@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FileText, Edit, Trash2, X } from 'lucide-react';
+import { FileText, Edit, Trash2, X, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ExpenseItem {
@@ -25,70 +25,84 @@ interface ExpenseCardProps {
 
 const ExpenseCard: React.FC<ExpenseCardProps> = ({ item, onEdit, onDelete }) => {
   return (
-    <div className="border rounded-lg shadow-sm bg-white hover:shadow-md transition-shadow duration-200">
-      <div className="p-4">
+    <div className="py-4">
+      <div className="flex flex-col space-y-3">
         <div className="flex items-start">
-          <div className="mr-3 flex-shrink-0">
-            <div className="h-10 w-10 bg-gray-100 rounded-md flex items-center justify-center text-lg">
-              {item.category}
+          <div className="flex-1">
+            {/* Title and type with emoji */}
+            <div className="flex items-center mb-0.5">
+              <h4 className="font-medium text-gray-900">{item.title}</h4>
+              <div className="ml-2 text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 flex items-center">
+                <span className="mr-1">{item.category}</span>
+                <span>{item.type}</span>
+              </div>
             </div>
           </div>
           
-          <div className="flex-1">
-            <div className="flex items-start justify-between">
-              <div>
-                <h4 className="font-medium text-gray-900">{item.title}</h4>
-                <p className="text-xs text-gray-500 mt-1">{item.type}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-500">{item.date}</p>
-                <p className="font-medium text-gray-900 mt-1">${item.amount.toFixed(2)}</p>
-              </div>
-            </div>
-            
-            <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
-              <div>
-                <p className="text-gray-500">{item.accountName}</p>
-                <p className="text-gray-700">{item.account}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">{item.costCenterName}</p>
-                <p className="text-gray-700">{item.costCenter}</p>
-              </div>
-            </div>
+          {/* Date on the right */}
+          <div className="text-xs text-gray-500 mt-0.5 min-w-[100px] text-right">
+            {item.date}
           </div>
         </div>
         
-        <div className="mt-4 pt-3 border-t flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <FileText className="h-3.5 w-3.5" />
-            <span className="max-w-[180px] truncate">{item.receiptName || "No receipt attached"}</span>
-            {item.receiptName && (
-              <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400">
-                <X className="h-3 w-3" />
-              </Button>
+        {/* GL account and cost center */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <p className="text-xs text-gray-500">{item.accountName}</p>
+            <p className="text-sm text-gray-700">{item.account}</p>
+          </div>
+          <div>
+            <p className="text-xs text-gray-500">{item.costCenterName}</p>
+            <p className="text-sm text-gray-700">{item.costCenter}</p>
+          </div>
+        </div>
+        
+        {/* Bottom row with amount, receipt, and actions */}
+        <div className="flex items-center justify-between mt-2">
+          {/* Receipt */}
+          <div className="flex items-center text-xs text-gray-500">
+            {item.receiptName ? (
+              <>
+                <FileText className="h-3.5 w-3.5 mr-1.5" />
+                <span className="max-w-[150px] truncate">{item.receiptName}</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400 ml-1">
+                  <X className="h-3 w-3" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-5 w-5 text-blue-500 ml-1">
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <FileText className="h-3.5 w-3.5 mr-1.5" />
+                <span>No receipt attached</span>
+              </>
             )}
           </div>
           
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onEdit}
-              className="h-7 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-            >
-              <Edit className="h-3.5 w-3.5 mr-1" />
-              Edit
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDelete}
-              className="h-7 text-red-600 hover:bg-red-50 hover:text-red-700"
-            >
-              <Trash2 className="h-3.5 w-3.5 mr-1" />
-              Delete
-            </Button>
+          {/* Amount and actions */}
+          <div className="flex items-center space-x-4">
+            <p className="font-medium text-gray-900">${item.amount.toFixed(2)}</p>
+            
+            <div className="flex space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onEdit}
+                className="h-8 w-8 text-blue-600 hover:bg-blue-50 hover:text-blue-700 rounded-full"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onDelete}
+                className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-full"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

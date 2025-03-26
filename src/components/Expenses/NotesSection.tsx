@@ -10,12 +10,12 @@ interface NotesSectionProps {
 const NotesSection: React.FC<NotesSectionProps> = ({ notes, setNotes }) => {
   return (
     <div>
-      <h3 className="text-base font-medium text-gray-800 mb-3">Notes</h3>
+      <h3 className="text-base font-medium text-gray-700 mb-3">Notes</h3>
       <Textarea
         placeholder="Add any additional information about this expense report..."
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        className="min-h-[180px] text-sm resize-none"
+        className="min-h-[120px] text-sm resize-none bg-gray-50 border-gray-200 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
       />
     </div>
   );

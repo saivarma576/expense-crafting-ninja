@@ -3,6 +3,7 @@ import React from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
+import { Separator } from '@/components/ui/separator';
 
 interface ExpenseLineItem {
   id: string;
@@ -35,27 +36,31 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
 }) => {
   return (
     <div className="mb-8">
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="text-base font-medium text-gray-800">Line Items</h3>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-base font-medium text-gray-700">Line Items</h3>
         <Button 
           variant="default"
           size="sm" 
           onClick={handleAddLineItem}
-          className="bg-blue-500 hover:bg-blue-600 text-white"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full"
         >
           <PlusCircle className="h-4 w-4 mr-1.5" />
-          Add Line Item
+          Line Items
         </Button>
       </div>
       
-      <div className="space-y-4">
-        {lineItems.map((item) => (
-          <ExpenseCard
-            key={item.id}
-            item={item}
-            onEdit={() => handleEditLineItem(item.id)}
-            onDelete={() => handleDeleteLineItem(item.id)}
-          />
+      <div className="space-y-0">
+        {lineItems.map((item, index) => (
+          <React.Fragment key={item.id}>
+            <ExpenseCard
+              item={item}
+              onEdit={() => handleEditLineItem(item.id)}
+              onDelete={() => handleDeleteLineItem(item.id)}
+            />
+            {index < lineItems.length - 1 && (
+              <div className="border-b border-dashed border-gray-200 my-2"></div>
+            )}
+          </React.Fragment>
         ))}
         
         {lineItems.length === 0 && (
@@ -75,14 +80,17 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
       </div>
       
       {lineItems.length > 0 && (
-        <div className="flex justify-end mt-6">
-          <div className="w-48">
-            <div className="flex justify-between py-2 text-sm font-medium">
-              <span>TOTAL AMOUNT</span>
-              <span>${totalAmount}</span>
+        <>
+          <Separator className="my-4" />
+          <div className="flex justify-end mt-2">
+            <div className="w-60">
+              <div className="flex justify-between py-2 text-sm font-medium">
+                <span className="text-gray-600">TOTAL AMOUNT</span>
+                <span className="text-gray-900 font-semibold">${totalAmount}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
