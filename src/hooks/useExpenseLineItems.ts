@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ExpenseLineItem } from '@/types/expense';
@@ -16,13 +17,20 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
   const handleEditLineItem = (id: string) => {
     const item = lineItems.find(item => item.id === id);
     if (item) {
+      // Map ExpenseLineItem to ExpenseLineItemType for editing
       setEditingItem({
         id: item.id,
         type: item.type.toLowerCase().replace(' ', '') as any,
         amount: item.amount,
         date: item.date,
         description: item.title,
-        receiptUrl: item.receiptName
+        receiptUrl: item.receiptName,
+        account: item.account,
+        accountName: item.accountName,
+        costCenter: item.costCenter,
+        costCenterName: item.costCenterName,
+        // Add any other fields that might have been added
+        merchantName: item.title
       });
       setIsAddingItem(true);
     }
@@ -44,6 +52,11 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
                 amount: lineItem.amount,
                 date: lineItem.date,
                 type: lineItem.type,
+                account: lineItem.account || item.account,
+                accountName: lineItem.accountName || item.accountName,
+                costCenter: lineItem.costCenter || item.costCenter,
+                costCenterName: lineItem.costCenterName || item.costCenterName,
+                receiptName: lineItem.receiptName || item.receiptName
               }
             : item
         )
@@ -54,15 +67,15 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
         {
           id: lineItem.id,
           title: lineItem.description,
-          type: lineItem.type,
+          type: getCategoryTypeLabel(lineItem.type),
           category: getEmojiForType(lineItem.type),
           date: lineItem.date,
           amount: lineItem.amount,
-          account: '1001- GL account Name',
-          accountName: 'GL Account',
-          costCenter: '1200- Cost Center Name',
-          costCenterName: 'Cost Center',
-          receiptName: 'Receipt Pending'
+          account: lineItem.account || '1001- GL account Name',
+          accountName: lineItem.accountName || 'GL Account',
+          costCenter: lineItem.costCenter || '1200- Cost Center Name',
+          costCenterName: lineItem.costCenterName || 'Cost Center',
+          receiptName: lineItem.receiptName || 'Receipt Pending'
         }
       ]);
     }
@@ -82,6 +95,18 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
       'other': '📋'
     };
     return emojiMap[type.toLowerCase()] || '📋';
+  };
+
+  const getCategoryTypeLabel = (type: string) => {
+    const labelMap: Record<string, string> = {
+      'airfare': 'Airfare',
+      'hotel': 'Hotel/Lodging',
+      'meals': 'Business Meals',
+      'rental': 'Car Rental',
+      'transport': 'Transport',
+      'other': 'Other Expense'
+    };
+    return labelMap[type.toLowerCase()] || 'Other Expense';
   };
 
   const getTotalAmount = () => {
