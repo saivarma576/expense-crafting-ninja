@@ -1,18 +1,19 @@
-
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, Pencil, PlusCircle, Clock, 
   FileText, Upload, Save, ArrowRight,
   Trash2, Edit, X, Info, Download
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem, { ExpenseLineItemType } from '@/components/Expenses/ExpenseLineItem';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import ExpenseCard from '@/components/Expenses/ExpenseCard';
+import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
+import { DocumentUpload } from '@/components/Expenses/DocumentUpload';
 
 interface ExpenseLineItem {
   id: string;
@@ -174,47 +175,24 @@ const NewExpense: React.FC = () => {
     return emojiMap[type.toLowerCase()] || '📋';
   };
 
-  const handleDeleteDocument = (index: number) => {
-    setUploadedDocuments(prevDocs => prevDocs.filter((_, i) => i !== index));
-    toast.success("Document removed");
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    // This would normally handle file uploads
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      toast.success(`Uploading ${e.dataTransfer.files.length} file(s)`);
-      // Mock file upload
-      const newDocs = Array.from(e.dataTransfer.files).map(file => ({
-        name: file.name,
-        size: `${(file.size / 1024).toFixed(2)} Kb`
-      }));
-      setUploadedDocuments(prev => [...prev, ...newDocs]);
-    }
-  };
-  
   return (
-    <div className="max-w-[1000px] mx-auto py-0 px-0">
+    <div className="max-w-5xl mx-auto bg-white shadow-sm">
       {/* Header */}
-      <div className="bg-gray-50 border-b py-3 px-4 flex items-center">
+      <div className="bg-white border-b sticky top-0 z-10 px-6 py-4 flex items-center">
         <button 
           onClick={() => navigate('/expenses')}
-          className="rounded-full hover:bg-gray-200 p-1.5 mr-2 transition-colors"
+          className="rounded-full hover:bg-gray-100 p-1.5 mr-3 transition-colors"
           aria-label="Go back"
         >
           <ArrowLeft className="h-5 w-5 text-gray-600" />
         </button>
-        <h1 className="text-base font-medium text-gray-700">New Expense Report</h1>
+        <h1 className="text-lg font-medium text-gray-800">New Expense Report</h1>
       </div>
 
-      {/* Main content card */}
-      <div className="bg-white border rounded-none shadow-sm mx-auto my-4">
+      {/* Main content */}
+      <div className="px-6 py-5">
         {/* Title section with inline editing */}
-        <div className="p-5 border-b">
+        <div className="mb-8 border-b pb-6">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="flex items-start gap-4">
               {isEditingTitle ? (
@@ -236,7 +214,7 @@ const NewExpense: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex items-center gap-2 group">
-                  <h2 className="text-lg font-medium text-gray-800">{title}</h2>
+                  <h2 className="text-xl font-medium text-gray-800">{title}</h2>
                   <Button 
                     size="icon" 
                     variant="ghost" 
@@ -249,7 +227,7 @@ const NewExpense: React.FC = () => {
               )}
               
               <div className="flex items-center">
-                <div className="h-8 w-8 bg-amber-100 rounded-full flex items-center justify-center text-xs">
+                <div className="h-9 w-9 bg-amber-100 rounded-full flex items-center justify-center text-xs font-medium">
                   OR
                 </div>
                 <div className="ml-2">
@@ -259,7 +237,7 @@ const NewExpense: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm self-start">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm self-start">
               <div className="text-gray-500">Expense #</div>
               <div className="font-medium text-right">{expenseNo}</div>
               
@@ -267,244 +245,120 @@ const NewExpense: React.FC = () => {
               <div className="font-medium text-right">{expenseDate}</div>
               
               <div className="text-gray-500">Amount</div>
-              <div className="font-medium text-right">{totalAmount} $</div>
+              <div className="font-medium text-right">${totalAmount}</div>
             </div>
           </div>
         </div>
 
         {/* Line items section */}
-        <div className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-700">Line Items</h3>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-5">
+            <h3 className="text-base font-medium text-gray-800">Line Items</h3>
             <Button 
               variant="default"
               size="sm" 
-              className="bg-blue-500 hover:bg-blue-600 h-9 px-3 py-2 text-sm"
               onClick={handleAddLineItem}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
             >
               <PlusCircle className="h-4 w-4 mr-1.5" />
-              Line Items
+              Add Line Item
             </Button>
           </div>
           
           <div className="space-y-4">
             {lineItems.map((item) => (
-              <div key={item.id} className="border rounded-lg overflow-hidden">
-                <div className="flex items-start p-4">
-                  <div className="mr-3">
-                    <div className="h-8 w-8 bg-gray-100 rounded-md flex items-center justify-center text-lg">
-                      {item.category}
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="font-medium text-gray-800">{item.title}</div>
-                    <div className="text-xs text-gray-500 mt-1">{item.type}</div>
-                    
-                    <div className="mt-3 grid grid-cols-2 gap-4 text-xs">
-                      <div>
-                        <div className="text-gray-500">{item.accountName}</div>
-                        <div>{item.account}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-500">{item.costCenterName}</div>
-                        <div>{item.costCenter}</div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-col items-end gap-1 ml-4">
-                    <div className="text-xs text-gray-500">{item.date}</div>
-                    <div className="font-medium">{item.amount.toFixed(2)} $</div>
-                    
-                    <div className="flex items-center mt-2 gap-2">
-                      <div className="flex items-center gap-1 text-xs text-gray-500">
-                        <FileText className="h-3.5 w-3.5" />
-                        <span className="max-w-[120px] truncate">{item.receiptName}</span>
-                        <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400">
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-blue-500"
-                          onClick={() => handleEditLineItem(item.id)}
-                        >
-                          <Edit className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-red-500"
-                          onClick={() => handleDeleteLineItem(item.id)}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <ExpenseCard
+                key={item.id}
+                item={item}
+                onEdit={() => handleEditLineItem(item.id)}
+                onDelete={() => handleDeleteLineItem(item.id)}
+              />
             ))}
             
             {lineItems.length === 0 && (
-              <div className="border rounded-lg p-6 text-center">
-                <div className="text-gray-500 mb-2">No expense items added yet</div>
-                <Button variant="outline" size="sm" onClick={handleAddLineItem}>
-                  <PlusCircle className="h-4 w-4 mr-2" /> Add First Item
+              <div className="border rounded-lg p-8 text-center bg-gray-50">
+                <div className="text-gray-500 mb-3">No expense items added yet</div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleAddLineItem}
+                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" /> 
+                  Add First Item
                 </Button>
               </div>
             )}
           </div>
           
-          <div className="flex justify-end mt-4">
-            <div className="w-48">
-              <div className="flex justify-between py-2 text-sm font-medium">
-                <span>TOTAL AMOUNT</span>
-                <span>{totalAmount} $</span>
+          {lineItems.length > 0 && (
+            <div className="flex justify-end mt-6">
+              <div className="w-48">
+                <div className="flex justify-between py-2 text-sm font-medium">
+                  <span>TOTAL AMOUNT</span>
+                  <span>${totalAmount}</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
           
         {/* Documents & Notes Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           {/* Document upload section */}
-          <div 
-            className="border rounded-lg"
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-          >
-            <div className="border-dashed border rounded-lg p-5 m-3 text-center">
-              <div className="flex justify-center mb-3">
-                <div className="p-2 bg-blue-50 rounded-full">
-                  <Upload className="h-5 w-5 text-blue-500" />
-                </div>
-              </div>
-              <p className="text-sm font-medium mb-1">Click to upload</p>
-              <p className="text-xs text-gray-500 mb-3">or drag and drop</p>
-              <Button variant="outline" size="sm" className="text-xs h-8">
-                <Upload className="h-3.5 w-3.5 mr-1.5" />
-                Upload
-              </Button>
-            </div>
-            
-            {uploadedDocuments.length > 0 && (
-              <div className="m-3 space-y-2">
-                {uploadedDocuments.map((doc, index) => (
-                  <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-blue-500" />
-                      <div>
-                        <div className="text-sm font-medium">{doc.name}</div>
-                        <div className="text-xs text-gray-500">{doc.size}</div>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <Download className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-7 w-7 text-red-500"
-                        onClick={() => handleDeleteDocument(index)}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <DocumentUpload 
+            uploadedDocuments={uploadedDocuments}
+            setUploadedDocuments={setUploadedDocuments}
+          />
           
           {/* Notes section */}
           <div>
-            <h3 className="text-sm font-medium mb-3 text-gray-700">Notes:</h3>
+            <h3 className="text-base font-medium text-gray-800 mb-3">Notes</h3>
             <Textarea
-              placeholder="Enter notes or comments here..."
+              placeholder="Add any additional information about this expense report..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="min-h-[150px] text-sm"
+              className="min-h-[180px] text-sm resize-none"
             />
           </div>
         </div>
         
         {/* Approval flow section */}
-        <div className="p-5">
-          <h3 className="text-sm font-medium mb-4 text-gray-700">Approval Flow</h3>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-gray-700 font-medium text-sm">
-                1
-              </div>
-              <div className="flex-1 flex items-center justify-between border-b pb-4">
-                <div>
-                  <div className="text-sm font-medium">Manager Approval</div>
-                  <div className="text-xs text-gray-500">Sarah Wright</div>
-                </div>
-                <div className="flex items-center text-amber-500">
-                  <Clock className="h-4 w-4 mr-1.5" />
-                  <span className="text-sm">Pending</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-gray-400 font-medium text-sm">
-                2
-              </div>
-              <div className="flex-1 flex items-center justify-between">
-                <div>
-                  <div className="text-sm font-medium text-gray-500">Finance Review</div>
-                  <div className="text-xs text-gray-500">Michael Chen</div>
-                </div>
-                <div className="text-sm text-gray-400">
-                  Waiting
-                </div>
-              </div>
-            </div>
-          </div>
+        <ExpenseApproval />
+      </div>
+      
+      {/* Footer with action buttons */}
+      <div className="border-t bg-white sticky bottom-0 p-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <input type="checkbox" id="terms" className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500" />
+          <label htmlFor="terms" className="text-xs text-gray-600">
+            By submitting, I confirm this is a valid business expense in accordance with company policy.
+          </label>
         </div>
         
-        <div className="border-t p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <input type="checkbox" id="terms" className="h-4 w-4" />
-            <label htmlFor="terms" className="text-xs text-gray-600">
-              By clicking on this, we are submitting a legally binding invoice for SmartDocs to pay as per the purchase order released to us by SmartDocs.
-            </label>
-          </div>
-          
-          {/* Footer with action buttons */}
-          <div className="flex items-center justify-end gap-3 mt-4">
-            <Button 
-              variant="outline" 
-              className="px-5 text-sm h-9"
-              onClick={() => navigate('/expenses')}
-            >
-              Cancel
-            </Button>
-            <Button 
-              variant="outline" 
-              className="px-5 flex items-center gap-1.5 text-sm h-9"
-              onClick={handleSaveAsDraft}
-            >
-              <Save className="h-4 w-4" />
-              Save as draft
-            </Button>
-            <Button 
-              className="px-5 flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-sm h-9"
-              onClick={handleSubmit}
-            >
-              Submit
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            className="text-sm h-9"
+            onClick={() => navigate('/expenses')}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="outline" 
+            className="text-sm h-9 flex items-center gap-1.5"
+            onClick={handleSaveAsDraft}
+          >
+            <Save className="h-4 w-4" />
+            Save as draft
+          </Button>
+          <Button 
+            className="bg-blue-500 hover:bg-blue-600 text-sm h-9 flex items-center gap-1.5"
+            onClick={handleSubmit}
+          >
+            Submit
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
