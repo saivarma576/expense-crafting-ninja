@@ -35,7 +35,7 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
   totalAmount
 }) => {
   return (
-    <div className="mb-8">
+    <div className="mb-8 max-w-5xl">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-base font-medium text-gray-700">Line Items</h3>
         <Button 
@@ -49,48 +49,56 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
         </Button>
       </div>
       
-      <div className="space-y-0">
-        {lineItems.map((item, index) => (
-          <React.Fragment key={item.id}>
-            <ExpenseCard
-              item={item}
-              onEdit={() => handleEditLineItem(item.id)}
-              onDelete={() => handleDeleteLineItem(item.id)}
-            />
-            {index < lineItems.length - 1 && (
-              <div className="border-b border-dashed border-gray-200 my-2"></div>
-            )}
-          </React.Fragment>
-        ))}
-        
-        {lineItems.length === 0 && (
-          <div className="border rounded-lg p-8 text-center bg-gray-50">
-            <div className="text-gray-500 mb-3">No expense items added yet</div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleAddLineItem}
-              className="border-blue-200 text-blue-600 hover:bg-blue-50"
-            >
-              <PlusCircle className="h-4 w-4 mr-2" /> 
-              Add First Item
-            </Button>
+      {lineItems.length > 0 ? (
+        <div className="border border-gray-100 rounded-lg overflow-hidden">
+          {/* Header row */}
+          <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-gray-50 text-xs font-medium text-gray-500">
+            <div className="col-span-3">TITLE</div>
+            <div className="col-span-3">ACCOUNT INFO</div>
+            <div className="col-span-2">DATE</div>
+            <div className="col-span-1 text-right">AMOUNT</div>
+            <div className="col-span-2">RECEIPT</div>
+            <div className="col-span-1"></div>
           </div>
-        )}
-      </div>
-      
-      {lineItems.length > 0 && (
-        <>
-          <Separator className="my-4" />
-          <div className="flex justify-end mt-2">
-            <div className="w-60">
-              <div className="flex justify-between py-2 text-sm font-medium">
-                <span className="text-gray-600">TOTAL AMOUNT</span>
-                <span className="text-gray-900 font-semibold">${totalAmount}</span>
+          
+          {/* Line items */}
+          <div className="divide-y divide-dashed divide-gray-200">
+            {lineItems.map((item) => (
+              <div key={item.id} className="px-4">
+                <ExpenseCard
+                  item={item}
+                  onEdit={() => handleEditLineItem(item.id)}
+                  onDelete={() => handleDeleteLineItem(item.id)}
+                />
+              </div>
+            ))}
+          </div>
+          
+          {/* Total row */}
+          <div className="bg-gray-50 px-4 py-3">
+            <div className="flex justify-end">
+              <div className="w-48">
+                <div className="flex justify-between py-2 text-sm font-medium">
+                  <span className="text-gray-600">TOTAL AMOUNT</span>
+                  <span className="text-gray-900 font-semibold">{totalAmount} $</span>
+                </div>
               </div>
             </div>
           </div>
-        </>
+        </div>
+      ) : (
+        <div className="border rounded-lg p-8 text-center bg-gray-50">
+          <div className="text-gray-500 mb-3">No expense items added yet</div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleAddLineItem}
+            className="border-blue-200 text-blue-600 hover:bg-blue-50"
+          >
+            <PlusCircle className="h-4 w-4 mr-2" /> 
+            Add First Item
+          </Button>
+        </div>
       )}
     </div>
   );
