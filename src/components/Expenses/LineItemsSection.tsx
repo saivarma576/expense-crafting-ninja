@@ -35,7 +35,7 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
   totalAmount
 }) => {
   return (
-    <div className="mb-8 max-w-4xl">
+    <div className="mb-8 w-full">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-medium text-gray-700">Line Items</h3>
         <Button 
@@ -50,16 +50,13 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
       </div>
       
       {lineItems.length > 0 ? (
-        <div className="border border-gray-100 rounded-lg overflow-hidden shadow-sm">
+        <div className="border border-gray-100 rounded-lg overflow-hidden shadow-sm w-full">
           {/* Header row */}
           <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-gray-50 text-xs font-medium text-gray-500">
-            <div className="col-span-4">ITEM</div>
-            <div className="col-span-2 text-right">PRICE</div>
-            <div className="col-span-2 text-center">QTY</div>
-            <div className="col-span-2 text-right">TOTAL</div>
-            <div className="col-span-1 flex justify-center">
-              <Paperclip className="h-3.5 w-3.5" />
-            </div>
+            <div className="col-span-5">ITEM</div>
+            <div className="col-span-4">ACCOUNT (GL/CC)</div>
+            <div className="col-span-1">DATE</div>
+            <div className="col-span-1 text-right">AMOUNT</div>
             <div className="col-span-1"></div>
           </div>
           
@@ -89,7 +86,7 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           </div>
         </div>
       ) : (
-        <div className="border rounded-lg p-6 text-center bg-gray-50">
+        <div className="border rounded-lg p-6 text-center bg-gray-50 w-full">
           <div className="text-gray-500 mb-3">No expense items added yet</div>
           <Button 
             variant="outline" 

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, Calendar, Hash, DollarSign, User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -24,6 +24,13 @@ const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
   userEmail
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [isEditingExpenseNo, setIsEditingExpenseNo] = useState(false);
+  const [isEditingExpenseDate, setIsEditingExpenseDate] = useState(false);
+  const [isEditingAmount, setIsEditingAmount] = useState(false);
+  
+  const [localExpenseNo, setLocalExpenseNo] = useState(expenseNo);
+  const [localExpenseDate, setLocalExpenseDate] = useState(expenseDate);
+  const [localAmount, setLocalAmount] = useState(totalAmount);
   
   return (
     <div className="mb-8 border-b pb-6">
@@ -65,21 +72,123 @@ const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
               {userName.split(' ').map(name => name[0]).join('')}
             </div>
             <div className="ml-2">
-              <div className="text-sm font-medium">{userName}</div>
-              <div className="text-xs text-gray-500">{userEmail}</div>
+              <div className="flex items-center text-sm font-medium">
+                <User className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+                {userName}
+              </div>
+              <div className="flex items-center text-xs text-gray-500">
+                <Mail className="h-3 w-3 mr-1.5 text-gray-400" />
+                {userEmail}
+              </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm self-start">
-          <div className="text-gray-500">Expense #</div>
-          <div className="font-medium text-right">{expenseNo}</div>
+          <div className="flex items-center text-gray-500">
+            <Hash className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+            Expense #
+          </div>
+          {isEditingExpenseNo ? (
+            <div className="flex items-center">
+              <Input 
+                value={localExpenseNo}
+                onChange={(e) => setLocalExpenseNo(e.target.value)}
+                className="h-7 text-right text-sm"
+                autoFocus
+              />
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsEditingExpenseNo(false)}
+                className="h-7 w-7 text-gray-500 ml-1"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ) : (
+            <div className="font-medium text-right group flex items-center justify-end">
+              {localExpenseNo}
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsEditingExpenseNo(true)}
+                className="h-6 w-6 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500 ml-1"
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
           
-          <div className="text-gray-500">Expense Date</div>
-          <div className="font-medium text-right">{expenseDate}</div>
+          <div className="flex items-center text-gray-500">
+            <Calendar className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+            Expense Date
+          </div>
+          {isEditingExpenseDate ? (
+            <div className="flex items-center">
+              <Input 
+                value={localExpenseDate}
+                onChange={(e) => setLocalExpenseDate(e.target.value)}
+                className="h-7 text-right text-sm"
+                autoFocus
+              />
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsEditingExpenseDate(false)}
+                className="h-7 w-7 text-gray-500 ml-1"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ) : (
+            <div className="font-medium text-right group flex items-center justify-end">
+              {localExpenseDate}
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsEditingExpenseDate(true)}
+                className="h-6 w-6 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500 ml-1"
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
           
-          <div className="text-gray-500">Amount</div>
-          <div className="font-medium text-right">${totalAmount}</div>
+          <div className="flex items-center text-gray-500">
+            <DollarSign className="h-3.5 w-3.5 mr-1.5 text-gray-400" />
+            Amount
+          </div>
+          {isEditingAmount ? (
+            <div className="flex items-center">
+              <Input 
+                value={localAmount}
+                onChange={(e) => setLocalAmount(e.target.value)}
+                className="h-7 text-right text-sm"
+                autoFocus
+              />
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsEditingAmount(false)}
+                className="h-7 w-7 text-gray-500 ml-1"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          ) : (
+            <div className="font-medium text-right group flex items-center justify-end">
+              ${localAmount}
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                onClick={() => setIsEditingAmount(true)}
+                className="h-6 w-6 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500 ml-1"
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
