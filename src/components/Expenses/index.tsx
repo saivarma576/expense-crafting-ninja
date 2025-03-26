@@ -213,84 +213,78 @@ const Expenses: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="bg-white rounded-lg shadow-sm border">
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <div className="flex items-center space-x-4">
-            <Button
-              onClick={() => navigate('/expenses/new')}
-              variant="outline"
-              size="sm"
-              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-            >
-              <Plus className="h-4 w-4 mr-1" />
-              New Expense
-            </Button>
-            
-            <Button
-              onClick={handleExport}
-              variant="outline"
-              size="sm"
-              className="border-gray-200 text-gray-700 hover:bg-gray-100"
-            >
-              <Download className="h-4 w-4 mr-1" />
-              Export
-            </Button>
-            
-            <Collapsible
-              open={isFilterOpen}
-              onOpenChange={setIsFilterOpen}
-            >
-              <CollapsibleTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="border-gray-200 text-gray-700 hover:bg-gray-100"
-                >
-                  <Filter className="h-4 w-4 mr-1" />
-                  Filter
-                  <ChevronRight className={`h-4 w-4 ml-1 transition-transform duration-200 ${isFilterOpen ? 'rotate-90' : ''}`} />
-                </Button>
-              </CollapsibleTrigger>
-            </Collapsible>
-          </div>
-        </div>
-        
         <Tabs defaultValue="my-expenses" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-none border-b h-auto p-0">
-            <TabsTrigger 
-              value="my-expenses" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
-            >
-              <FileText className="h-4 w-4" />
-              <span>My Expenses</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="in-process" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
-            >
-              <ClipboardList className="h-4 w-4" />
-              <span>In Process</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="completed" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
-            >
-              <CheckCircle className="h-4 w-4" />
-              <span>Completed</span>
-            </TabsTrigger>
-            <TabsTrigger 
-              value="draft" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
-            >
-              <Clock className="h-4 w-4" />
-              <span>Draft</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between border-b">
+            <TabsList className="rounded-none border-b-0 p-0 h-auto bg-transparent">
+              <TabsTrigger 
+                value="my-expenses" 
+                className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-transparent rounded-none justify-start"
+              >
+                <FileText className="h-4 w-4" />
+                <span>My Expenses</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="in-process" 
+                className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-transparent rounded-none justify-start"
+              >
+                <ClipboardList className="h-4 w-4" />
+                <span>In Process</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="completed" 
+                className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-transparent rounded-none justify-start"
+              >
+                <CheckCircle className="h-4 w-4" />
+                <span>Completed</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="draft" 
+                className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-transparent rounded-none justify-start"
+              >
+                <Clock className="h-4 w-4" />
+                <span>Draft</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <div className="flex items-center space-x-2 px-4">
+              <Button
+                onClick={() => navigate('/expenses/new')}
+                variant="outline"
+                size="sm"
+                className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                New Expense
+              </Button>
+              
+              <Button
+                onClick={handleExport}
+                variant="outline"
+                size="sm"
+                className="border-gray-200 text-gray-700 hover:bg-gray-100"
+              >
+                <Download className="h-4 w-4 mr-1" />
+                Export
+              </Button>
+              
+              <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+                <CollapsibleTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="border-gray-200 text-gray-700 hover:bg-gray-100"
+                  >
+                    <Filter className="h-4 w-4 mr-1" />
+                    Filter
+                    <ChevronRight className={`h-4 w-4 ml-1 transition-transform duration-200 ${isFilterOpen ? 'rotate-90' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
+              </Collapsible>
+            </div>
+          </div>
           
           <TabsContent value="my-expenses" className="p-4">
-            <Collapsible
-              open={isFilterOpen}
-              onOpenChange={setIsFilterOpen}
-            >
+            <Collapsible open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <CollapsibleContent>
                 <div className="border rounded-md mb-4 bg-gray-50 overflow-hidden">
                   <div className="p-4">
@@ -459,3 +453,4 @@ const Expenses: React.FC = () => {
 };
 
 export default Expenses;
+
