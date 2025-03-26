@@ -1,6 +1,10 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Search, Filter, ArrowDownUp, MoreVertical, ChevronDown, ClipboardList, Clock, CheckCircle } from 'lucide-react';
+import { 
+  FileText, Search, Filter, Download, MoreVertical, ChevronDown, 
+  ClipboardList, Clock, CheckCircle, Plus, ChevronRight
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +20,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
 
@@ -183,6 +188,7 @@ const Expenses: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [activeTab, setActiveTab] = useState('my-expenses');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   
   const filteredExpenses = expenseData.filter(expense => {
     const matchesEmployee = expense.employee.name.toLowerCase().includes(searchEmployee.toLowerCase()) || 
@@ -200,16 +206,37 @@ const Expenses: React.FC = () => {
     setExpenseDate('');
     setStatusFilter('all');
   };
+
+  const handleExport = () => {
+    // Placeholder for export functionality
+    console.log('Exporting expenses data...');
+    // Implementation would typically involve generating a CSV or Excel file
+  };
   
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <Button
-          onClick={() => navigate('/expenses/new')}
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-        >
-          Create New Request
-        </Button>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => navigate('/expenses/new')}
+            variant="outline"
+            size="sm"
+            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            New Expense
+          </Button>
+          
+          <Button
+            onClick={handleExport}
+            variant="outline"
+            size="sm"
+            className="border-gray-200 text-gray-700 hover:bg-gray-100"
+          >
+            <Download className="h-4 w-4 mr-1" />
+            Export
+          </Button>
+        </div>
       </div>
       
       <div className="bg-white rounded-lg shadow-sm border">
@@ -217,106 +244,122 @@ const Expenses: React.FC = () => {
           <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-t-lg border-b h-auto p-0">
             <TabsTrigger 
               value="my-expenses" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
             >
               <FileText className="h-4 w-4" />
               <span>My Expenses</span>
-              <Badge className="ml-1 bg-gray-100 text-gray-700 rounded-full">0</Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="in-process" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
             >
               <ClipboardList className="h-4 w-4" />
               <span>In Process</span>
-              <Badge className="ml-1 bg-gray-100 text-gray-700 rounded-full">0</Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="completed" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
             >
               <CheckCircle className="h-4 w-4" />
               <span>Completed</span>
-              <Badge className="ml-1 bg-gray-100 text-gray-700 rounded-full">0</Badge>
             </TabsTrigger>
             <TabsTrigger 
               value="draft" 
-              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
             >
               <Clock className="h-4 w-4" />
               <span>Draft</span>
-              <Badge className="ml-1 bg-amber-100 text-amber-700 rounded-full">0</Badge>
             </TabsTrigger>
           </TabsList>
           
           <TabsContent value="my-expenses" className="p-4">
-            <div className="border rounded-md p-4 mb-4 bg-gray-50">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <Label htmlFor="searchEmployee">Search Employee</Label>
-                  <div className="relative">
-                    <Input
-                      id="searchEmployee"
-                      placeholder="Search Employee"
-                      value={searchEmployee}
-                      onChange={(e) => setSearchEmployee(e.target.value)}
-                      className="pl-9 bg-white"
-                    />
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  </div>
+            <Collapsible
+              open={isFilterOpen}
+              onOpenChange={setIsFilterOpen}
+              className="w-full border rounded-md mb-4 bg-gray-50 overflow-hidden"
+            >
+              <div className="flex justify-between items-center px-4 py-3">
+                <div className="flex items-center">
+                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
+                  <span className="font-medium text-sm">Filter Expenses</span>
                 </div>
-                
-                <div>
-                  <Label htmlFor="expenseNumber">Expense Number</Label>
-                  <Input
-                    id="expenseNumber"
-                    placeholder="Expense Number"
-                    value={expenseNumber}
-                    onChange={(e) => setExpenseNumber(e.target.value)}
-                    className="bg-white"
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="expenseDate">Expense Date</Label>
-                  <div className="relative">
-                    <Input
-                      id="expenseDate"
-                      placeholder="Expense Date"
-                      type="text" 
-                      value={expenseDate}
-                      onChange={(e) => setExpenseDate(e.target.value)}
-                      className="bg-white"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <Label htmlFor="statusFilter">Select status</Label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger id="statusFilter" className="bg-white">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                      <SelectItem value="in-process">In Process</SelectItem>
-                      <SelectItem value="collaborated">Collaborated</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-90' : ''}`} />
+                  </Button>
+                </CollapsibleTrigger>
               </div>
               
-              <div className="flex justify-end gap-2 mt-4">
-                <Button variant="outline" onClick={resetFilters} className="bg-white">
-                  Reset
-                </Button>
-                <Button className="bg-blue-700 text-white">
-                  Search
-                </Button>
-              </div>
-            </div>
+              <CollapsibleContent>
+                <div className="p-4 pt-0 border-t">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div>
+                      <Label htmlFor="searchEmployee">Search Employee</Label>
+                      <div className="relative">
+                        <Input
+                          id="searchEmployee"
+                          placeholder="Search Employee"
+                          value={searchEmployee}
+                          onChange={(e) => setSearchEmployee(e.target.value)}
+                          className="pl-9 bg-white"
+                        />
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="expenseNumber">Expense Number</Label>
+                      <Input
+                        id="expenseNumber"
+                        placeholder="Expense Number"
+                        value={expenseNumber}
+                        onChange={(e) => setExpenseNumber(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="expenseDate">Expense Date</Label>
+                      <div className="relative">
+                        <Input
+                          id="expenseDate"
+                          placeholder="Expense Date"
+                          type="text" 
+                          value={expenseDate}
+                          onChange={(e) => setExpenseDate(e.target.value)}
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="statusFilter">Select status</Label>
+                      <Select value={statusFilter} onValueChange={setStatusFilter}>
+                        <SelectTrigger id="statusFilter" className="bg-white">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All</SelectItem>
+                          <SelectItem value="approved">Approved</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                          <SelectItem value="in-process">In Process</SelectItem>
+                          <SelectItem value="collaborated">Collaborated</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  
+                  <div className="flex justify-end gap-2 mt-4">
+                    <Button variant="outline" onClick={resetFilters} className="bg-white">
+                      Reset
+                    </Button>
+                    <Button className="bg-blue-700 text-white">
+                      Search
+                    </Button>
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
             
             {filteredExpenses.length > 0 ? (
               <div className="border rounded-md overflow-hidden bg-white">

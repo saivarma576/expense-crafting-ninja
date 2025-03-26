@@ -1,8 +1,20 @@
 
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, LayoutDashboard, Receipt, FileText, BarChart3, Settings, Menu, X } from 'lucide-react';
+import { 
+  ChevronDown, 
+  LayoutDashboard, 
+  FileText, 
+  Receipt, 
+  BarChart3, 
+  Settings, 
+  Menu, 
+  X, 
+  Plus
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -14,12 +26,20 @@ const navItems = [
 
 const Navigation: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
   // Close mobile menu when navigating
   const handleNavigation = () => {
     if (isOpen) setIsOpen(false);
   };
+
+  // Quick create new expense
+  const handleQuickCreate = () => {
+    navigate('/expenses/new');
+  };
+
+  const isExpensesActive = location.pathname.startsWith('/expenses');
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -33,7 +53,7 @@ const Navigation: React.FC = () => {
           </div>
 
           {/* Desktop navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="ml-6 hidden md:flex items-center space-x-1 flex-1">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path || 
                 (item.path !== '/dashboard' && location.pathname.startsWith(item.path));
@@ -44,22 +64,30 @@ const Navigation: React.FC = () => {
                   to={item.path}
                   onClick={handleNavigation}
                   className={cn(
-                    "flex items-center text-sm font-medium transition-colors hover:text-primary relative py-2",
-                    isActive ? "text-primary" : "text-foreground/70"
+                    "flex items-center text-sm font-medium transition-colors hover:text-primary relative py-2 px-3 rounded-md",
+                    isActive ? "text-primary bg-primary/10" : "text-foreground/70"
                   )}
                 >
                   <item.icon className="w-4 h-4 mr-2" />
                   {item.name}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary rounded-full" />
-                  )}
                 </Link>
               );
             })}
+            
+            {/* Quick create button that only shows on expenses pages */}
+            {isExpensesActive && (
+              <Button 
+                size="sm"
+                onClick={handleQuickCreate}
+                className="ml-auto bg-blue-500 hover:bg-blue-600 text-white rounded-full h-8 w-8 p-0"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            )}
           </nav>
 
           {/* User section */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 ml-auto md:ml-0">
             <button className="hidden md:flex items-center justify-center rounded-full p-1.5">
               <span className="relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full">
                 <span className="flex h-full w-full items-center justify-center rounded-full bg-muted text-muted-foreground">
@@ -110,6 +138,17 @@ const Navigation: React.FC = () => {
                 </Link>
               );
             })}
+            
+            {/* Quick create in mobile menu */}
+            {isExpensesActive && (
+              <Button 
+                onClick={handleQuickCreate}
+                className="w-full flex items-center justify-center bg-primary text-primary-foreground"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New Expense
+              </Button>
+            )}
           </div>
         </div>
       )}
