@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Search, Filter, ArrowDownUp, MoreVertical, ChevronDown, ClipboardList, Clock, CheckCircle } from 'lucide-react';
@@ -20,7 +19,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
 
-// Mock data for the table
 const expenseData = [
   {
     id: 'exp-001',
@@ -182,17 +180,16 @@ const Expenses: React.FC = () => {
   const [searchEmployee, setSearchEmployee] = useState('');
   const [expenseNumber, setExpenseNumber] = useState('');
   const [expenseDate, setExpenseDate] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [activeTab, setActiveTab] = useState('my-expenses');
   
-  // Filter expenses based on search criteria
   const filteredExpenses = expenseData.filter(expense => {
     const matchesEmployee = expense.employee.name.toLowerCase().includes(searchEmployee.toLowerCase()) || 
                            expense.employee.email.toLowerCase().includes(searchEmployee.toLowerCase());
     const matchesNumber = expense.expenseNumber.includes(expenseNumber);
     const matchesDate = expenseDate ? expense.expenseDate.includes(expenseDate) : true;
-    const matchesStatus = statusFilter ? expense.status === statusFilter : true;
+    const matchesStatus = statusFilter === 'all' ? true : expense.status === statusFilter;
     
     return matchesEmployee && matchesNumber && matchesDate && matchesStatus;
   });
@@ -201,7 +198,7 @@ const Expenses: React.FC = () => {
     setSearchEmployee('');
     setExpenseNumber('');
     setExpenseDate('');
-    setStatusFilter('');
+    setStatusFilter('all');
   };
   
   return (
@@ -301,7 +298,7 @@ const Expenses: React.FC = () => {
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All</SelectItem>
+                      <SelectItem value="all">All</SelectItem>
                       <SelectItem value="approved">Approved</SelectItem>
                       <SelectItem value="rejected">Rejected</SelectItem>
                       <SelectItem value="in-process">In Process</SelectItem>
