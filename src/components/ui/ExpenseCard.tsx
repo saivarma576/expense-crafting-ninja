@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  Plane, Hotel, UtensilsCrossed, Car, Taxi, FileQuestion,
+  Plane, Hotel, UtensilsCrossed, Car, Truck, FileQuestion,
   ChevronRight 
 } from 'lucide-react';
 
@@ -25,7 +25,7 @@ const getExpenseTypeIcon = (type: ExpenseType) => {
     case 'hotel': return <Hotel className="h-4 w-4" />;
     case 'meals': return <UtensilsCrossed className="h-4 w-4" />;
     case 'rental': return <Car className="h-4 w-4" />;
-    case 'transport': return <Taxi className="h-4 w-4" />;
+    case 'transport': return <Truck className="h-4 w-4" />; // Changed from Taxi to Truck
     case 'other': 
     default: 
       return <FileQuestion className="h-4 w-4" />;

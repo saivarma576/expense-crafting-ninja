@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { 
-  Plane, Hotel, UtensilsCrossed, Car, Taxi, FileQuestion, 
+  Plane, Hotel, UtensilsCrossed, Car, Truck, FileQuestion, 
   Calendar, DollarSign, FileText, ArrowRight 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -28,7 +28,7 @@ const expenseTypes = [
   { value: 'hotel', label: 'Hotel', icon: <Hotel className="h-5 w-5" /> },
   { value: 'meals', label: 'Meals', icon: <UtensilsCrossed className="h-5 w-5" /> },
   { value: 'rental', label: 'Car Rental', icon: <Car className="h-5 w-5" /> },
-  { value: 'transport', label: 'Taxi/Ride', icon: <Taxi className="h-5 w-5" /> },
+  { value: 'transport', label: 'Taxi/Ride', icon: <Truck className="h-5 w-5" /> }, // Changed from Taxi to Truck
   { value: 'other', label: 'Other', icon: <FileQuestion className="h-5 w-5" /> }
 ];
 

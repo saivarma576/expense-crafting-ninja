@@ -1,7 +1,7 @@
-
 import React, { useState } from 'react';
 import { 
-  FileText, Receipt, Plus, ArrowLeft, Clock, Check, CheckCircle2
+  FileText, Receipt, Plus, ArrowLeft, Clock, Check, CheckCircle2,
+  Plane, Hotel, UtensilsCrossed, Car, Truck, FileQuestion
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import LineItemSlider from '../ui/LineItemSlider';
@@ -17,10 +17,8 @@ const NewExpense: React.FC = () => {
   const [lineItems, setLineItems] = useState<ExpenseLineItemType[]>([]);
   const [editingItem, setEditingItem] = useState<ExpenseLineItemType | undefined>();
   
-  // Calculate total amount
   const totalAmount = lineItems.reduce((sum, item) => sum + item.amount, 0);
   
-  // Determine approval requirements based on total amount
   const getApprovalRequirements = () => {
     if (totalAmount < 500) {
       return {
@@ -57,10 +55,8 @@ const NewExpense: React.FC = () => {
 
   const handleSaveLineItem = (item: ExpenseLineItemType) => {
     if (editingItem) {
-      // Update existing item
       setLineItems(lineItems.map(li => li.id === item.id ? item : li));
     } else {
-      // Add new item
       setLineItems([...lineItems, item]);
     }
     setIsAddingLineItem(false);
@@ -84,7 +80,6 @@ const NewExpense: React.FC = () => {
       return;
     }
     
-    // Submit logic would go here
     toast.success("Expense submitted successfully");
     navigate('/expenses');
   };
@@ -104,7 +99,6 @@ const NewExpense: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Info */}
             <div className="glass-card rounded-xl p-6 space-y-5">
               <h2 className="text-lg font-medium mb-2">Basic Information</h2>
               
@@ -137,7 +131,6 @@ const NewExpense: React.FC = () => {
               </div>
             </div>
             
-            {/* Line Items */}
             <div className="glass-card rounded-xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-medium">Line Items</h2>
@@ -188,14 +181,13 @@ const NewExpense: React.FC = () => {
                             "p-2 rounded-full mr-3 bg-muted",
                             `text-expense-${itemType}`
                           )}>
-                            {/* The icons would be rendered here based on type */}
                             {React.createElement(
                               {
                                 'airfare': Plane,
                                 'hotel': Hotel,
                                 'meals': UtensilsCrossed,
                                 'rental': Car,
-                                'transport': Taxi,
+                                'transport': Truck,
                                 'other': FileQuestion
                               }[itemType] || FileQuestion, 
                               { className: "h-5 w-5" }
@@ -245,7 +237,6 @@ const NewExpense: React.FC = () => {
               )}
             </div>
             
-            {/* Submit Button */}
             <div className="flex justify-end">
               <button
                 type="submit"
@@ -259,7 +250,6 @@ const NewExpense: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {/* Summary Card */}
           <div className="glass-card rounded-xl p-6 sticky top-20">
             <h3 className="text-lg font-medium mb-4">Expense Summary</h3>
             
@@ -286,7 +276,6 @@ const NewExpense: React.FC = () => {
         </div>
       </div>
       
-      {/* Line Item Slider */}
       <LineItemSlider
         isOpen={isAddingLineItem}
         onClose={() => {

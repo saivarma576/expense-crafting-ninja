@@ -2,7 +2,7 @@
 import React from 'react';
 import StatCard from '../ui/StatCard';
 import ExpenseCard from '../ui/ExpenseCard';
-import { ArrowUpRight, ArrowDownRight, DollarSign, Receipt, Clock, Plane, Hotel, UtensilsCrossed, Car, Taxi } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, DollarSign, Receipt, Clock, Plane, Hotel, UtensilsCrossed, Car, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Dashboard: React.FC = () => {
@@ -102,7 +102,7 @@ const Dashboard: React.FC = () => {
               { name: 'Hotels', value: 2890.15, icon: <Hotel className="h-5 w-5" />, color: 'text-expense-hotel' },
               { name: 'Meals', value: 1245.82, icon: <UtensilsCrossed className="h-5 w-5" />, color: 'text-expense-meals' },
               { name: 'Car Rental', value: 876.25, icon: <Car className="h-5 w-5" />, color: 'text-expense-rental' },
-              { name: 'Transport', value: 562.18, icon: <Taxi className="h-5 w-5" />, color: 'text-expense-transport' }
+              { name: 'Transport', value: 562.18, icon: <Truck className="h-5 w-5" />, color: 'text-expense-transport' } // Changed from Taxi to Truck
             ].map((category, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
