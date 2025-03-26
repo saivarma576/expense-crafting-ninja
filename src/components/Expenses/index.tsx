@@ -207,9 +207,7 @@ const Expenses: React.FC = () => {
   };
 
   const handleExport = () => {
-    // Placeholder for export functionality
     console.log('Exporting expenses data...');
-    // Implementation would typically involve generating a CSV or Excel file
   };
   
   return (
@@ -289,77 +287,82 @@ const Expenses: React.FC = () => {
           </TabsList>
           
           <TabsContent value="my-expenses" className="p-4">
-            <CollapsibleContent>
-              <div className="border rounded-md mb-4 bg-gray-50 overflow-hidden">
-                <div className="p-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <Label htmlFor="searchEmployee">Search Employee</Label>
-                      <div className="relative">
-                        <Input
-                          id="searchEmployee"
-                          placeholder="Search Employee"
-                          value={searchEmployee}
-                          onChange={(e) => setSearchEmployee(e.target.value)}
-                          className="pl-9 bg-white"
-                        />
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Collapsible
+              open={isFilterOpen}
+              onOpenChange={setIsFilterOpen}
+            >
+              <CollapsibleContent>
+                <div className="border rounded-md mb-4 bg-gray-50 overflow-hidden">
+                  <div className="p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <Label htmlFor="searchEmployee">Search Employee</Label>
+                        <div className="relative">
+                          <Input
+                            id="searchEmployee"
+                            placeholder="Search Employee"
+                            value={searchEmployee}
+                            onChange={(e) => setSearchEmployee(e.target.value)}
+                            className="pl-9 bg-white"
+                          />
+                          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="expenseNumber">Expense Number</Label>
-                      <Input
-                        id="expenseNumber"
-                        placeholder="Expense Number"
-                        value={expenseNumber}
-                        onChange={(e) => setExpenseNumber(e.target.value)}
-                        className="bg-white"
-                      />
-                    </div>
-                    
-                    <div>
-                      <Label htmlFor="expenseDate">Expense Date</Label>
-                      <div className="relative">
+                      
+                      <div>
+                        <Label htmlFor="expenseNumber">Expense Number</Label>
                         <Input
-                          id="expenseDate"
-                          placeholder="Expense Date"
-                          type="text" 
-                          value={expenseDate}
-                          onChange={(e) => setExpenseDate(e.target.value)}
+                          id="expenseNumber"
+                          placeholder="Expense Number"
+                          value={expenseNumber}
+                          onChange={(e) => setExpenseNumber(e.target.value)}
                           className="bg-white"
                         />
                       </div>
+                      
+                      <div>
+                        <Label htmlFor="expenseDate">Expense Date</Label>
+                        <div className="relative">
+                          <Input
+                            id="expenseDate"
+                            placeholder="Expense Date"
+                            type="text" 
+                            value={expenseDate}
+                            onChange={(e) => setExpenseDate(e.target.value)}
+                            className="bg-white"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="statusFilter">Select status</Label>
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                          <SelectTrigger id="statusFilter" className="bg-white">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                            <SelectItem value="in-process">In Process</SelectItem>
+                            <SelectItem value="collaborated">Collaborated</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     
-                    <div>
-                      <Label htmlFor="statusFilter">Select status</Label>
-                      <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger id="statusFilter" className="bg-white">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="approved">Approved</SelectItem>
-                          <SelectItem value="rejected">Rejected</SelectItem>
-                          <SelectItem value="in-process">In Process</SelectItem>
-                          <SelectItem value="collaborated">Collaborated</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    <div className="flex justify-end gap-2 mt-4">
+                      <Button variant="outline" onClick={resetFilters} className="bg-white">
+                        Reset
+                      </Button>
+                      <Button className="bg-blue-700 text-white">
+                        Search
+                      </Button>
                     </div>
                   </div>
-                  
-                  <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="outline" onClick={resetFilters} className="bg-white">
-                      Reset
-                    </Button>
-                    <Button className="bg-blue-700 text-white">
-                      Search
-                    </Button>
-                  </div>
                 </div>
-              </div>
-            </CollapsibleContent>
+              </CollapsibleContent>
+            </Collapsible>
             
             {filteredExpenses.length > 0 ? (
               <div className="border rounded-md overflow-hidden bg-white">
@@ -416,7 +419,6 @@ const Expenses: React.FC = () => {
                         <TableCell>
                           <Button variant="ghost" size="icon" onClick={(e) => {
                             e.stopPropagation();
-                            // Handle menu click
                           }}>
                             <MoreVertical className="h-5 w-5 text-gray-500" />
                           </Button>
