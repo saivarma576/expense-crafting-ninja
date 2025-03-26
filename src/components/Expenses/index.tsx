@@ -1,175 +1,314 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Search, Filter, ArrowDownUp } from 'lucide-react';
-import ExpenseCard from '../ui/ExpenseCard';
+import { PlusCircle, Search, Filter, ArrowDownUp, MoreVertical, ChevronDown } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
+
+// Mock data for the table
+const expenseData = [
+  {
+    id: 'exp-001',
+    employee: {
+      name: 'Cameron Williamson',
+      email: 'cwilliamson@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Jan 08, 2022',
+    createdDate: 'Jan 12, 2022',
+    amount: 64120.00,
+    status: 'in-process'
+  },
+  {
+    id: 'exp-002',
+    employee: {
+      name: 'Annette Black',
+      email: 'ablack@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 27, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 24120.00,
+    status: 'in-process'
+  },
+  {
+    id: 'exp-003',
+    employee: {
+      name: 'Kathryn Murphy',
+      email: 'kmurphy@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 27, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 14120.00,
+    status: 'approved'
+  },
+  {
+    id: 'exp-004',
+    employee: {
+      name: 'Brooklyn Simmons',
+      email: 'bsimmons@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 27, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 25020.00,
+    status: 'rejected'
+  },
+  {
+    id: 'exp-005',
+    employee: {
+      name: 'Kristin Watson',
+      email: 'kwatson@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 27, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 34100.00,
+    status: 'approved'
+  },
+  {
+    id: 'exp-006',
+    employee: {
+      name: 'Ronald Richards',
+      email: 'rrichards@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 20, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 42620.00,
+    status: 'rejected'
+  },
+  {
+    id: 'exp-007',
+    employee: {
+      name: 'Theresa Webb',
+      email: 'twebb@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 20, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 42620.00,
+    status: 'collaborated'
+  },
+  {
+    id: 'exp-008',
+    employee: {
+      name: 'Leslie Alexander',
+      email: 'lalexander@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 20, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 42620.00,
+    status: 'approved'
+  },
+  {
+    id: 'exp-009',
+    employee: {
+      name: 'Ralph Edwards',
+      email: 'redwards@paturnpike.com',
+      avatar: ''
+    },
+    expenseNumber: '4100067922',
+    reference: '#75-598 - Rob\'s - PLYM - 12-21-20..',
+    expenseDate: 'Nov 20, 2021',
+    createdDate: 'Jan 12, 2022',
+    amount: 42620.00,
+    status: 'approved'
+  }
+];
+
+const getStatusBadge = (status: string) => {
+  const statusConfig = {
+    'approved': { color: 'text-green-600', bg: 'bg-green-100', label: 'Approved' },
+    'rejected': { color: 'text-red-600', bg: 'bg-red-100', label: 'Rejected' },
+    'in-process': { color: 'text-amber-600', bg: 'bg-amber-100', label: 'In-Process' },
+    'collaborated': { color: 'text-blue-600', bg: 'bg-blue-100', label: 'Collaborated' }
+  };
+  
+  const config = statusConfig[status as keyof typeof statusConfig];
+  
+  return (
+    <Badge 
+      className={`font-medium rounded-md ${config.bg} ${config.color} border-none px-3`}
+    >
+      {config.label}
+    </Badge>
+  );
+};
+
+const getInitials = (name: string) => {
+  const parts = name.split(' ');
+  return parts.length > 1 
+    ? `${parts[0][0]}${parts[1][0]}`
+    : parts[0].substring(0, 2);
+};
 
 const Expenses: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
-  
-  // Mock data
-  const allExpenses = [
-    {
-      id: 'exp-001',
-      title: 'NYC Client Visit',
-      date: 'Oct 12-15, 2023',
-      amount: 1245.89,
-      status: 'approved',
-      expenseTypes: ['airfare', 'hotel', 'meals', 'transport'],
-      description: 'Client meetings with ABC Corp. in New York.'
-    },
-    {
-      id: 'exp-002',
-      title: 'Office Supplies',
-      date: 'Oct 25, 2023',
-      amount: 89.99,
-      status: 'submitted',
-      expenseTypes: ['other'],
-      description: 'Quarterly office supplies and equipment.'
-    },
-    {
-      id: 'exp-003',
-      title: 'Chicago Conference',
-      date: 'Nov 2-4, 2023',
-      amount: 1876.50,
-      status: 'draft',
-      expenseTypes: ['airfare', 'hotel', 'meals'],
-      description: 'Annual industry conference.'
-    },
-    {
-      id: 'exp-004',
-      title: 'Team Lunch',
-      date: 'Nov 10, 2023',
-      amount: 142.75,
-      status: 'approved',
-      expenseTypes: ['meals'],
-      description: 'Monthly team lunch meeting.'
-    },
-    {
-      id: 'exp-005',
-      title: 'San Francisco Sales Trip',
-      date: 'Nov 15-18, 2023',
-      amount: 2150.32,
-      status: 'rejected',
-      expenseTypes: ['airfare', 'hotel', 'meals', 'transport'],
-      description: 'Sales presentation to potential clients.'
-    },
-    {
-      id: 'exp-006',
-      title: 'Software Subscription',
-      date: 'Nov 20, 2023',
-      amount: 49.99,
-      status: 'approved',
-      expenseTypes: ['other'],
-      description: 'Monthly subscription for design software.'
-    }
-  ];
+  const [activeTab, setActiveTab] = useState('my-expenses');
   
   // Filter expenses based on search term
-  const filteredExpenses = allExpenses.filter(expense => 
-    expense.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredExpenses = expenseData.filter(expense => 
+    expense.employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    expense.employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    expense.expenseNumber.includes(searchTerm)
   );
   
-  // Sort expenses based on sort option
-  const sortedExpenses = [...filteredExpenses].sort((a, b) => {
-    switch (sortBy) {
-      case 'newest':
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      case 'oldest':
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      case 'highest':
-        return b.amount - a.amount;
-      case 'lowest':
-        return a.amount - b.amount;
-      default:
-        return 0;
-    }
-  });
-  
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Expenses</h1>
-        <button
-          onClick={() => navigate('/expenses/new')}
-          className="inline-flex items-center py-2.5 px-4 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-        >
-          <PlusCircle className="h-5 w-5 mr-2" />
-          New Expense
-        </button>
+        <div className="flex items-center space-x-2">
+          <Button
+            onClick={() => navigate('/expenses/new')}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+          >
+            Create New Request
+          </Button>
+        </div>
+        
+        <div className="flex gap-4 border-b">
+          <button
+            onClick={() => setActiveTab('my-expenses')}
+            className={`px-4 py-2 font-medium ${activeTab === 'my-expenses' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600'}`}
+          >
+            My Expenses <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">26</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('drafts')}
+            className={`px-4 py-2 font-medium ${activeTab === 'drafts' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600'}`}
+          >
+            Drafts <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs">12</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('receipts')}
+            className={`px-4 py-2 font-medium ${activeTab === 'receipts' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600'}`}
+          >
+            Receipts <span className="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs">54</span>
+          </button>
+        </div>
       </div>
       
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
+        <div className="relative w-full md:w-80">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <Search className="w-4 h-4 text-gray-500" />
+          </div>
           <input
             type="text"
-            placeholder="Search expenses..."
+            placeholder="Search Invoice number"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 w-full h-10 rounded-md border border-input bg-transparent px-3 py-2 shadow-sm transition-colors placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            className="pl-10 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
           />
         </div>
         
-        <div className="flex gap-2">
-          <div className="relative">
-            <button className="h-10 px-3 inline-flex items-center justify-center rounded-md border border-input bg-transparent shadow-sm transition-colors hover:bg-accent">
-              <Filter className="h-4 w-4 mr-2" />
-              <span>Filter</span>
-            </button>
-          </div>
+        <div className="flex gap-2 items-center">
+          <div className="text-sm text-gray-600">Applied Filters:</div>
           
-          <div className="relative">
-            <button className="h-10 px-3 inline-flex items-center justify-center rounded-md border border-input bg-transparent shadow-sm transition-colors hover:bg-accent">
-              <ArrowDownUp className="h-4 w-4 mr-2" />
-              <span>Sort</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-                <option value="highest">Highest Amount</option>
-                <option value="lowest">Lowest Amount</option>
-              </select>
-            </button>
-          </div>
+          <Button
+            variant="outline"
+            className="h-10 flex items-center gap-2 border-gray-300"
+          >
+            <Filter className="h-4 w-4" />
+            <span>Filters</span>
+          </Button>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {sortedExpenses.length > 0 ? (
-          sortedExpenses.map((expense) => (
-            <ExpenseCard
-              key={expense.id}
-              id={expense.id}
-              title={expense.title}
-              date={expense.date}
-              amount={expense.amount}
-              status={expense.status as any}
-              expenseTypes={expense.expenseTypes as any}
-              description={expense.description}
-              onClick={() => navigate(`/expenses/${expense.id}`)}
-            />
-          ))
-        ) : (
-          <div className="col-span-full py-12 text-center">
-            <p className="text-muted-foreground mb-4">No expenses found. Try a different search term.</p>
-            <button
-              onClick={() => navigate('/expenses/new')}
-              className="inline-flex items-center py-2 px-4 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Create New Expense
-            </button>
-          </div>
-        )}
+      <div className="border rounded-md overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50 hover:bg-gray-50">
+              <TableHead className="text-gray-600 font-medium">Employee</TableHead>
+              <TableHead className="text-gray-600 font-medium">Expense Number</TableHead>
+              <TableHead className="text-gray-600 font-medium">Expense Date</TableHead>
+              <TableHead className="text-gray-600 font-medium">
+                <div className="flex items-center">
+                  Created Date <ChevronDown className="ml-1 h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead className="text-gray-600 font-medium text-right">Amount</TableHead>
+              <TableHead className="text-gray-600 font-medium">Status</TableHead>
+              <TableHead className="w-10"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredExpenses.map((expense) => (
+              <TableRow 
+                key={expense.id}
+                className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
+                onClick={() => navigate(`/expenses/${expense.id}`)}
+              >
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="bg-gray-200 text-gray-600">
+                        {getInitials(expense.employee.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium">{expense.employee.name}</div>
+                      <div className="text-sm text-gray-500">{expense.employee.email}</div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="font-medium text-blue-600">{expense.expenseNumber}</div>
+                  <div className="text-sm text-gray-500">{expense.reference}</div>
+                </TableCell>
+                <TableCell>{expense.expenseDate}</TableCell>
+                <TableCell>{expense.createdDate}</TableCell>
+                <TableCell className="text-right font-medium">
+                  {expense.amount.toLocaleString('en-US', {
+                    style: 'decimal',
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
+                  })} USD
+                </TableCell>
+                <TableCell>{getStatusBadge(expense.status)}</TableCell>
+                <TableCell>
+                  <Button variant="ghost" size="icon" onClick={(e) => {
+                    e.stopPropagation();
+                    // Handle menu click
+                  }}>
+                    <MoreVertical className="h-5 w-5 text-gray-500" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
