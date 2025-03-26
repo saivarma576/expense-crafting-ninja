@@ -1,21 +1,17 @@
+
 import React, { useState } from 'react';
 import { 
   ArrowLeft, Pencil, PlusCircle, Clock, 
   FileText, Upload, Save, ArrowRight,
-  LightbulbIcon, InfoIcon
+  Trash2, Edit, X, Info, Download
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem, { ExpenseLineItemType } from '@/components/Expenses/ExpenseLineItem';
-import { Card } from '@/components/ui/card';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 interface ExpenseLineItem {
   id: string;
@@ -34,9 +30,12 @@ interface ExpenseLineItem {
 const NewExpense: React.FC = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState('Trip to Europe');
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [expenseNo] = useState('Ref-154264');
   const [expenseDate] = useState('Dec 14, 2021');
   const [notes, setNotes] = useState('');
+  const [userEmail] = useState('oliviarhye@example.com');
+  const [userName] = useState('Olivia Rhye');
   const [lineItems, setLineItems] = useState<ExpenseLineItem[]>([
     {
       id: '1',
@@ -63,11 +62,27 @@ const NewExpense: React.FC = () => {
       costCenter: '1200- Cost Center Name',
       costCenterName: 'Cost Center',
       receiptName: 'IMG_10_11_200_DC.jpg'
+    },
+    {
+      id: '3',
+      title: 'City Cab',
+      type: 'Inter City Cab',
+      category: '🚕',
+      date: 'Nov 11, 2022',
+      amount: 256.00,
+      account: '1001- GL account Name',
+      accountName: 'GL Account',
+      costCenter: '1200- Cost Center Name',
+      costCenterName: 'Cost Center',
+      receiptName: 'IMG_10_11_200_DC.jpg'
     }
   ]);
   
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItem, setEditingItem] = useState<ExpenseLineItemType | undefined>(undefined);
+  const [uploadedDocuments, setUploadedDocuments] = useState<{name: string, size: string}[]>([
+    {name: 'Document Name goes here', size: '256.32 Kb'}
+  ]);
   
   const totalAmount = lineItems.reduce((sum, item) => sum + item.amount, 0);
   
@@ -84,6 +99,26 @@ const NewExpense: React.FC = () => {
   const handleAddLineItem = () => {
     setEditingItem(undefined);
     setIsAddingItem(true);
+  };
+
+  const handleEditLineItem = (id: string) => {
+    const item = lineItems.find(item => item.id === id);
+    if (item) {
+      setEditingItem({
+        id: item.id,
+        type: item.type.toLowerCase().replace(' ', '') as any,
+        amount: item.amount,
+        date: item.date,
+        description: item.title,
+        receiptUrl: item.receiptName
+      });
+      setIsAddingItem(true);
+    }
+  };
+
+  const handleDeleteLineItem = (id: string) => {
+    setLineItems(prevItems => prevItems.filter(item => item.id !== id));
+    toast.success("Item removed successfully");
   };
 
   const handleLineItemSave = (lineItem: ExpenseLineItemType) => {
@@ -135,227 +170,335 @@ const NewExpense: React.FC = () => {
       'transport': '🚕',
       'other': '📋'
     };
-    return emojiMap[type] || '📋';
+    return emojiMap[type.toLowerCase()] || '📋';
+  };
+
+  const handleDeleteDocument = (index: number) => {
+    setUploadedDocuments(prevDocs => prevDocs.filter((_, i) => i !== index));
+    toast.success("Document removed");
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    // This would normally handle file uploads
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      toast.success(`Uploading ${e.dataTransfer.files.length} file(s)`);
+      // Mock file upload
+      const newDocs = Array.from(e.dataTransfer.files).map(file => ({
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(2)} Kb`
+      }));
+      setUploadedDocuments(prev => [...prev, ...newDocs]);
+    }
   };
   
   return (
-    <div className="max-w-4xl mx-auto mt-8">
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <div className="p-6 pb-0">
-          <div className="flex items-center mb-6">
+    <div className="max-w-6xl mx-auto mt-3">
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        {/* Header */}
+        <div className="p-4 border-b flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => navigate('/expenses')}
-              className="mr-3 p-2 rounded-full hover:bg-muted transition-colors"
+              className="p-2 rounded-full hover:bg-muted transition-colors"
+              aria-label="Go back"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <h1 className="text-xl font-semibold">New Expense</h1>
-            <div className="flex items-center ml-auto space-x-3">
-              <Button variant="outline" size="sm" className="text-blue-600 gap-1.5">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 19.5V4.5C4 3.67157 4.67157 3 5.5 3H18.5C19.3284 3 20 3.67157 20 4.5V19.5C20 20.3284 19.3284 21 18.5 21H5.5C4.67157 21 4 20.3284 4 19.5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M15 14L12 11L9 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M12 11L12 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M16 7H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Save as Template
-              </Button>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Pencil className="h-4 w-4" />
-                Edit Expense
-              </Button>
-              <span className="text-sm text-muted-foreground">Ref #{expenseNo}</span>
-            </div>
+            <h1 className="text-lg font-medium">New Expense Report</h1>
           </div>
-          
-          <div className="border-b pb-4">
-            <h2 className="text-lg font-medium mb-4">Expense Details</h2>
-            <div className="grid grid-cols-3 gap-6">
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Expense Title</div>
-                <div className="font-medium">{title}</div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Department</div>
-                <div className="font-medium">Engineering</div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Cost Center</div>
-                <div className="font-medium">ENG-001</div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Expense Owner</div>
-                <div className="font-medium">Alex Johnson</div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Date</div>
-                <div className="font-medium">{expenseDate}</div>
-              </div>
-              <div>
-                <div className="text-sm text-muted-foreground mb-1">Status</div>
-                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  Draft
+        </div>
+
+        {/* Main content */}
+        <div className="p-6">
+          {/* Title section with inline editing */}
+          <div className="flex items-start justify-between mb-8">
+            <div className="flex items-start gap-4">
+              {isEditingTitle ? (
+                <div className="flex items-center gap-2">
+                  <Input 
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="text-xl font-medium h-9 min-w-[300px]"
+                    autoFocus
+                  />
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    onClick={() => setIsEditingTitle(false)}
+                    className="h-8 w-8"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="py-6 border-b">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium">Expense Items</h2>
-              <Button className="h-9 gap-1.5" onClick={handleAddLineItem}>
-                <PlusCircle className="h-4 w-4" />
-                Add Item
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              <table className="w-full">
-                <thead>
-                  <tr className="text-sm text-left border-b">
-                    <th className="font-medium pb-2 w-1/2">Item</th>
-                    <th className="font-medium pb-2 text-right">Date</th>
-                    <th className="font-medium pb-2 text-right">Amount</th>
-                    <th className="w-8"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lineItems.map((item) => (
-                    <tr key={item.id} className="border-b">
-                      <td className="py-4">
-                        <div className="flex items-start">
-                          <div className="h-10 w-10 bg-gray-100 rounded flex items-center justify-center text-xl flex-shrink-0 mr-3">
-                            {item.category}
-                          </div>
-                          <div>
-                            <div className="font-medium">{item.title}</div>
-                            <div className="text-sm text-muted-foreground">{item.type}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 text-right">{item.date}</td>
-                      <td className="py-4 text-right font-medium">${item.amount.toFixed(2)}</td>
-                      <td className="py-4 text-right">
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <InfoIcon className="h-4 w-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              
-              {lineItems.length === 0 && (
-                <div className="text-center py-8 border rounded-lg">
-                  <div className="text-muted-foreground">No expense items added yet</div>
-                  <Button variant="outline" size="sm" className="mt-4" onClick={handleAddLineItem}>
-                    <PlusCircle className="h-4 w-4 mr-2" />
-                    Add First Item
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-medium">{title}</h2>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    onClick={() => setIsEditingTitle(true)}
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:opacity-100"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               )}
               
-              <div className="flex justify-end">
-                <div className="w-64 space-y-2">
-                  <div className="flex justify-between pt-2 border-t">
-                    <span className="font-medium">Total:</span>
-                    <span className="font-bold">${totalAmount.toFixed(2)}</span>
-                  </div>
+              <div className="flex items-center mt-1">
+                <div className="h-8 w-8 bg-amber-100 rounded-full flex items-center justify-center text-xs">
+                  OR
+                </div>
+                <div className="ml-2">
+                  <div className="text-sm font-medium">{userName}</div>
+                  <div className="text-xs text-muted-foreground">{userEmail}</div>
                 </div>
               </div>
             </div>
+
+            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
+              <div className="text-muted-foreground text-right">Expense #</div>
+              <div className="font-medium">{expenseNo}</div>
+              
+              <div className="text-muted-foreground text-right">Expense Date</div>
+              <div className="font-medium">{expenseDate}</div>
+              
+              <div className="text-muted-foreground text-right">Amount</div>
+              <div className="font-medium">{totalAmount.toFixed(2)} $</div>
+            </div>
           </div>
-          
-          <div className="py-6 border-b">
-            <h2 className="text-lg font-medium mb-4">Notes & Attachments</h2>
+
+          {/* Line items section */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-medium">Line Items</h3>
+              <Button 
+                size="sm" 
+                className="h-9"
+                onClick={handleAddLineItem}
+              >
+                <PlusCircle className="h-4 w-4 mr-1.5" />
+                Line Items
+              </Button>
+            </div>
             
-            <div className="space-y-4">
-              <div className="bg-gray-50 rounded-lg p-5 border">
-                <div className="flex flex-col items-center justify-center text-center">
-                  <div className="bg-blue-100 rounded-full p-3 mb-3">
-                    <Upload className="h-6 w-6 text-blue-600" />
+            <div className="space-y-3">
+              {lineItems.map((item) => (
+                <div key={item.id} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 bg-gray-100 rounded flex items-center justify-center text-xl flex-shrink-0">
+                        {item.category}
+                      </div>
+                      <div>
+                        <div className="font-medium">{item.title}</div>
+                        <div className="text-sm text-muted-foreground mt-0.5">{item.type}</div>
+                        <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
+                          <div className="text-muted-foreground">{item.accountName}</div>
+                          <div>{item.account}</div>
+                          <div className="text-muted-foreground">{item.costCenterName}</div>
+                          <div>{item.costCenter}</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start justify-end gap-5">
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">{item.date}</div>
+                        <div className="font-medium mt-1">{item.amount.toFixed(2)} $</div>
+                      </div>
+                      
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <FileText className="h-3.5 w-3.5" />
+                          <span className="text-xs max-w-[140px] truncate">{item.receiptName}</span>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                          <X className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-blue-500"
+                          onClick={() => handleEditLineItem(item.id)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-red-500"
+                          onClick={() => handleDeleteLineItem(item.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="font-medium mb-1">Upload Receipts</h3>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Drag and drop files or click to browse
-                  </p>
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <Upload className="h-4 w-4" />
-                    Upload Receipts
+                </div>
+              ))}
+              
+              {lineItems.length === 0 && (
+                <div className="border rounded-lg p-6 text-center">
+                  <div className="text-muted-foreground mb-2">No expense items added yet</div>
+                  <Button variant="outline" size="sm" onClick={handleAddLineItem}>
+                    <PlusCircle className="h-4 w-4 mr-2" /> Add First Item
                   </Button>
                 </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Notes
-                </label>
-                <Textarea 
-                  placeholder="Add any additional notes about this expense..." 
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  className="min-h-[100px]"
-                />
+              )}
+            </div>
+            
+            <div className="flex justify-end mt-4">
+              <div className="w-64">
+                <div className="flex justify-between py-2 border-t border-dashed">
+                  <span className="font-medium">TOTAL AMOUNT</span>
+                  <span className="font-bold">{totalAmount.toFixed(2)} $</span>
+                </div>
               </div>
             </div>
           </div>
           
-          <div className="py-6">
-            <h2 className="text-lg font-medium mb-4">Approval Flow</h2>
+          {/* Documents & Notes Section */}
+          <div className="grid grid-cols-2 gap-8 mb-8">
+            {/* Document upload section */}
+            <div 
+              className="border rounded-lg p-4"
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            >
+              <div className="border border-dashed rounded-lg p-6 text-center">
+                <div className="flex justify-center mb-3">
+                  <div className="p-2 bg-blue-50 rounded-full">
+                    <Upload className="h-5 w-5 text-blue-500" />
+                  </div>
+                </div>
+                <p className="text-sm font-medium mb-1">Click to upload</p>
+                <p className="text-xs text-muted-foreground mb-3">or drag and drop</p>
+                <Button variant="outline" size="sm" className="text-xs h-8">
+                  <Upload className="h-3.5 w-3.5 mr-1.5" />
+                  Upload
+                </Button>
+              </div>
+              
+              {uploadedDocuments.length > 0 && (
+                <div className="mt-4 space-y-2">
+                  {uploadedDocuments.map((doc, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-blue-500" />
+                        <div>
+                          <div className="text-sm font-medium">{doc.name}</div>
+                          <div className="text-xs text-muted-foreground">{doc.size}</div>
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                          <Download className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-7 w-7 text-red-500"
+                          onClick={() => handleDeleteDocument(index)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             
-            <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="flex-none bg-white border border-primary/30 rounded-full w-8 h-8 flex items-center justify-center text-primary font-medium">
+            {/* Notes section */}
+            <div>
+              <h3 className="font-medium mb-3">Notes:</h3>
+              <Textarea
+                placeholder="Enter notes or comments here..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="min-h-[150px]"
+              />
+            </div>
+          </div>
+          
+          {/* Approval flow section */}
+          <div className="mb-8">
+            <h3 className="font-medium mb-4">Approval Flow</h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-50 text-blue-500 font-medium">
                   1
                 </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium">Manager Approval</h4>
-                      <p className="text-sm text-muted-foreground">Sarah Wright</p>
-                    </div>
-                    <div className="flex items-center text-amber-500">
-                      <Clock className="h-4 w-4 mr-1" />
-                      <span className="text-sm">Pending</span>
-                    </div>
+                <div className="flex-1 flex items-center justify-between border-b pb-4">
+                  <div>
+                    <div className="font-medium">Manager Approval</div>
+                    <div className="text-sm text-muted-foreground">Sarah Wright</div>
+                  </div>
+                  <div className="flex items-center text-amber-500">
+                    <Clock className="h-4 w-4 mr-1.5" />
+                    <span className="text-sm">Pending</span>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-start gap-4">
-                <div className="flex-none bg-white border border-muted rounded-full w-8 h-8 flex items-center justify-center text-muted-foreground font-medium">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 text-gray-400 font-medium">
                   2
                 </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h4 className="font-medium">Finance Review</h4>
-                      <p className="text-sm text-muted-foreground">Michael Chen</p>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Waiting
-                    </div>
+                <div className="flex-1 flex items-center justify-between border-b pb-4">
+                  <div>
+                    <div className="font-medium">Finance Review</div>
+                    <div className="text-sm text-muted-foreground">Michael Chen</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Waiting
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          
+          <div className="border-t pt-4">
+            <div className="flex items-center gap-2">
+              <input type="checkbox" id="terms" className="h-4 w-4" />
+              <label htmlFor="terms" className="text-sm">
+                By clicking on this, we are submitting a legally binding invoice for SmartDocs to pay as per the purchase order released to us by SmartDocs.
+              </label>
             </div>
           </div>
         </div>
         
-        <div className="bg-gray-50 p-6 flex justify-between">
+        {/* Footer with action buttons */}
+        <div className="bg-gray-50 p-4 flex items-center justify-end gap-3 border-t">
           <Button 
             variant="outline" 
-            className="flex items-center gap-2"
+            className="px-5"
+            onClick={() => navigate('/expenses')}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="outline" 
+            className="px-5 flex items-center gap-1.5"
             onClick={handleSaveAsDraft}
           >
             <Save className="h-4 w-4" />
-            Save as Draft
+            Save as draft
           </Button>
           <Button 
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700"
+            className="px-5 flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600"
             onClick={handleSubmit}
           >
-            Submit Expense
+            Submit
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
