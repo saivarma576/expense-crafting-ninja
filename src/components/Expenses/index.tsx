@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Search, Filter, ArrowDownUp, MoreVertical, ChevronDown } from 'lucide-react';
+import { FileText, Search, Filter, ArrowDownUp, MoreVertical, ChevronDown, ClipboardList, Clock, CheckCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 type SortOption = 'newest' | 'oldest' | 'highest' | 'lowest';
 
@@ -174,140 +179,238 @@ const getInitials = (name: string) => {
 const Expenses: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchEmployee, setSearchEmployee] = useState('');
+  const [expenseNumber, setExpenseNumber] = useState('');
+  const [expenseDate, setExpenseDate] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
   const [activeTab, setActiveTab] = useState('my-expenses');
   
-  // Filter expenses based on search term
-  const filteredExpenses = expenseData.filter(expense => 
-    expense.employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.employee.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    expense.expenseNumber.includes(searchTerm)
-  );
+  // Filter expenses based on search criteria
+  const filteredExpenses = expenseData.filter(expense => {
+    const matchesEmployee = expense.employee.name.toLowerCase().includes(searchEmployee.toLowerCase()) || 
+                           expense.employee.email.toLowerCase().includes(searchEmployee.toLowerCase());
+    const matchesNumber = expense.expenseNumber.includes(expenseNumber);
+    const matchesDate = expenseDate ? expense.expenseDate.includes(expenseDate) : true;
+    const matchesStatus = statusFilter ? expense.status === statusFilter : true;
+    
+    return matchesEmployee && matchesNumber && matchesDate && matchesStatus;
+  });
+  
+  const resetFilters = () => {
+    setSearchEmployee('');
+    setExpenseNumber('');
+    setExpenseDate('');
+    setStatusFilter('');
+  };
   
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center space-x-2">
-          <Button
-            onClick={() => navigate('/expenses/new')}
-            className="bg-blue-500 hover:bg-blue-600 text-white rounded-md"
-          >
-            Create New Request
-          </Button>
-        </div>
-        
-        <div className="flex gap-4 border-b">
-          <button
-            onClick={() => setActiveTab('my-expenses')}
-            className={`px-4 py-2 font-medium ${activeTab === 'my-expenses' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600'}`}
-          >
-            My Expenses <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs">26</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('drafts')}
-            className={`px-4 py-2 font-medium ${activeTab === 'drafts' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600'}`}
-          >
-            Drafts <span className="ml-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs">12</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('receipts')}
-            className={`px-4 py-2 font-medium ${activeTab === 'receipts' ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-600'}`}
-          >
-            Receipts <span className="ml-1 px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded-full text-xs">54</span>
-          </button>
-        </div>
+      <div className="flex justify-between items-center">
+        <Button
+          onClick={() => navigate('/expenses/new')}
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-md"
+        >
+          Create New Request
+        </Button>
       </div>
       
-      <div className="flex flex-col md:flex-row justify-between gap-4 items-center">
-        <div className="relative w-full md:w-80">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <Search className="w-4 h-4 text-gray-500" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search Invoice number"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
-          />
-        </div>
-        
-        <div className="flex gap-2 items-center">
-          <div className="text-sm text-gray-600">Applied Filters:</div>
+      <div className="bg-white rounded-lg shadow-sm border">
+        <Tabs defaultValue="my-expenses" className="w-full">
+          <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-t-lg border-b h-auto p-0">
+            <TabsTrigger 
+              value="my-expenses" 
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+            >
+              <FileText className="h-4 w-4" />
+              <span>My Expenses</span>
+              <Badge className="ml-1 bg-gray-100 text-gray-700 rounded-full">0</Badge>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="in-process" 
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+            >
+              <ClipboardList className="h-4 w-4" />
+              <span>In Process</span>
+              <Badge className="ml-1 bg-gray-100 text-gray-700 rounded-full">0</Badge>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="completed" 
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+            >
+              <CheckCircle className="h-4 w-4" />
+              <span>Completed</span>
+              <Badge className="ml-1 bg-gray-100 text-gray-700 rounded-full">0</Badge>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="draft" 
+              className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none"
+            >
+              <Clock className="h-4 w-4" />
+              <span>Draft</span>
+              <Badge className="ml-1 bg-amber-100 text-amber-700 rounded-full">0</Badge>
+            </TabsTrigger>
+          </TabsList>
           
-          <Button
-            variant="outline"
-            className="h-10 flex items-center gap-2 border-gray-300"
-          >
-            <Filter className="h-4 w-4" />
-            <span>Filters</span>
-          </Button>
-        </div>
-      </div>
-      
-      <div className="border rounded-md overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50 hover:bg-gray-50">
-              <TableHead className="text-gray-600 font-medium">Employee</TableHead>
-              <TableHead className="text-gray-600 font-medium">Expense Number</TableHead>
-              <TableHead className="text-gray-600 font-medium">Expense Date</TableHead>
-              <TableHead className="text-gray-600 font-medium">
-                <div className="flex items-center">
-                  Created Date <ChevronDown className="ml-1 h-4 w-4" />
-                </div>
-              </TableHead>
-              <TableHead className="text-gray-600 font-medium text-right">Amount</TableHead>
-              <TableHead className="text-gray-600 font-medium">Status</TableHead>
-              <TableHead className="w-10"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredExpenses.map((expense) => (
-              <TableRow 
-                key={expense.id}
-                className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
-                onClick={() => navigate(`/expenses/${expense.id}`)}
-              >
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-9 w-9">
-                      <AvatarFallback className="bg-gray-200 text-gray-600">
-                        {getInitials(expense.employee.name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium">{expense.employee.name}</div>
-                      <div className="text-sm text-gray-500">{expense.employee.email}</div>
-                    </div>
+          <TabsContent value="my-expenses" className="p-4">
+            <div className="border rounded-md p-4 mb-4 bg-gray-50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                  <Label htmlFor="searchEmployee">Search Employee</Label>
+                  <div className="relative">
+                    <Input
+                      id="searchEmployee"
+                      placeholder="Search Employee"
+                      value={searchEmployee}
+                      onChange={(e) => setSearchEmployee(e.target.value)}
+                      className="pl-9 bg-white"
+                    />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                   </div>
-                </TableCell>
-                <TableCell>
-                  <div className="font-medium text-blue-600">{expense.expenseNumber}</div>
-                  <div className="text-sm text-gray-500">{expense.reference}</div>
-                </TableCell>
-                <TableCell>{expense.expenseDate}</TableCell>
-                <TableCell>{expense.createdDate}</TableCell>
-                <TableCell className="text-right font-medium">
-                  {expense.amount.toLocaleString('en-US', {
-                    style: 'decimal',
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1
-                  })} USD
-                </TableCell>
-                <TableCell>{getStatusBadge(expense.status)}</TableCell>
-                <TableCell>
-                  <Button variant="ghost" size="icon" onClick={(e) => {
-                    e.stopPropagation();
-                    // Handle menu click
-                  }}>
-                    <MoreVertical className="h-5 w-5 text-gray-500" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                </div>
+                
+                <div>
+                  <Label htmlFor="expenseNumber">Expense Number</Label>
+                  <Input
+                    id="expenseNumber"
+                    placeholder="Expense Number"
+                    value={expenseNumber}
+                    onChange={(e) => setExpenseNumber(e.target.value)}
+                    className="bg-white"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="expenseDate">Expense Date</Label>
+                  <div className="relative">
+                    <Input
+                      id="expenseDate"
+                      placeholder="Expense Date"
+                      type="text" 
+                      value={expenseDate}
+                      onChange={(e) => setExpenseDate(e.target.value)}
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="statusFilter">Select status</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger id="statusFilter" className="bg-white">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
+                      <SelectItem value="in-process">In Process</SelectItem>
+                      <SelectItem value="collaborated">Collaborated</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={resetFilters} className="bg-white">
+                  Reset
+                </Button>
+                <Button className="bg-blue-700 text-white">
+                  Search
+                </Button>
+              </div>
+            </div>
+            
+            {filteredExpenses.length > 0 ? (
+              <div className="border rounded-md overflow-hidden bg-white">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50 hover:bg-gray-50">
+                      <TableHead className="text-gray-600 font-medium">Employee</TableHead>
+                      <TableHead className="text-gray-600 font-medium">Expense Number</TableHead>
+                      <TableHead className="text-gray-600 font-medium">Expense Date</TableHead>
+                      <TableHead className="text-gray-600 font-medium">
+                        <div className="flex items-center">
+                          Created Date <ChevronDown className="ml-1 h-4 w-4" />
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-gray-600 font-medium text-right">Amount</TableHead>
+                      <TableHead className="text-gray-600 font-medium">Status</TableHead>
+                      <TableHead className="w-10"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredExpenses.map((expense) => (
+                      <TableRow 
+                        key={expense.id}
+                        className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
+                        onClick={() => navigate(`/expenses/${expense.id}`)}
+                      >
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9">
+                              <AvatarFallback className="bg-gray-200 text-gray-600">
+                                {getInitials(expense.employee.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">{expense.employee.name}</div>
+                              <div className="text-sm text-gray-500">{expense.employee.email}</div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium text-blue-600">{expense.expenseNumber}</div>
+                          <div className="text-sm text-gray-500">{expense.reference}</div>
+                        </TableCell>
+                        <TableCell>{expense.expenseDate}</TableCell>
+                        <TableCell>{expense.createdDate}</TableCell>
+                        <TableCell className="text-right font-medium">
+                          {expense.amount.toLocaleString('en-US', {
+                            style: 'decimal',
+                            minimumFractionDigits: 1,
+                            maximumFractionDigits: 1
+                          })} USD
+                        </TableCell>
+                        <TableCell>{getStatusBadge(expense.status)}</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" onClick={(e) => {
+                            e.stopPropagation();
+                            // Handle menu click
+                          }}>
+                            <MoreVertical className="h-5 w-5 text-gray-500" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="text-center py-8 bg-white border rounded-md">
+                <p className="text-gray-500">No Records Found!</p>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="in-process" className="p-4">
+            <div className="text-center py-8 bg-white border rounded-md">
+              <p className="text-gray-500">No Records Found!</p>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="completed" className="p-4">
+            <div className="text-center py-8 bg-white border rounded-md">
+              <p className="text-gray-500">No Records Found!</p>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="draft" className="p-4">
+            <div className="text-center py-8 bg-white border rounded-md">
+              <p className="text-gray-500">No Records Found!</p>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
