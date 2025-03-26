@@ -14,7 +14,7 @@ const CollapsibleTrigger = React.forwardRef<
 >(({ className, asChild = false, ...props }, ref) => (
   <CollapsiblePrimitive.Trigger
     ref={ref}
-    className={cn("flex items-center justify-between", className)}
+    className={cn("flex items-center justify-between gap-2 text-sm font-medium", className)}
     {...props}
   />
 ))

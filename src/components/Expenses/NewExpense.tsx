@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem, { ExpenseLineItemType } from '@/components/Expenses/ExpenseLineItem';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ExpenseLineItem {
   id: string;
@@ -84,7 +85,7 @@ const NewExpense: React.FC = () => {
     {name: 'Document Name goes here', size: '256.32 Kb'}
   ]);
   
-  const totalAmount = lineItems.reduce((sum, item) => sum + item.amount, 0);
+  const totalAmount = lineItems.reduce((sum, item) => sum + item.amount, 0).toFixed(2);
   
   const handleSaveAsDraft = () => {
     toast.success("Expense saved as draft");
@@ -197,310 +198,313 @@ const NewExpense: React.FC = () => {
   };
   
   return (
-    <div className="max-w-6xl mx-auto mt-3">
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        {/* Header */}
-        <div className="p-4 border-b flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={() => navigate('/expenses')}
-              className="p-2 rounded-full hover:bg-muted transition-colors"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <h1 className="text-lg font-medium">New Expense Report</h1>
-          </div>
-        </div>
+    <div className="max-w-[1000px] mx-auto py-0 px-0">
+      {/* Header */}
+      <div className="bg-gray-50 border-b py-3 px-4 flex items-center">
+        <button 
+          onClick={() => navigate('/expenses')}
+          className="rounded-full hover:bg-gray-200 p-1.5 mr-2 transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-600" />
+        </button>
+        <h1 className="text-base font-medium text-gray-700">New Expense Report</h1>
+      </div>
 
-        {/* Main content */}
-        <div className="p-6">
-          {/* Title section with inline editing */}
-          <div className="flex items-start justify-between mb-8">
+      {/* Main content card */}
+      <div className="bg-white border rounded-none shadow-sm mx-auto my-4">
+        {/* Title section with inline editing */}
+        <div className="p-5 border-b">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div className="flex items-start gap-4">
               {isEditingTitle ? (
                 <div className="flex items-center gap-2">
                   <Input 
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="text-xl font-medium h-9 min-w-[300px]"
+                    className="h-9 min-w-[300px] font-medium"
                     autoFocus
                   />
                   <Button 
                     size="icon" 
                     variant="ghost" 
                     onClick={() => setIsEditingTitle(false)}
-                    className="h-8 w-8"
+                    className="h-8 w-8 text-gray-500"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-medium">{title}</h2>
+                <div className="flex items-center gap-2 group">
+                  <h2 className="text-lg font-medium text-gray-800">{title}</h2>
                   <Button 
                     size="icon" 
                     variant="ghost" 
                     onClick={() => setIsEditingTitle(true)}
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:opacity-100"
+                    className="h-7 w-7 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-blue-500"
                   >
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               )}
               
-              <div className="flex items-center mt-1">
+              <div className="flex items-center">
                 <div className="h-8 w-8 bg-amber-100 rounded-full flex items-center justify-center text-xs">
                   OR
                 </div>
                 <div className="ml-2">
                   <div className="text-sm font-medium">{userName}</div>
-                  <div className="text-xs text-muted-foreground">{userEmail}</div>
+                  <div className="text-xs text-gray-500">{userEmail}</div>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm">
-              <div className="text-muted-foreground text-right">Expense #</div>
-              <div className="font-medium">{expenseNo}</div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 text-sm self-start">
+              <div className="text-gray-500">Expense #</div>
+              <div className="font-medium text-right">{expenseNo}</div>
               
-              <div className="text-muted-foreground text-right">Expense Date</div>
-              <div className="font-medium">{expenseDate}</div>
+              <div className="text-gray-500">Expense Date</div>
+              <div className="font-medium text-right">{expenseDate}</div>
               
-              <div className="text-muted-foreground text-right">Amount</div>
-              <div className="font-medium">{totalAmount.toFixed(2)} $</div>
+              <div className="text-gray-500">Amount</div>
+              <div className="font-medium text-right">{totalAmount} $</div>
             </div>
           </div>
+        </div>
 
-          {/* Line items section */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-medium">Line Items</h3>
-              <Button 
-                size="sm" 
-                className="h-9"
-                onClick={handleAddLineItem}
-              >
-                <PlusCircle className="h-4 w-4 mr-1.5" />
-                Line Items
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {lineItems.map((item) => (
-                <div key={item.id} className="border rounded-lg p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3">
-                      <div className="h-10 w-10 bg-gray-100 rounded flex items-center justify-center text-xl flex-shrink-0">
-                        {item.category}
-                      </div>
-                      <div>
-                        <div className="font-medium">{item.title}</div>
-                        <div className="text-sm text-muted-foreground mt-0.5">{item.type}</div>
-                        <div className="mt-3 grid grid-cols-2 gap-x-8 gap-y-1 text-xs">
-                          <div className="text-muted-foreground">{item.accountName}</div>
-                          <div>{item.account}</div>
-                          <div className="text-muted-foreground">{item.costCenterName}</div>
-                          <div>{item.costCenter}</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start justify-end gap-5">
-                      <div className="text-right">
-                        <div className="text-sm text-muted-foreground">{item.date}</div>
-                        <div className="font-medium mt-1">{item.amount.toFixed(2)} $</div>
-                      </div>
-                      
-                      <div className="flex items-center gap-1.5">
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                          <FileText className="h-3.5 w-3.5" />
-                          <span className="text-xs max-w-[140px] truncate">{item.receiptName}</span>
-                        </div>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                          <X className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                      
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-blue-500"
-                          onClick={() => handleEditLineItem(item.id)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500"
-                          onClick={() => handleDeleteLineItem(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {lineItems.length === 0 && (
-                <div className="border rounded-lg p-6 text-center">
-                  <div className="text-muted-foreground mb-2">No expense items added yet</div>
-                  <Button variant="outline" size="sm" onClick={handleAddLineItem}>
-                    <PlusCircle className="h-4 w-4 mr-2" /> Add First Item
-                  </Button>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex justify-end mt-4">
-              <div className="w-64">
-                <div className="flex justify-between py-2 border-t border-dashed">
-                  <span className="font-medium">TOTAL AMOUNT</span>
-                  <span className="font-bold">{totalAmount.toFixed(2)} $</span>
-                </div>
-              </div>
-            </div>
+        {/* Line items section */}
+        <div className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-medium text-gray-700">Line Items</h3>
+            <Button 
+              variant="default"
+              size="sm" 
+              className="bg-blue-500 hover:bg-blue-600 h-9 px-3 py-2 text-sm"
+              onClick={handleAddLineItem}
+            >
+              <PlusCircle className="h-4 w-4 mr-1.5" />
+              Line Items
+            </Button>
           </div>
           
-          {/* Documents & Notes Section */}
-          <div className="grid grid-cols-2 gap-8 mb-8">
-            {/* Document upload section */}
-            <div 
-              className="border rounded-lg p-4"
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-            >
-              <div className="border border-dashed rounded-lg p-6 text-center">
-                <div className="flex justify-center mb-3">
-                  <div className="p-2 bg-blue-50 rounded-full">
-                    <Upload className="h-5 w-5 text-blue-500" />
+          <div className="space-y-4">
+            {lineItems.map((item) => (
+              <div key={item.id} className="border rounded-lg overflow-hidden">
+                <div className="flex items-start p-4">
+                  <div className="mr-3">
+                    <div className="h-8 w-8 bg-gray-100 rounded-md flex items-center justify-center text-lg">
+                      {item.category}
+                    </div>
                   </div>
-                </div>
-                <p className="text-sm font-medium mb-1">Click to upload</p>
-                <p className="text-xs text-muted-foreground mb-3">or drag and drop</p>
-                <Button variant="outline" size="sm" className="text-xs h-8">
-                  <Upload className="h-3.5 w-3.5 mr-1.5" />
-                  Upload
-                </Button>
-              </div>
-              
-              {uploadedDocuments.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {uploadedDocuments.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                      <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4 text-blue-500" />
-                        <div>
-                          <div className="text-sm font-medium">{doc.name}</div>
-                          <div className="text-xs text-muted-foreground">{doc.size}</div>
-                        </div>
+                  
+                  <div className="flex-1">
+                    <div className="font-medium text-gray-800">{item.title}</div>
+                    <div className="text-xs text-gray-500 mt-1">{item.type}</div>
+                    
+                    <div className="mt-3 grid grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <div className="text-gray-500">{item.accountName}</div>
+                        <div>{item.account}</div>
                       </div>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" className="h-7 w-7">
-                          <Download className="h-3.5 w-3.5" />
+                      <div>
+                        <div className="text-gray-500">{item.costCenterName}</div>
+                        <div>{item.costCenter}</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col items-end gap-1 ml-4">
+                    <div className="text-xs text-gray-500">{item.date}</div>
+                    <div className="font-medium">{item.amount.toFixed(2)} $</div>
+                    
+                    <div className="flex items-center mt-2 gap-2">
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <FileText className="h-3.5 w-3.5" />
+                        <span className="max-w-[120px] truncate">{item.receiptName}</span>
+                        <Button variant="ghost" size="icon" className="h-5 w-5 text-gray-400">
+                          <X className="h-3 w-3" />
                         </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                      </div>
+                      
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-blue-500"
+                          onClick={() => handleEditLineItem(item.id)}
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           className="h-7 w-7 text-red-500"
-                          onClick={() => handleDeleteDocument(index)}
+                          onClick={() => handleDeleteLineItem(item.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            
-            {/* Notes section */}
-            <div>
-              <h3 className="font-medium mb-3">Notes:</h3>
-              <Textarea
-                placeholder="Enter notes or comments here..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="min-h-[150px]"
-              />
-            </div>
-          </div>
-          
-          {/* Approval flow section */}
-          <div className="mb-8">
-            <h3 className="font-medium mb-4">Approval Flow</h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-50 text-blue-500 font-medium">
-                  1
-                </div>
-                <div className="flex-1 flex items-center justify-between border-b pb-4">
-                  <div>
-                    <div className="font-medium">Manager Approval</div>
-                    <div className="text-sm text-muted-foreground">Sarah Wright</div>
-                  </div>
-                  <div className="flex items-center text-amber-500">
-                    <Clock className="h-4 w-4 mr-1.5" />
-                    <span className="text-sm">Pending</span>
                   </div>
                 </div>
               </div>
-              
-              <div className="flex items-center gap-4">
-                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-100 text-gray-400 font-medium">
-                  2
-                </div>
-                <div className="flex-1 flex items-center justify-between border-b pb-4">
-                  <div>
-                    <div className="font-medium">Finance Review</div>
-                    <div className="text-sm text-muted-foreground">Michael Chen</div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    Waiting
-                  </div>
-                </div>
+            ))}
+            
+            {lineItems.length === 0 && (
+              <div className="border rounded-lg p-6 text-center">
+                <div className="text-gray-500 mb-2">No expense items added yet</div>
+                <Button variant="outline" size="sm" onClick={handleAddLineItem}>
+                  <PlusCircle className="h-4 w-4 mr-2" /> Add First Item
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex justify-end mt-4">
+            <div className="w-48">
+              <div className="flex justify-between py-2 text-sm font-medium">
+                <span>TOTAL AMOUNT</span>
+                <span>{totalAmount} $</span>
               </div>
             </div>
           </div>
+        </div>
           
-          <div className="border-t pt-4">
-            <div className="flex items-center gap-2">
-              <input type="checkbox" id="terms" className="h-4 w-4" />
-              <label htmlFor="terms" className="text-sm">
-                By clicking on this, we are submitting a legally binding invoice for SmartDocs to pay as per the purchase order released to us by SmartDocs.
-              </label>
+        {/* Documents & Notes Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-5">
+          {/* Document upload section */}
+          <div 
+            className="border rounded-lg"
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          >
+            <div className="border-dashed border rounded-lg p-5 m-3 text-center">
+              <div className="flex justify-center mb-3">
+                <div className="p-2 bg-blue-50 rounded-full">
+                  <Upload className="h-5 w-5 text-blue-500" />
+                </div>
+              </div>
+              <p className="text-sm font-medium mb-1">Click to upload</p>
+              <p className="text-xs text-gray-500 mb-3">or drag and drop</p>
+              <Button variant="outline" size="sm" className="text-xs h-8">
+                <Upload className="h-3.5 w-3.5 mr-1.5" />
+                Upload
+              </Button>
+            </div>
+            
+            {uploadedDocuments.length > 0 && (
+              <div className="m-3 space-y-2">
+                {uploadedDocuments.map((doc, index) => (
+                  <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-blue-500" />
+                      <div>
+                        <div className="text-sm font-medium">{doc.name}</div>
+                        <div className="text-xs text-gray-500">{doc.size}</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button variant="ghost" size="icon" className="h-7 w-7">
+                        <Download className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-7 w-7 text-red-500"
+                        onClick={() => handleDeleteDocument(index)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Notes section */}
+          <div>
+            <h3 className="text-sm font-medium mb-3 text-gray-700">Notes:</h3>
+            <Textarea
+              placeholder="Enter notes or comments here..."
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              className="min-h-[150px] text-sm"
+            />
+          </div>
+        </div>
+        
+        {/* Approval flow section */}
+        <div className="p-5">
+          <h3 className="text-sm font-medium mb-4 text-gray-700">Approval Flow</h3>
+          
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-gray-700 font-medium text-sm">
+                1
+              </div>
+              <div className="flex-1 flex items-center justify-between border-b pb-4">
+                <div>
+                  <div className="text-sm font-medium">Manager Approval</div>
+                  <div className="text-xs text-gray-500">Sarah Wright</div>
+                </div>
+                <div className="flex items-center text-amber-500">
+                  <Clock className="h-4 w-4 mr-1.5" />
+                  <span className="text-sm">Pending</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-gray-400 font-medium text-sm">
+                2
+              </div>
+              <div className="flex-1 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-medium text-gray-500">Finance Review</div>
+                  <div className="text-xs text-gray-500">Michael Chen</div>
+                </div>
+                <div className="text-sm text-gray-400">
+                  Waiting
+                </div>
+              </div>
             </div>
           </div>
         </div>
         
-        {/* Footer with action buttons */}
-        <div className="bg-gray-50 p-4 flex items-center justify-end gap-3 border-t">
-          <Button 
-            variant="outline" 
-            className="px-5"
-            onClick={() => navigate('/expenses')}
-          >
-            Cancel
-          </Button>
-          <Button 
-            variant="outline" 
-            className="px-5 flex items-center gap-1.5"
-            onClick={handleSaveAsDraft}
-          >
-            <Save className="h-4 w-4" />
-            Save as draft
-          </Button>
-          <Button 
-            className="px-5 flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600"
-            onClick={handleSubmit}
-          >
-            Submit
-            <ArrowRight className="h-4 w-4" />
-          </Button>
+        <div className="border-t p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <input type="checkbox" id="terms" className="h-4 w-4" />
+            <label htmlFor="terms" className="text-xs text-gray-600">
+              By clicking on this, we are submitting a legally binding invoice for SmartDocs to pay as per the purchase order released to us by SmartDocs.
+            </label>
+          </div>
+          
+          {/* Footer with action buttons */}
+          <div className="flex items-center justify-end gap-3 mt-4">
+            <Button 
+              variant="outline" 
+              className="px-5 text-sm h-9"
+              onClick={() => navigate('/expenses')}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="outline" 
+              className="px-5 flex items-center gap-1.5 text-sm h-9"
+              onClick={handleSaveAsDraft}
+            >
+              <Save className="h-4 w-4" />
+              Save as draft
+            </Button>
+            <Button 
+              className="px-5 flex items-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-sm h-9"
+              onClick={handleSubmit}
+            >
+              Submit
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 

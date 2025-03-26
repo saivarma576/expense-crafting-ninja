@@ -41,19 +41,19 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
     )}>
       <div 
         className={cn(
-          "fixed inset-y-0 right-0 w-full max-w-md bg-background shadow-lg",
+          "fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-lg",
           "transform transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         <div className="flex flex-col h-full overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-medium">{title}</h2>
+            <h2 className="text-base font-medium text-gray-800">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-full hover:bg-muted transition-colors"
+              className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5 text-gray-500" />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4">
