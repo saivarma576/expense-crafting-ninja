@@ -1,4 +1,3 @@
-
 export interface ExpenseLineItem {
   id: string;
   title: string;
@@ -40,3 +39,21 @@ export interface DynamicField {
   required?: boolean;
   options?: { value: string; label: string }[];
 }
+
+export type ExpenseType = 
+  | 'gasoline'
+  | 'hotel'
+  | 'meals'
+  | 'mileage'
+  | 'office_supplies'
+  | 'other'
+  | 'parking'
+  | 'postage'
+  | 'professional_fees'
+  | 'registration'
+  | 'rental'
+  | 'transport'
+  | 'auditing'
+  | 'baggage'
+  | 'business_meals'
+  | 'subscriptions';
