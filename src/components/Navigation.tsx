@@ -5,12 +5,11 @@ import {
   ChevronDown, 
   LayoutDashboard, 
   FileText, 
-  Receipt, 
-  BarChart3, 
+  ReceiptText, 
+  BarChart4, 
   Settings, 
   Menu, 
-  X, 
-  Plus
+  X
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -19,8 +18,8 @@ import { Button } from '@/components/ui/button';
 const navItems = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Expenses', path: '/expenses', icon: FileText },
-  { name: 'Receipts', path: '/receipts', icon: Receipt },
-  { name: 'Reports', path: '/reports', icon: BarChart3 },
+  { name: 'Receipts', path: '/receipts', icon: ReceiptText },
+  { name: 'Reports', path: '/reports', icon: BarChart4 },
   { name: 'Admin', path: '/admin', icon: Settings }
 ];
 
@@ -33,13 +32,6 @@ const Navigation: React.FC = () => {
   const handleNavigation = () => {
     if (isOpen) setIsOpen(false);
   };
-
-  // Quick create new expense
-  const handleQuickCreate = () => {
-    navigate('/expenses/new');
-  };
-
-  const isExpensesActive = location.pathname.startsWith('/expenses');
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -73,17 +65,6 @@ const Navigation: React.FC = () => {
                 </Link>
               );
             })}
-            
-            {/* Quick create button that only shows on expenses pages */}
-            {isExpensesActive && (
-              <Button 
-                size="sm"
-                onClick={handleQuickCreate}
-                className="ml-auto bg-blue-500 hover:bg-blue-600 text-white rounded-full h-8 w-8 p-0"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            )}
           </nav>
 
           {/* User section */}
@@ -138,17 +119,6 @@ const Navigation: React.FC = () => {
                 </Link>
               );
             })}
-            
-            {/* Quick create in mobile menu */}
-            {isExpensesActive && (
-              <Button 
-                onClick={handleQuickCreate}
-                className="w-full flex items-center justify-center bg-primary text-primary-foreground"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                New Expense
-              </Button>
-            )}
           </div>
         </div>
       )}

@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  FileText, Search, Filter, Download, MoreVertical, ChevronDown, 
-  ClipboardList, Clock, CheckCircle, Plus, ChevronRight
+  FileText, Search, Filter, Download, MoreVertical, ChevronDown, ChevronRight,
+  ClipboardList, Clock, CheckCircle, Plus
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -215,33 +214,50 @@ const Expenses: React.FC = () => {
   
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
-          <Button
-            onClick={() => navigate('/expenses/new')}
-            variant="outline"
-            size="sm"
-            className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            New Expense
-          </Button>
-          
-          <Button
-            onClick={handleExport}
-            variant="outline"
-            size="sm"
-            className="border-gray-200 text-gray-700 hover:bg-gray-100"
-          >
-            <Download className="h-4 w-4 mr-1" />
-            Export
-          </Button>
-        </div>
-      </div>
-      
       <div className="bg-white rounded-lg shadow-sm border">
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <div className="flex items-center space-x-4">
+            <Button
+              onClick={() => navigate('/expenses/new')}
+              variant="outline"
+              size="sm"
+              className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              New Expense
+            </Button>
+            
+            <Button
+              onClick={handleExport}
+              variant="outline"
+              size="sm"
+              className="border-gray-200 text-gray-700 hover:bg-gray-100"
+            >
+              <Download className="h-4 w-4 mr-1" />
+              Export
+            </Button>
+            
+            <Collapsible
+              open={isFilterOpen}
+              onOpenChange={setIsFilterOpen}
+            >
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-200 text-gray-700 hover:bg-gray-100"
+                >
+                  <Filter className="h-4 w-4 mr-1" />
+                  Filter
+                  <ChevronRight className={`h-4 w-4 ml-1 transition-transform duration-200 ${isFilterOpen ? 'rotate-90' : ''}`} />
+                </Button>
+              </CollapsibleTrigger>
+            </Collapsible>
+          </div>
+        </div>
+        
         <Tabs defaultValue="my-expenses" className="w-full">
-          <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-t-lg border-b h-auto p-0">
+          <TabsList className="w-full grid grid-cols-4 bg-gray-50 rounded-none border-b h-auto p-0">
             <TabsTrigger 
               value="my-expenses" 
               className="flex items-center gap-2 py-4 px-6 data-[state=active]:border-b-2 data-[state=active]:border-blue-500 data-[state=active]:bg-white rounded-none justify-start"
@@ -273,25 +289,9 @@ const Expenses: React.FC = () => {
           </TabsList>
           
           <TabsContent value="my-expenses" className="p-4">
-            <Collapsible
-              open={isFilterOpen}
-              onOpenChange={setIsFilterOpen}
-              className="w-full border rounded-md mb-4 bg-gray-50 overflow-hidden"
-            >
-              <div className="flex justify-between items-center px-4 py-3">
-                <div className="flex items-center">
-                  <Filter className="h-4 w-4 mr-2 text-gray-500" />
-                  <span className="font-medium text-sm">Filter Expenses</span>
-                </div>
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${isFilterOpen ? 'rotate-90' : ''}`} />
-                  </Button>
-                </CollapsibleTrigger>
-              </div>
-              
-              <CollapsibleContent>
-                <div className="p-4 pt-0 border-t">
+            <CollapsibleContent>
+              <div className="border rounded-md mb-4 bg-gray-50 overflow-hidden">
+                <div className="p-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                       <Label htmlFor="searchEmployee">Search Employee</Label>
@@ -358,8 +358,8 @@ const Expenses: React.FC = () => {
                     </Button>
                   </div>
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
+              </div>
+            </CollapsibleContent>
             
             {filteredExpenses.length > 0 ? (
               <div className="border rounded-md overflow-hidden bg-white">
