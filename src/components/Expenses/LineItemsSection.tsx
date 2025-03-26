@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
 import { Separator } from '@/components/ui/separator';
@@ -35,8 +35,8 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
   totalAmount
 }) => {
   return (
-    <div className="mb-8 max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="mb-8 max-w-4xl">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-base font-medium text-gray-700">Line Items</h3>
         <Button 
           variant="default"
@@ -50,14 +50,16 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
       </div>
       
       {lineItems.length > 0 ? (
-        <div className="border border-gray-100 rounded-lg overflow-hidden">
+        <div className="border border-gray-100 rounded-lg overflow-hidden shadow-sm">
           {/* Header row */}
-          <div className="grid grid-cols-12 gap-2 px-4 py-3 bg-gray-50 text-xs font-medium text-gray-500">
-            <div className="col-span-3">TITLE</div>
-            <div className="col-span-3">ACCOUNT INFO</div>
-            <div className="col-span-2">DATE</div>
-            <div className="col-span-1 text-right">AMOUNT</div>
-            <div className="col-span-2">RECEIPT</div>
+          <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-gray-50 text-xs font-medium text-gray-500">
+            <div className="col-span-4">ITEM</div>
+            <div className="col-span-2 text-right">PRICE</div>
+            <div className="col-span-2 text-center">QTY</div>
+            <div className="col-span-2 text-right">TOTAL</div>
+            <div className="col-span-1 flex justify-center">
+              <Paperclip className="h-3.5 w-3.5" />
+            </div>
             <div className="col-span-1"></div>
           </div>
           
@@ -77,17 +79,17 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           {/* Total row */}
           <div className="bg-gray-50 px-4 py-3">
             <div className="flex justify-end">
-              <div className="w-48">
+              <div className="w-32">
                 <div className="flex justify-between py-2 text-sm font-medium">
-                  <span className="text-gray-600">TOTAL AMOUNT</span>
-                  <span className="text-gray-900 font-semibold">{totalAmount} $</span>
+                  <span className="text-gray-600">TOTAL</span>
+                  <span className="text-gray-900 font-semibold">${totalAmount}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       ) : (
-        <div className="border rounded-lg p-8 text-center bg-gray-50">
+        <div className="border rounded-lg p-6 text-center bg-gray-50">
           <div className="text-gray-500 mb-3">No expense items added yet</div>
           <Button 
             variant="outline" 
