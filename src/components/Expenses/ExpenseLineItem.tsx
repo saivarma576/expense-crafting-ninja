@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   Droplet, Hotel, UtensilsCrossed, Milestone, FileBox, FileQuestion, 
@@ -12,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { GLAccount, CostCenter, DynamicField, ExpenseType } from '@/types/expense';
 
 interface ExpenseLineItemProps {
@@ -43,22 +43,22 @@ export interface ExpenseLineItemType {
 }
 
 const expenseTypes = [
-  { value: 'gasoline', label: 'Gasoline', icon: <Droplet className="h-5 w-5" /> },
-  { value: 'hotel', label: 'Hotel/Lodging', icon: <Hotel className="h-5 w-5" /> },
-  { value: 'meals', label: 'Meals', icon: <UtensilsCrossed className="h-5 w-5" /> },
-  { value: 'mileage', label: 'Mileage', icon: <Milestone className="h-5 w-5" /> },
-  { value: 'office_supplies', label: 'Office Supplies', icon: <FileBox className="h-5 w-5" /> },
-  { value: 'other', label: 'Others', icon: <FileQuestion className="h-5 w-5" /> },
-  { value: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-5 w-5" /> },
-  { value: 'postage', label: 'Postage & Freight', icon: <Package className="h-5 w-5" /> },
-  { value: 'professional_fees', label: 'Professional Fees', icon: <Briefcase className="h-5 w-5" /> },
-  { value: 'registration', label: 'Registration Fees', icon: <ClipboardCheck className="h-5 w-5" /> },
-  { value: 'rental', label: 'Rental Car', icon: <Car className="h-5 w-5" /> },
-  { value: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-5 w-5" /> },
-  { value: 'auditing', label: 'Auditing Serv Fees', icon: <ReceiptText className="h-5 w-5" /> },
-  { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-5 w-5" /> },
-  { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-5 w-5" /> },
-  { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-5 w-5" /> }
+  { value: 'gasoline', label: 'Gasoline', icon: <Droplet className="h-4 w-4" /> },
+  { value: 'hotel', label: 'Hotel/Lodging', icon: <Hotel className="h-4 w-4" /> },
+  { value: 'meals', label: 'Meals', icon: <UtensilsCrossed className="h-4 w-4" /> },
+  { value: 'mileage', label: 'Mileage', icon: <Milestone className="h-4 w-4" /> },
+  { value: 'office_supplies', label: 'Office Supplies', icon: <FileBox className="h-4 w-4" /> },
+  { value: 'other', label: 'Others', icon: <FileQuestion className="h-4 w-4" /> },
+  { value: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-4 w-4" /> },
+  { value: 'postage', label: 'Postage & Freight', icon: <Package className="h-4 w-4" /> },
+  { value: 'professional_fees', label: 'Professional Fees', icon: <Briefcase className="h-4 w-4" /> },
+  { value: 'registration', label: 'Registration Fees', icon: <ClipboardCheck className="h-4 w-4" /> },
+  { value: 'rental', label: 'Rental Car', icon: <Car className="h-4 w-4" /> },
+  { value: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-4 w-4" /> },
+  { value: 'auditing', label: 'Auditing Serv Fees', icon: <ReceiptText className="h-4 w-4" /> },
+  { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
+  { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
+  { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-4 w-4" /> }
 ];
 
 // Mock data - In a real app, these would come from an API
@@ -197,38 +197,38 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-full">
+    <div className="flex h-full">
       {/* Left side - Form */}
-      <div className="w-full md:w-1/2 p-4 overflow-y-auto">
-        {/* Expense Type - Compact version */}
-        <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 block mb-1.5">Expense Type</label>
-          <div className="grid grid-cols-4 gap-1.5 mb-2">
-            {expenseTypes.slice(0, 8).map((expType) => (
+      <div className="w-3/5 h-full px-4 py-3">
+        {/* Expense Type - More compact version */}
+        <div className="mb-3">
+          <label className="text-sm font-medium text-gray-700 block mb-1">Expense Type</label>
+          <div className="grid grid-cols-6 gap-1 mb-2">
+            {expenseTypes.slice(0, 12).map((expType) => (
               <button
                 key={expType.value}
                 type="button"
                 onClick={() => setType(expType.value as ExpenseType)}
                 className={cn(
-                  "flex flex-col items-center justify-center p-1.5 rounded-lg border transition-all duration-200",
+                  "flex flex-col items-center justify-center p-1 rounded-lg border transition-all duration-200",
                   type === expType.value 
                     ? "border-blue-500 bg-blue-50" 
                     : "border-gray-200 hover:border-gray-300"
                 )}
               >
                 <div className={cn(
-                  "rounded-full mb-0.5",
+                  "rounded-full",
                   type === expType.value ? `text-blue-500` : "text-gray-500"
                 )}>
                   {expType.icon}
                 </div>
-                <span className="text-xs text-center leading-tight">{expType.label}</span>
+                <span className="text-[10px] text-center leading-tight truncate w-full">{expType.label.split('/')[0]}</span>
               </button>
             ))}
           </div>
           
           <select 
-            className="w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full h-8 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-xs text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={type}
             onChange={(e) => setType(e.target.value as ExpenseType)}
           >
@@ -241,13 +241,13 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           </select>
         </div>
 
-        {/* Amount and Date */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+          {/* Amount and Date */}
           <div>
-            <label htmlFor="amount" className="text-sm font-medium text-gray-700 block mb-1">Amount</label>
+            <label htmlFor="amount" className="text-xs font-medium text-gray-700 block mb-1">Amount</label>
             <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                <DollarSign className="h-4 w-4" />
+              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <DollarSign className="h-3.5 w-3.5" />
               </div>
               <input
                 id="amount"
@@ -255,59 +255,40 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-7 w-full h-8 rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="0.00"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="date" className="text-sm font-medium text-gray-700 block mb-1">Date</label>
+            <label htmlFor="date" className="text-xs font-medium text-gray-700 block mb-1">Date</label>
             <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                <Calendar className="h-4 w-4" />
+              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <Calendar className="h-3.5 w-3.5" />
               </div>
               <input
                 id="date"
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-7 w-full h-8 rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
-        </div>
 
-        {/* Description */}
-        <div className="mb-3">
-          <label htmlFor="description" className="text-sm font-medium text-gray-700 block mb-1">Description</label>
-          <div className="relative">
-            <div className="absolute left-3 top-3 text-gray-500">
-              <FileText className="h-4 w-4" />
-            </div>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="pl-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[60px]"
-              placeholder="Enter description"
-            />
-          </div>
-        </div>
-        
-        {/* GL Account and Cost Center */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+          {/* GL Account and Cost Center */}
           <div>
-            <label htmlFor="account" className="text-sm font-medium text-gray-700 block mb-1">GL Account</label>
+            <label htmlFor="account" className="text-xs font-medium text-gray-700 block mb-1">GL Account</label>
             <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                <Building className="h-4 w-4" />
+              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <Building className="h-3.5 w-3.5" />
               </div>
               <select
                 id="account"
                 value={account}
                 onChange={(e) => handleAccountChange(e.target.value)}
-                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="pl-7 w-full h-8 rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
               >
                 <option value="">Select GL Account</option>
                 {glAccounts.map((acc) => (
@@ -320,16 +301,16 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           </div>
 
           <div>
-            <label htmlFor="costCenter" className="text-sm font-medium text-gray-700 block mb-1">Cost Center</label>
+            <label htmlFor="costCenter" className="text-xs font-medium text-gray-700 block mb-1">Cost Center</label>
             <div className="relative">
-              <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                <BriefcaseBusiness className="h-4 w-4" />
+              <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                <BriefcaseBusiness className="h-3.5 w-3.5" />
               </div>
               <select
                 id="costCenter"
                 value={costCenter}
                 onChange={(e) => handleCostCenterChange(e.target.value)}
-                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                className="pl-7 w-full h-8 rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
               >
                 <option value="">Select Cost Center</option>
                 {costCenters.map((cc) => (
@@ -342,15 +323,32 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           </div>
         </div>
 
+        {/* Description */}
+        <div className="mb-3 mt-2">
+          <label htmlFor="description" className="text-xs font-medium text-gray-700 block mb-1">Description</label>
+          <div className="relative">
+            <div className="absolute left-2 top-2 text-gray-500">
+              <FileText className="h-3.5 w-3.5" />
+            </div>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="pl-7 w-full rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[50px] max-h-[50px] resize-none"
+              placeholder="Enter description"
+            />
+          </div>
+        </div>
+        
         {/* Type-specific fields */}
         {typeSpecificFields.length > 0 && (
           <div className="mb-3">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">{expenseTypes.find(e => e.value === type)?.label} Details</h3>
+            <h3 className="text-xs font-medium text-gray-700 mb-1">{expenseTypes.find(e => e.value === type)?.label} Details</h3>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2">
               {typeSpecificFields.map((field) => (
-                <div key={field.id} className="mb-1">
-                  <label htmlFor={field.id} className="text-sm font-medium text-gray-700 block mb-1">
+                <div key={field.id}>
+                  <label htmlFor={field.id} className="text-xs font-medium text-gray-700 block mb-1">
                     {field.label} {field.required && <span className="text-red-500">*</span>}
                   </label>
                   {field.type === 'text' && (
@@ -360,7 +358,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                       value={dynamicFields[field.id] || ''}
                       onChange={(e) => handleDynamicFieldChange(field.id, e.target.value)}
                       placeholder={field.placeholder}
-                      className="h-9 px-3 py-1 text-sm"
+                      className="h-8 px-2 py-1 text-sm"
                     />
                   )}
                   {field.type === 'date' && (
@@ -369,7 +367,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                       type="date"
                       value={dynamicFields[field.id] || ''}
                       onChange={(e) => handleDynamicFieldChange(field.id, e.target.value)}
-                      className="h-9 px-3 py-1 text-sm"
+                      className="h-8 px-2 py-1 text-sm"
                     />
                   )}
                   {field.type === 'number' && (
@@ -378,7 +376,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                       type="number"
                       value={dynamicFields[field.id] || ''}
                       onChange={(e) => handleDynamicFieldChange(field.id, parseInt(e.target.value) || 0)}
-                      className="h-9 px-3 py-1 text-sm"
+                      className="h-8 px-2 py-1 text-sm"
                     />
                   )}
                   {field.type === 'select' && field.options && (
@@ -386,7 +384,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                       value={dynamicFields[field.id] || ''} 
                       onValueChange={(value) => handleDynamicFieldChange(field.id, value)}
                     >
-                      <SelectTrigger className="h-9 text-sm">
+                      <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
                       </SelectTrigger>
                       <SelectContent>
@@ -405,17 +403,17 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
         )}
 
         {/* Receipt upload */}
-        <div className="mb-4">
-          <label className="text-sm font-medium text-gray-700 block mb-1">Receipt</label>
+        <div className="mb-3">
+          <label className="text-xs font-medium text-gray-700 block mb-1">Receipt</label>
           <div className="flex items-center gap-2">
             <div className="flex-1">
               <div className="relative flex items-center">
-                <div className="absolute left-3 text-gray-500">
-                  <Paperclip className="h-4 w-4" />
+                <div className="absolute left-2 text-gray-500">
+                  <Paperclip className="h-3.5 w-3.5" />
                 </div>
                 <input
                   type="text"
-                  className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="pl-7 w-full h-8 rounded-md border border-gray-300 bg-transparent px-2 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs"
                   placeholder="No receipt attached"
                   value={receiptName || ''}
                   readOnly
@@ -427,9 +425,9 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                       setReceiptName('');
                       setReceiptUrl('');
                     }}
-                    className="absolute right-3 text-gray-400 hover:text-gray-600"
+                    className="absolute right-2 text-gray-400 hover:text-gray-600"
                   >
-                    <X className="h-4 w-4" />
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 )}
               </div>
@@ -442,27 +440,27 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 accept="image/*,.pdf"
                 onChange={handleFileUpload}
               />
-              <div className="px-3 py-1.5 h-9 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
-                <Upload className="h-4 w-4 mr-1" />
-                <span className="text-sm">Upload</span>
+              <div className="px-2 py-1 h-8 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
+                <Upload className="h-3.5 w-3.5 mr-1" />
+                <span className="text-xs">Upload</span>
               </div>
             </label>
           </div>
         </div>
 
         {/* Action buttons */}
-        <div className="flex items-center pt-2 gap-3">
+        <div className="flex items-center gap-3 mt-auto pt-1">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-4 py-2 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 px-4 py-2 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
+            className="flex-1 px-4 py-1.5 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
           >
             <span>Save</span>
             <ArrowRight className="ml-1 h-4 w-4" />
@@ -471,8 +469,8 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
       </div>
 
       {/* Right side - Receipt Preview */}
-      <div className="w-full md:w-1/2 bg-gray-50 flex flex-col border-l border-gray-200 h-full">
-        <h3 className="text-sm font-medium text-gray-700 p-4 pb-2 border-b border-gray-200">Receipt Preview</h3>
+      <div className="w-2/5 bg-gray-50 flex flex-col border-l border-gray-200 h-full">
+        <h3 className="text-xs font-medium text-gray-700 p-3 border-b border-gray-200">Receipt Preview</h3>
         
         <div className="flex-1 p-4 flex flex-col items-center justify-center">
           {receiptUrl ? (
@@ -482,7 +480,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 alt="Receipt" 
                 className="max-w-full max-h-[90%] object-contain rounded-md shadow-sm" 
               />
-              <div className="mt-3 text-sm text-gray-500">
+              <div className="mt-2 text-xs text-gray-500">
                 {receiptName}
               </div>
             </div>
@@ -490,7 +488,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
             <div className="flex flex-col items-center justify-center bg-white rounded-md border border-dashed border-gray-300 p-8 w-full h-full">
               <Upload className="h-12 w-12 text-gray-300 mb-3" />
               <p className="text-gray-500 text-center mb-1">No receipt uploaded</p>
-              <p className="text-gray-400 text-sm text-center">
+              <p className="text-gray-400 text-xs text-center">
                 Upload a receipt to see a preview here
               </p>
             </div>

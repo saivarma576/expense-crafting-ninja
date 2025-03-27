@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface LineItemSliderProps {
   isOpen: boolean;
@@ -21,12 +22,21 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
+      // Prevent body scrolling when the slider is open
+      document.body.style.overflow = 'hidden';
     } else {
       const timer = setTimeout(() => {
         setIsVisible(false);
+        // Re-enable body scrolling when the slider is closed
+        document.body.style.overflow = '';
       }, 300);
       return () => clearTimeout(timer);
     }
+    
+    // Cleanup when component unmounts
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   if (!isVisible && !isOpen) {
@@ -55,7 +65,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 h-[calc(100vh-65px)] overflow-hidden">
           {children}
         </div>
       </div>
