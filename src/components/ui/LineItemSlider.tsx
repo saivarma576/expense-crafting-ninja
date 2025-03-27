@@ -41,7 +41,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
     )}>
       <div 
         className={cn(
-          "fixed inset-y-0 right-0 w-full max-w-5xl bg-white shadow-lg flex flex-col",
+          "fixed inset-y-0 right-0 w-full max-w-6xl bg-white shadow-lg flex flex-col h-full",
           "transform transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
@@ -55,7 +55,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-hidden">
           {children}
         </div>
       </div>

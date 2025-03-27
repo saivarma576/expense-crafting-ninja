@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Droplet, Hotel, UtensilsCrossed, Milestone, FileBox, FileQuestion, 
@@ -119,9 +120,9 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           { id: 'zipCode', label: 'ZIP Code', type: 'text', required: true },
         );
         break;
-      case 'airfare':
+      case 'transport':
         fields.push(
-          { id: 'location', label: 'Departure Airport', type: 'text', required: true },
+          { id: 'location', label: 'Departure Location', type: 'text', required: true },
           { id: 'cityName', label: 'Destination', type: 'text', required: true },
           { id: 'checkInDate', label: 'Departure Date', type: 'date', required: true },
           { id: 'checkOutDate', label: 'Return Date', type: 'date', required: false },
@@ -138,12 +139,6 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           { id: 'checkInDate', label: 'Pickup Date', type: 'date', required: true },
           { id: 'checkOutDate', label: 'Return Date', type: 'date', required: true },
           { id: 'cityName', label: 'City', type: 'text', required: true },
-        );
-        break;
-      case 'transport':
-        fields.push(
-          { id: 'location', label: 'From', type: 'text', required: true },
-          { id: 'cityName', label: 'To', type: 'text', required: true },
         );
         break;
       default:
@@ -203,39 +198,41 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
 
   return (
     <div className="flex flex-col md:flex-row h-full">
-      <div className="w-full md:w-1/2 p-5 space-y-5 overflow-y-auto">
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">Expense Type</label>
-          <div className="grid grid-cols-4 gap-2">
+      {/* Left side - Form */}
+      <div className="w-full md:w-1/2 p-4 overflow-y-auto">
+        {/* Expense Type - Compact version */}
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700 block mb-1.5">Expense Type</label>
+          <div className="grid grid-cols-4 gap-1.5 mb-2">
             {expenseTypes.slice(0, 8).map((expType) => (
               <button
                 key={expType.value}
                 type="button"
                 onClick={() => setType(expType.value as ExpenseType)}
                 className={cn(
-                  "flex flex-col items-center justify-center p-2 rounded-lg border transition-all duration-200",
+                  "flex flex-col items-center justify-center p-1.5 rounded-lg border transition-all duration-200",
                   type === expType.value 
                     ? "border-blue-500 bg-blue-50" 
                     : "border-gray-200 hover:border-gray-300"
                 )}
               >
                 <div className={cn(
-                  "p-1 rounded-full mb-1",
+                  "rounded-full mb-0.5",
                   type === expType.value ? `text-blue-500` : "text-gray-500"
                 )}>
                   {expType.icon}
                 </div>
-                <span className="text-xs font-medium text-center">{expType.label}</span>
+                <span className="text-xs text-center leading-tight">{expType.label}</span>
               </button>
             ))}
           </div>
           
           <select 
-            className="mt-2 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={type}
             onChange={(e) => setType(e.target.value as ExpenseType)}
           >
-            <option value="" disabled>More expense types...</option>
+            <option value="" disabled>Select expense type...</option>
             {expenseTypes.map((expType) => (
               <option key={expType.value} value={expType.value}>
                 {expType.label}
@@ -244,9 +241,10 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           </select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="amount" className="text-sm font-medium text-gray-700">Amount</label>
+        {/* Amount and Date */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label htmlFor="amount" className="text-sm font-medium text-gray-700 block mb-1">Amount</label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 <DollarSign className="h-4 w-4" />
@@ -257,14 +255,14 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 step="0.01"
                 value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="0.00"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="date" className="text-sm font-medium text-gray-700">Date</label>
+          <div>
+            <label htmlFor="date" className="text-sm font-medium text-gray-700 block mb-1">Date</label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 <Calendar className="h-4 w-4" />
@@ -274,14 +272,15 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="description" className="text-sm font-medium text-gray-700">Description</label>
+        {/* Description */}
+        <div className="mb-3">
+          <label htmlFor="description" className="text-sm font-medium text-gray-700 block mb-1">Description</label>
           <div className="relative">
             <div className="absolute left-3 top-3 text-gray-500">
               <FileText className="h-4 w-4" />
@@ -290,15 +289,16 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="pl-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[80px]"
+              className="pl-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[60px]"
               placeholder="Enter description"
             />
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label htmlFor="account" className="text-sm font-medium text-gray-700">GL Account</label>
+        {/* GL Account and Cost Center */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label htmlFor="account" className="text-sm font-medium text-gray-700 block mb-1">GL Account</label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 <Building className="h-4 w-4" />
@@ -307,7 +307,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 id="account"
                 value={account}
                 onChange={(e) => handleAccountChange(e.target.value)}
-                className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
                 <option value="">Select GL Account</option>
                 {glAccounts.map((acc) => (
@@ -319,8 +319,8 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="costCenter" className="text-sm font-medium text-gray-700">Cost Center</label>
+          <div>
+            <label htmlFor="costCenter" className="text-sm font-medium text-gray-700 block mb-1">Cost Center</label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                 <BriefcaseBusiness className="h-4 w-4" />
@@ -329,7 +329,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 id="costCenter"
                 value={costCenter}
                 onChange={(e) => handleCostCenterChange(e.target.value)}
-                className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
                 <option value="">Select Cost Center</option>
                 {costCenters.map((cc) => (
@@ -342,71 +342,72 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           </div>
         </div>
 
-        <div className="space-y-4 pt-2 border-t border-gray-100">
-          <h3 className="text-sm font-medium text-gray-700">{expenseTypes.find(e => e.value === type)?.label} Details</h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {typeSpecificFields.map((field) => (
-              <div key={field.id} className="space-y-2">
-                <label htmlFor={field.id} className="text-sm font-medium text-gray-700">
-                  {field.label} {field.required && <span className="text-red-500">*</span>}
-                </label>
-                {field.type === 'text' && (
-                  <Input
-                    id={field.id}
-                    type="text"
-                    value={dynamicFields[field.id] || ''}
-                    onChange={(e) => handleDynamicFieldChange(field.id, e.target.value)}
-                    placeholder={field.placeholder}
-                    className="w-full"
-                  />
-                )}
-                {field.type === 'date' && (
-                  <Input
-                    id={field.id}
-                    type="date"
-                    value={dynamicFields[field.id] || ''}
-                    onChange={(e) => handleDynamicFieldChange(field.id, e.target.value)}
-                    className="w-full"
-                  />
-                )}
-                {field.type === 'number' && (
-                  <Input
-                    id={field.id}
-                    type="number"
-                    value={dynamicFields[field.id] || ''}
-                    onChange={(e) => handleDynamicFieldChange(field.id, parseInt(e.target.value) || 0)}
-                    className="w-full"
-                  />
-                )}
-                {field.type === 'select' && field.options && (
-                  <Select 
-                    value={dynamicFields[field.id] || ''} 
-                    onValueChange={(value) => handleDynamicFieldChange(field.id, value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {field.options.map(option => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              </div>
-            ))}
+        {/* Type-specific fields */}
+        {typeSpecificFields.length > 0 && (
+          <div className="mb-3">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">{expenseTypes.find(e => e.value === type)?.label} Details</h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              {typeSpecificFields.map((field) => (
+                <div key={field.id} className="mb-1">
+                  <label htmlFor={field.id} className="text-sm font-medium text-gray-700 block mb-1">
+                    {field.label} {field.required && <span className="text-red-500">*</span>}
+                  </label>
+                  {field.type === 'text' && (
+                    <Input
+                      id={field.id}
+                      type="text"
+                      value={dynamicFields[field.id] || ''}
+                      onChange={(e) => handleDynamicFieldChange(field.id, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="h-9 px-3 py-1 text-sm"
+                    />
+                  )}
+                  {field.type === 'date' && (
+                    <Input
+                      id={field.id}
+                      type="date"
+                      value={dynamicFields[field.id] || ''}
+                      onChange={(e) => handleDynamicFieldChange(field.id, e.target.value)}
+                      className="h-9 px-3 py-1 text-sm"
+                    />
+                  )}
+                  {field.type === 'number' && (
+                    <Input
+                      id={field.id}
+                      type="number"
+                      value={dynamicFields[field.id] || ''}
+                      onChange={(e) => handleDynamicFieldChange(field.id, parseInt(e.target.value) || 0)}
+                      className="h-9 px-3 py-1 text-sm"
+                    />
+                  )}
+                  {field.type === 'select' && field.options && (
+                    <Select 
+                      value={dynamicFields[field.id] || ''} 
+                      onValueChange={(value) => handleDynamicFieldChange(field.id, value)}
+                    >
+                      <SelectTrigger className="h-9 text-sm">
+                        <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {field.options.map(option => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="space-y-2 pt-2 border-t border-gray-100">
-          <div className="flex justify-between items-center">
-            <label className="text-sm font-medium text-gray-700">Receipt</label>
-          </div>
-
-          <div className="flex items-center gap-3">
+        {/* Receipt upload */}
+        <div className="mb-4">
+          <label className="text-sm font-medium text-gray-700 block mb-1">Receipt</label>
+          <div className="flex items-center gap-2">
             <div className="flex-1">
               <div className="relative flex items-center">
                 <div className="absolute left-3 text-gray-500">
@@ -414,7 +415,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 </div>
                 <input
                   type="text"
-                  className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                  className="pl-9 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm"
                   placeholder="No receipt attached"
                   value={receiptName || ''}
                   readOnly
@@ -441,7 +442,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
                 accept="image/*,.pdf"
                 onChange={handleFileUpload}
               />
-              <div className="px-4 py-2 h-10 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
+              <div className="px-3 py-1.5 h-9 flex items-center justify-center rounded-md bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors">
                 <Upload className="h-4 w-4 mr-1" />
                 <span className="text-sm">Upload</span>
               </div>
@@ -449,48 +450,52 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center pt-4 space-x-3">
+        {/* Action buttons */}
+        <div className="flex items-center pt-2 gap-3">
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-4 py-2.5 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSave}
-            className="flex-1 px-4 py-2.5 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors flex items-center justify-center"
+            className="flex-1 px-4 py-2 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
           >
             <span>Save</span>
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-1 h-4 w-4" />
           </button>
         </div>
       </div>
 
-      <div className="w-full md:w-1/2 bg-gray-50 p-5 flex flex-col border-l border-gray-200">
-        <h3 className="text-sm font-medium text-gray-700 mb-4">Receipt Preview</h3>
+      {/* Right side - Receipt Preview */}
+      <div className="w-full md:w-1/2 bg-gray-50 flex flex-col border-l border-gray-200 h-full">
+        <h3 className="text-sm font-medium text-gray-700 p-4 pb-2 border-b border-gray-200">Receipt Preview</h3>
         
-        {receiptUrl ? (
-          <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-md shadow-sm p-4">
-            <img 
-              src={`/public/lovable-uploads/fc953625-155a-4230-9515-5801b4d67e6f.png`} 
-              alt="Receipt" 
-              className="max-w-full max-h-full object-contain rounded-md" 
-            />
-            <div className="mt-3 text-sm text-gray-500">
-              {receiptName}
+        <div className="flex-1 p-4 flex flex-col items-center justify-center">
+          {receiptUrl ? (
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <img 
+                src={`/public/lovable-uploads/fc953625-155a-4230-9515-5801b4d67e6f.png`} 
+                alt="Receipt" 
+                className="max-w-full max-h-[90%] object-contain rounded-md shadow-sm" 
+              />
+              <div className="mt-3 text-sm text-gray-500">
+                {receiptName}
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-md border border-dashed border-gray-300 p-8">
-            <Upload className="h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-500 text-center mb-1">No receipt uploaded</p>
-            <p className="text-gray-400 text-sm text-center">
-              Upload a receipt to see a preview here
-            </p>
-          </div>
-        )}
+          ) : (
+            <div className="flex flex-col items-center justify-center bg-white rounded-md border border-dashed border-gray-300 p-8 w-full h-full">
+              <Upload className="h-12 w-12 text-gray-300 mb-3" />
+              <p className="text-gray-500 text-center mb-1">No receipt uploaded</p>
+              <p className="text-gray-400 text-sm text-center">
+                Upload a receipt to see a preview here
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       <Dialog open={showReceiptDialog} onOpenChange={setShowReceiptDialog}>
