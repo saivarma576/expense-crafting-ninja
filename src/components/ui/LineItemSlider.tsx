@@ -65,9 +65,9 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <div className="flex-1 h-[calc(100vh-65px)] overflow-hidden">
+        <ScrollArea className="flex-1 h-[calc(100vh-65px)]">
           {children}
-        </div>
+        </ScrollArea>
       </div>
     </div>
   );
