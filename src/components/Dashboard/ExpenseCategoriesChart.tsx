@@ -50,18 +50,18 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
   const getCategoryIcon = (name: string) => {
     switch (name.toLowerCase()) {
       case 'airfare':
-        return <Plane className="h-4 w-4" />;
+        return <Plane className="h-3 w-3 text-white/90" strokeWidth={1.5} />;
       case 'hotel':
-        return <Hotel className="h-4 w-4" />;
+        return <Hotel className="h-3 w-3 text-white/90" strokeWidth={1.5} />;
       case 'meals':
-        return <Utensils className="h-4 w-4" />;
+        return <Utensils className="h-3 w-3 text-white/90" strokeWidth={1.5} />;
       case 'car rental':
-        return <Car className="h-4 w-4" />;
+        return <Car className="h-3 w-3 text-white/90" strokeWidth={1.5} />;
       case 'transport':
-        return <Bus className="h-4 w-4" />;
+        return <Bus className="h-3 w-3 text-white/90" strokeWidth={1.5} />;
       case 'other':
       default:
-        return <MoreHorizontal className="h-4 w-4" />;
+        return <MoreHorizontal className="h-3 w-3 text-white/90" strokeWidth={1.5} />;
     }
   };
 
@@ -106,7 +106,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
           {categoryData.map((category, index) => (
             <div key={index} className="flex items-center space-x-2">
               <div 
-                className="flex items-center justify-center w-6 h-6 rounded-full" 
+                className="flex items-center justify-center w-5 h-5 rounded-full" 
                 style={{ backgroundColor: category.color }}
               >
                 {getCategoryIcon(category.name)}
