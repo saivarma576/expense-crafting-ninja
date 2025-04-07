@@ -6,6 +6,7 @@ import {
   Pie, 
   Cell
 } from 'recharts';
+import { ChartContainer } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
 
 interface CategoryData {
@@ -29,6 +30,15 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
   // Total value calculation for the center of the chart
   const totalValue = categoryData.reduce((sum, item) => sum + item.value, 0);
 
+  // Create chart config from category data
+  const chartConfig = categoryData.reduce((config, category) => {
+    config[category.name.toLowerCase()] = {
+      label: category.name,
+      color: category.color
+    };
+    return config;
+  }, {} as Record<string, { label: string, color: string }>);
+
   return (
     <div className="glass-card rounded-xl p-6">
       <div className="flex justify-between items-center mb-4">
@@ -38,7 +48,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
       
       <div className="flex flex-col items-center">
         <div className="relative w-full max-w-[220px] aspect-square flex items-center justify-center mb-6 mx-auto">
-          <ResponsiveContainer width="100%" height="100%">
+          <ChartContainer config={chartConfig}>
             <PieChart>
               <Pie
                 data={categoryData}
@@ -55,7 +65,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
                 ))}
               </Pie>
             </PieChart>
-          </ResponsiveContainer>
+          </ChartContainer>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <div className="text-2xl font-bold">

@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   Tooltip
 } from 'recharts';
-import { ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
 
 interface ExpenseTrendsChartProps {
@@ -34,7 +34,14 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
       </div>
       
       <div className="h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer 
+          config={{ 
+            expenses: { 
+              label: "Expenses", 
+              color: "#3b82f6" 
+            } 
+          }}
+        >
           <AreaChart 
             data={monthlyExpenseData} 
             margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
@@ -77,7 +84,7 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
               fill="url(#colorExpense)" 
             />
           </AreaChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </div>
     </div>
   );
