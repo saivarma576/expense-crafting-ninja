@@ -1,13 +1,11 @@
-
 import { DollarSign, Receipt, Clock, ArrowDownRight } from 'lucide-react';
-import React from 'react';
 
 // Mock data for expense stats
 export const expenseStats = [
-  { title: 'Total Expenses', value: '$12,450.65', trend: 8.2, icon: <DollarSign className="h-5 w-5" /> },
-  { title: 'Pending Approval', value: '$2,340.00', description: '4 expenses', icon: <Clock className="h-5 w-5" /> },
-  { title: 'Receipts to Process', value: '12', description: 'Last updated 2h ago', icon: <Receipt className="h-5 w-5" /> },
-  { title: 'Reimbursed', value: '$9,120.45', trend: -3.6, icon: <ArrowDownRight className="h-5 w-5" /> }
+  { title: 'Total Expenses', value: '$12,450.65', trend: 8.2, icon: 'dollar' },
+  { title: 'Pending Approval', value: '$2,340.00', description: '4 expenses', icon: 'clock' },
+  { title: 'Receipts to Process', value: '12', description: 'Last updated 2h ago', icon: 'receipt' },
+  { title: 'Reimbursed', value: '$9,120.45', trend: -3.6, icon: 'arrow-down-right' }
 ];
 
 // Mock data for recent expenses
