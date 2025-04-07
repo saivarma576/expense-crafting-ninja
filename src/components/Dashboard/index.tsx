@@ -4,6 +4,12 @@ import StatCard from '../ui/StatCard';
 import ExpenseCard from '../ui/ExpenseCard';
 import { ArrowUpRight, ArrowDownRight, DollarSign, Receipt, Clock, Plane, Hotel, UtensilsCrossed, Car, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { 
+  ResponsiveContainer, 
+  PieChart, 
+  Pie, 
+  Cell 
+} from 'recharts';
 
 const Dashboard: React.FC = () => {
   // Mock data
@@ -43,6 +49,18 @@ const Dashboard: React.FC = () => {
       description: 'Annual industry conference.'
     }
   ];
+
+  // Category data with colors and values
+  const categoryData = [
+    { name: 'Airfare', value: 3450.65, color: '#3b82f6', formattedValue: '3.4k' },
+    { name: 'Hotels', value: 2890.15, color: '#f59e0b', formattedValue: '2.9k' },
+    { name: 'Meals', value: 1245.82, color: '#10b981', formattedValue: '1.2k' },
+    { name: 'Transport', value: 562.18, color: '#ef4444', formattedValue: '0.5k' },
+    { name: 'Car Rental', value: 876.25, color: '#8b5cf6', formattedValue: '0.8k' }
+  ];
+
+  // Total value calculation for the center of the chart
+  const totalValue = categoryData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="space-y-8">
@@ -96,27 +114,61 @@ const Dashboard: React.FC = () => {
 
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Expense Categories</h2>
-          <div className="glass-card rounded-xl p-6 space-y-5">
-            {[
-              { name: 'Airfare', value: 3450.65, icon: <Plane className="h-5 w-5" />, color: 'text-expense-airfare' },
-              { name: 'Hotels', value: 2890.15, icon: <Hotel className="h-5 w-5" />, color: 'text-expense-hotel' },
-              { name: 'Meals', value: 1245.82, icon: <UtensilsCrossed className="h-5 w-5" />, color: 'text-expense-meals' },
-              { name: 'Car Rental', value: 876.25, icon: <Car className="h-5 w-5" />, color: 'text-expense-rental' },
-              { name: 'Transport', value: 562.18, icon: <Truck className="h-5 w-5" />, color: 'text-expense-transport' } // Changed from Taxi to Truck
-            ].map((category, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className={cn(
-                    "p-2 rounded-full mr-3",
-                    `bg-muted ${category.color}`
-                  )}>
-                    {category.icon}
-                  </div>
-                  <span className="font-medium">{category.name}</span>
-                </div>
-                <span className="font-semibold">${category.value.toFixed(2)}</span>
+          <div className="glass-card rounded-xl p-6 flex flex-col items-center">
+            <div className="relative w-full max-w-[220px] aspect-square flex flex-col items-center justify-center mb-6">
+              {/* Year Selection */}
+              <div className="absolute top-0 left-0 right-0 flex justify-between items-center mb-4 px-6">
+                <button className="text-gray-400 hover:text-gray-600">
+                  <ArrowUpRight className="h-4 w-4 rotate-180" />
+                </button>
+                <div className="font-medium">2023</div>
+                <button className="text-gray-400 hover:text-gray-600">
+                  <ArrowUpRight className="h-4 w-4 rotate-90" />
+                </button>
               </div>
-            ))}
+              
+              {/* Circular Chart */}
+              <ResponsiveContainer width="100%" height="100%" className="flex items-center justify-center">
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius="70%"
+                    outerRadius="90%"
+                    paddingAngle={4}
+                    dataKey="value"
+                    stroke="none"
+                  >
+                    {categoryData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              
+              {/* Center Text */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <div className="text-2xl font-bold">
+                  ${(totalValue / 1000).toFixed(3)}
+                </div>
+                <div className="text-sm text-gray-500">Expenses this year</div>
+              </div>
+            </div>
+            
+            {/* Category Legend */}
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 w-full">
+              {categoryData.map((category, index) => (
+                <div key={index} className="flex items-center">
+                  <div 
+                    className="w-3 h-3 rounded-full mr-2" 
+                    style={{ backgroundColor: category.color }}
+                  />
+                  <span className="text-sm font-medium">{category.name}</span>
+                  <span className="ml-auto text-sm font-medium">{category.formattedValue}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
