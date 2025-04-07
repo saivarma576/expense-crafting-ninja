@@ -1,4 +1,3 @@
-import { DollarSign, Receipt, Clock, ArrowDownRight } from 'lucide-react';
 
 // Mock data for expense stats
 export const expenseStats = [
