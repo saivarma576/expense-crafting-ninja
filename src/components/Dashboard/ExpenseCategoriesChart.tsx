@@ -1,12 +1,11 @@
 
 import React from 'react';
 import { 
-  ResponsiveContainer, 
   PieChart, 
   Pie, 
   Cell
 } from 'recharts';
-import { ChartContainer } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
 
 interface CategoryData {
@@ -59,6 +58,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
                 paddingAngle={2}
                 dataKey="value"
                 stroke="none"
+                nameKey="name"
               >
                 {categoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
@@ -77,12 +77,15 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 w-full">
           {categoryData.map((category, index) => (
-            <div key={index} className="flex items-center">
+            <div key={index} className="flex items-center space-x-2">
               <div 
-                className="w-3 h-3 rounded-full mr-2" 
+                className="w-3 h-3 rounded-full" 
                 style={{ backgroundColor: category.color }}
               />
-              <span className="text-sm font-medium">{category.name}</span>
+              <div className="flex flex-col text-sm">
+                <span className="font-medium">{category.name}</span>
+                <span className="text-gray-500">${category.formattedValue}</span>
+              </div>
             </div>
           ))}
         </div>
