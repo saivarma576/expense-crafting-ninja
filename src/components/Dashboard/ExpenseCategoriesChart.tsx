@@ -7,6 +7,14 @@ import {
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
+import { 
+  Plane, 
+  Hotel, 
+  Utensils, 
+  Car, 
+  Bus, 
+  MoreHorizontal 
+} from 'lucide-react';
 
 interface CategoryData {
   name: string;
@@ -37,6 +45,25 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     };
     return config;
   }, {} as Record<string, { label: string, color: string }>);
+
+  // Get icon based on category name
+  const getCategoryIcon = (name: string) => {
+    switch (name.toLowerCase()) {
+      case 'airfare':
+        return <Plane className="h-4 w-4" />;
+      case 'hotel':
+        return <Hotel className="h-4 w-4" />;
+      case 'meals':
+        return <Utensils className="h-4 w-4" />;
+      case 'car rental':
+        return <Car className="h-4 w-4" />;
+      case 'transport':
+        return <Bus className="h-4 w-4" />;
+      case 'other':
+      default:
+        return <MoreHorizontal className="h-4 w-4" />;
+    }
+  };
 
   return (
     <div className="glass-card rounded-xl p-6">
@@ -79,9 +106,11 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
           {categoryData.map((category, index) => (
             <div key={index} className="flex items-center space-x-2">
               <div 
-                className="w-3 h-3 rounded-full" 
+                className="flex items-center justify-center w-6 h-6 rounded-full" 
                 style={{ backgroundColor: category.color }}
-              />
+              >
+                {getCategoryIcon(category.name)}
+              </div>
               <div className="flex flex-col text-sm">
                 <span className="font-medium">{category.name}</span>
                 <span className="text-gray-500">${category.formattedValue}</span>
