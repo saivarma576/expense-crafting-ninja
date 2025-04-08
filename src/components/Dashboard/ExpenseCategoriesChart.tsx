@@ -70,18 +70,15 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
             className="h-[240px]"
           />
           
-          {/* Custom Legend */}
-          <div className="grid grid-cols-3 gap-x-6 gap-y-2 mt-4 text-sm">
+          {/* Custom Legend - Styled to match the reference image */}
+          <div className="w-full flex flex-wrap justify-center gap-x-6 gap-y-3 mt-4">
             {pieData.map((category, index) => (
-              <div key={index} className="flex items-center">
+              <div key={index} className="flex items-center whitespace-nowrap px-1">
                 <div 
                   className="w-3 h-3 rounded-full mr-2" 
                   style={{ backgroundColor: category.color }}
                 />
-                <span className="mr-1">{category.name}</span>
-                <span className="text-xs font-medium text-muted-foreground">
-                  {formatCurrency(category.value, true)}
-                </span>
+                <span className="text-sm font-medium">{category.name}</span>
               </div>
             ))}
           </div>
