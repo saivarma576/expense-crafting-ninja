@@ -76,6 +76,14 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categ
   const sortedCategories = [...categoryData].sort((a, b) => b.value - a.value);
   const topCategories = sortedCategories.slice(0, 12);
 
+  // Format the price display
+  const formatPrice = (value: number) => {
+    if (value >= 1000) {
+      return `$${(value / 1000).toFixed(1)}k`;
+    }
+    return `$${value.toFixed(0)}`;
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="relative w-full h-56 flex items-center justify-center">
@@ -116,23 +124,26 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categ
         </div>
       </div>
       
-      {/* Category legend - improved with icons */}
-      <div className="mt-4 grid grid-cols-3 gap-x-2 gap-y-2.5 text-xs px-2 overflow-y-auto max-h-40">
+      {/* Category legend - improved with icons and price display */}
+      <div className="mt-2 grid grid-cols-3 gap-x-1 gap-y-3 text-xs px-1 overflow-y-auto max-h-44">
         {topCategories.map((category, index) => (
           <motion.div 
             key={index} 
-            className="flex items-center gap-1.5"
+            className="flex flex-col gap-0.5"
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 + index * 0.03, duration: 0.2 }}
           >
-            <div 
-              className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-              style={{ backgroundColor: category.color }}
-            >
-              {getCategoryIcon(category.name)}
+            <div className="flex items-center gap-1">
+              <div 
+                className="w-5 h-5 rounded-md flex items-center justify-center shrink-0"
+                style={{ backgroundColor: category.color }}
+              >
+                {getCategoryIcon(category.name)}
+              </div>
+              <span className="truncate text-[10px] leading-tight font-medium">{category.name}</span>
             </div>
-            <span className="truncate text-[10px] leading-tight">{category.name}</span>
+            <span className="text-[10px] font-bold pl-6">{formatPrice(category.value)}</span>
           </motion.div>
         ))}
       </div>

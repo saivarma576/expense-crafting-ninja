@@ -88,6 +88,14 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     .sort((a, b) => b.value - a.value)
     .slice(0, 8);
 
+  // Format the price display
+  const formatPrice = (value: number) => {
+    if (value >= 1000) {
+      return `$${(value / 1000).toFixed(1)}k`;
+    }
+    return `$${value.toFixed(0)}`;
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -144,18 +152,21 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
           {topCategories.map((category, index) => (
             <motion.div 
               key={index} 
-              className="flex items-center gap-1"
+              className="flex flex-col gap-0.5"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + index * 0.03, duration: 0.2 }}
             >
-              <div 
-                className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                style={{ backgroundColor: category.color }}
-              >
-                {getCategoryIcon(category.name)}
+              <div className="flex items-center gap-1.5">
+                <div 
+                  className="w-6 h-6 rounded-md flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: category.color }}
+                >
+                  {getCategoryIcon(category.name)}
+                </div>
+                <span className="text-[10px] leading-tight font-medium">{category.name}</span>
               </div>
-              <span className="truncate text-[10px] leading-tight">{category.name}</span>
+              <span className="text-xs font-bold pl-7.5">{formatPrice(category.value)}</span>
             </motion.div>
           ))}
         </div>
