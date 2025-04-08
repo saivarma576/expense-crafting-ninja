@@ -1,4 +1,3 @@
-
 // Mock data for expense stats
 export const expenseStats = [
   { title: 'Total Expenses', value: '$12,450.65', trend: 8.2, icon: 'dollar' },
@@ -40,12 +39,22 @@ export const recentExpenses = [
 
 // Category data with colors and values
 export const categoryData = [
-  { name: 'Airfare', value: 3450.65, color: '#0EA5E9', formattedValue: '3.4k' },
-  { name: 'Hotel', value: 2890.15, color: '#8B5CF6', formattedValue: '2.9k' },
-  { name: 'Meals', value: 1245.82, color: '#ea384c', formattedValue: '1.2k' },
-  { name: 'Transport', value: 562.18, color: '#10b981', formattedValue: '0.5k' },
-  { name: 'Car Rental', value: 876.25, color: '#F97316', formattedValue: '0.8k' },
-  { name: 'Other', value: 425.75, color: '#94a3b8', formattedValue: '0.4k' }
+  { name: 'Mileage', value: 4500, color: '#3498db', formattedValue: '$4.5k' },
+  { name: 'Dues Subscriptions', value: 3200, color: '#9b59b6', formattedValue: '$3.2k' },
+  { name: 'Auditing Serv Fees', value: 5800, color: '#e74c3c', formattedValue: '$5.8k' },
+  { name: 'Hotel/Lodging', value: 7200, color: '#2ecc71', formattedValue: '$7.2k' },
+  { name: 'Meals', value: 3800, color: '#f39c12', formattedValue: '$3.8k' },
+  { name: 'Others', value: 2100, color: '#7f8c8d', formattedValue: '$2.1k' },
+  { name: 'Professional Fees', value: 6500, color: '#1abc9c', formattedValue: '$6.5k' },
+  { name: 'Gasoline', value: 3100, color: '#e67e22', formattedValue: '$3.1k' },
+  { name: 'Office Supplies', value: 2800, color: '#34495e', formattedValue: '$2.8k' },
+  { name: 'Business Meals', value: 4200, color: '#16a085', formattedValue: '$4.2k' },
+  { name: 'Postage & Freight', value: 1800, color: '#d35400', formattedValue: '$1.8k' },
+  { name: 'Registration Fees', value: 2400, color: '#8e44ad', formattedValue: '$2.4k' },
+  { name: 'Parking/Tolls', value: 1500, color: '#2980b9', formattedValue: '$1.5k' },
+  { name: 'Air/Taxi/Uber', value: 6800, color: '#c0392b', formattedValue: '$6.8k' },
+  { name: 'Baggage Fees', value: 900, color: '#27ae60', formattedValue: '$900' },
+  { name: 'Rental Car', value: 4800, color: '#f1c40f', formattedValue: '$4.8k' }
 ];
 
 // Monthly expense trend data

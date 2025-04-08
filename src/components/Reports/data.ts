@@ -1,4 +1,3 @@
-
 // This file contains the mock data for the Reports component
 
 export const monthlyData = [
@@ -17,18 +16,22 @@ export const monthlyData = [
 ];
 
 export const categoryData = [
-  { name: 'Hotel/Lodging', value: 9850, color: '#3b82f6' },
-  { name: 'Meals', value: 7600, color: '#8b5cf6' },
-  { name: 'Air/Taxi/Uber', value: 6200, color: '#ec4899' },
-  { name: 'Rental Car', value: 4700, color: '#f97316' },
-  { name: 'Mileage', value: 3800, color: '#10b981' },
-  { name: 'Office Supplies', value: 3200, color: '#06b6d4' },
-  { name: 'Business Meals', value: 2800, color: '#eab308' },
-  { name: 'Gasoline', value: 2400, color: '#ef4444' },
-  { name: 'Parking/Tolls', value: 1900, color: '#a855f7' },
-  { name: 'Registration Fees', value: 1600, color: '#14b8a6' },
-  { name: 'Professional Fees', value: 1400, color: '#f43f5e' },
-  { name: 'Baggage Fees', value: 1100, color: '#0ea5e9' }
+  { name: 'Mileage', value: 4500, color: '#3498db' },
+  { name: 'Dues Subscriptions', value: 3200, color: '#9b59b6' },
+  { name: 'Auditing Serv Fees', value: 5800, color: '#e74c3c' },
+  { name: 'Hotel/Lodging', value: 7200, color: '#2ecc71' },
+  { name: 'Meals', value: 3800, color: '#f39c12' },
+  { name: 'Others', value: 2100, color: '#7f8c8d' },
+  { name: 'Professional Fees', value: 6500, color: '#1abc9c' },
+  { name: 'Gasoline', value: 3100, color: '#e67e22' },
+  { name: 'Office Supplies', value: 2800, color: '#34495e' },
+  { name: 'Business Meals', value: 4200, color: '#16a085' },
+  { name: 'Postage & Freight', value: 1800, color: '#d35400' },
+  { name: 'Registration Fees', value: 2400, color: '#8e44ad' },
+  { name: 'Parking/Tolls', value: 1500, color: '#2980b9' },
+  { name: 'Air/Taxi/Uber', value: 6800, color: '#c0392b' },
+  { name: 'Baggage Fees', value: 900, color: '#27ae60' },
+  { name: 'Rental Car', value: 4800, color: '#f1c40f' }
 ];
 
 export const deptData = [
