@@ -32,6 +32,14 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
     return [`$${value.toLocaleString()}`, 'Expense'];
   };
   
+  // Helper to format Y-axis values
+  const formatYAxisTick = (value: number) => {
+    if (value >= 1000) {
+      return `${Math.round(value / 1000)}k`;
+    }
+    return value;
+  };
+  
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -74,7 +82,7 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 12 }}
-              tickFormatter={(value) => `$${value.toLocaleString()}`}
+              tickFormatter={formatYAxisTick}
               domain={[0, 'dataMax + 500']}
               tickCount={5}
             />
