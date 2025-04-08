@@ -87,71 +87,82 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="relative w-full h-[130px] flex items-center justify-center">
-        <ChartContainer config={chartConfig} className="w-full h-full">
-          <PieChart>
-            <Pie
-              data={categoryData}
-              cx="50%"
-              cy="50%"
-              innerRadius={45}
-              outerRadius={65}
-              dataKey="value"
-              stroke="none"
-              startAngle={90}
-              endAngle={-270}
+    <div className="flex h-full">
+      {/* Left side - PieChart */}
+      <div className="w-2/5 h-full flex items-center justify-center">
+        <div className="relative w-full h-[180px] flex items-center justify-center">
+          <ChartContainer config={chartConfig} className="w-full h-full">
+            <PieChart>
+              <Pie
+                data={categoryData}
+                cx="50%"
+                cy="50%"
+                innerRadius={45}
+                outerRadius={65}
+                dataKey="value"
+                stroke="none"
+                startAngle={90}
+                endAngle={-270}
+              >
+                {categoryData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<ChartTooltipContent />} />
+            </PieChart>
+          </ChartContainer>
+          
+          {/* Center content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="flex flex-col items-center"
             >
-              {categoryData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip content={<ChartTooltipContent />} />
-          </PieChart>
-        </ChartContainer>
-        
-        {/* Center content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="flex flex-col items-center"
-          >
-            <span className="text-2xl font-bold">{formattedTotal}</span>
-            <span className="text-xs text-gray-500">
-              Total expenses
-            </span>
-          </motion.div>
+              <span className="text-2xl font-bold">{formattedTotal}</span>
+              <span className="text-xs text-gray-500">
+                Total expenses
+              </span>
+            </motion.div>
+          </div>
         </div>
       </div>
       
-      {/* Category groups display */}
-      <div className="grid grid-cols-3 gap-1 text-xs max-h-[195px] overflow-y-auto">
+      {/* Right side - Category groups display */}
+      <div className="w-3/5 pl-4 pr-2 grid grid-cols-2 gap-x-3 gap-y-0 max-h-[215px] overflow-y-auto">
         {categoryGroups.map((group, groupIndex) => (
-          <div key={`group-${groupIndex}`} className="mb-2">
-            <div className="font-semibold text-xs text-gray-600 mb-1.5">{group.name}</div>
-            {group.categories.map((category, catIndex) => (
-              <motion.div 
-                key={`cat-${groupIndex}-${catIndex}`} 
-                className="flex items-center gap-1.5 mb-1"
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + (groupIndex * 0.03) + (catIndex * 0.01), duration: 0.2 }}
-              >
-                <div 
-                  className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-white"
-                  style={{ backgroundColor: category.color }}
+          <motion.div 
+            key={`group-${groupIndex}`} 
+            className="mb-1.5"
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + (groupIndex * 0.05), duration: 0.3 }}
+          >
+            <div className="font-semibold text-xs text-primary/90 mb-1 border-b border-primary/10 pb-0.5">{group.name}</div>
+            <div className="space-y-1.5">
+              {group.categories.map((category, catIndex) => (
+                <motion.div 
+                  key={`cat-${groupIndex}-${catIndex}`} 
+                  className="flex items-center gap-1.5"
+                  initial={{ opacity: 0, x: -5 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + (groupIndex * 0.03) + (catIndex * 0.02), duration: 0.2 }}
                 >
-                  {getCategoryIcon(category.name)}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] leading-tight font-medium truncate max-w-[60px]">{category.name}</span>
-                  <span className="text-[10px] font-bold">{formatPrice(category.value)}</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                  <div 
+                    className="w-5 h-5 rounded-md flex items-center justify-center shrink-0 text-white"
+                    style={{ backgroundColor: category.color }}
+                  >
+                    {getCategoryIcon(category.name)}
+                  </div>
+                  <div className="flex justify-between w-full items-center">
+                    <span className="text-[10px] leading-tight font-medium truncate max-w-[70px]">{category.name}</span>
+                    <span className="text-[10px] font-bold">{formatPrice(category.value)}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         ))}
       </div>
     </div>

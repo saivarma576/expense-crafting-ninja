@@ -95,71 +95,82 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
       </div>
       
-      <div className="flex flex-col h-[calc(100%-2rem)]">
-        <div className="relative w-full h-[140px] flex items-center justify-center">
-          <ChartContainer config={chartConfig} className="w-full h-full">
-            <PieChart>
-              <Pie
-                data={categoryData}
-                cx="50%"
-                cy="50%"
-                innerRadius={45}
-                outerRadius={65}
-                dataKey="value"
-                stroke="none"
-                startAngle={90}
-                endAngle={-270}
+      <div className="flex h-[calc(100%-2rem)]">
+        {/* Left side - PieChart */}
+        <div className="w-1/3 flex items-center justify-center">
+          <div className="relative w-full h-[180px] flex items-center justify-center">
+            <ChartContainer config={chartConfig} className="w-full h-full">
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={45}
+                  outerRadius={65}
+                  dataKey="value"
+                  stroke="none"
+                  startAngle={90}
+                  endAngle={-270}
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip content={<ChartTooltipContent />} />
+              </PieChart>
+            </ChartContainer>
+            
+            {/* Center content */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="flex flex-col items-center"
               >
-                {categoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip content={<ChartTooltipContent />} />
-            </PieChart>
-          </ChartContainer>
-          
-          {/* Center content */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-              className="flex flex-col items-center"
-            >
-              <span className="text-2xl font-bold">${(totalValue / 1000).toFixed(1)}k</span>
-              <span className="text-xs text-gray-500">
-                Total expenses
-              </span>
-            </motion.div>
+                <span className="text-2xl font-bold">${(totalValue / 1000).toFixed(1)}k</span>
+                <span className="text-xs text-gray-500">
+                  Total expenses
+                </span>
+              </motion.div>
+            </div>
           </div>
         </div>
         
-        {/* Category groups display */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs h-[162px] overflow-y-auto mt-1">
+        {/* Right side - Category groups display */}
+        <div className="w-2/3 pl-2 overflow-y-auto pr-1 grid grid-cols-2 gap-x-4 gap-y-2">
           {categoryGroups.map((group, groupIndex) => (
-            <div key={`group-${groupIndex}`} className="mb-2">
-              <div className="font-semibold text-xs text-gray-600 mb-1.5">{group.name}</div>
-              {group.categories.map((category, catIndex) => (
-                <motion.div 
-                  key={`cat-${groupIndex}-${catIndex}`} 
-                  className="flex items-center gap-1.5 mb-1"
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + (groupIndex * 0.03) + (catIndex * 0.01), duration: 0.2 }}
-                >
-                  <div 
-                    className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-white"
-                    style={{ backgroundColor: category.color }}
+            <motion.div 
+              key={`group-${groupIndex}`} 
+              className="mb-2"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + (groupIndex * 0.05), duration: 0.3 }}
+            >
+              <div className="font-semibold text-sm text-primary mb-1.5 border-b pb-1">{group.name}</div>
+              <div className="space-y-2">
+                {group.categories.map((category, catIndex) => (
+                  <motion.div 
+                    key={`cat-${groupIndex}-${catIndex}`} 
+                    className="flex items-center gap-1.5"
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + (groupIndex * 0.03) + (catIndex * 0.02), duration: 0.2 }}
                   >
-                    {getCategoryIcon(category.name)}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] leading-tight font-medium truncate max-w-[80px]">{category.name}</span>
-                    <span className="text-xs font-bold">{category.formattedValue}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                    <div 
+                      className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-white"
+                      style={{ backgroundColor: category.color }}
+                    >
+                      {getCategoryIcon(category.name)}
+                    </div>
+                    <div className="flex justify-between w-full items-center">
+                      <span className="text-xs leading-tight font-medium truncate max-w-[90px]">{category.name}</span>
+                      <span className="text-xs font-bold text-right">{category.formattedValue}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>

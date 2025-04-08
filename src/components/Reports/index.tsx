@@ -24,7 +24,7 @@ const Reports: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <ExpenseTrendChart monthlyData={monthlyData} />
         
-        <div className="glass-card rounded-xl p-6">
+        <div className="glass-card rounded-xl p-6 col-span-2">
           <div>
             <h2 className="text-lg font-medium">Expense by Category</h2>
             <p className="text-sm text-muted-foreground mb-4">Distribution across categories</p>
