@@ -55,10 +55,12 @@ const Reports: React.FC = () => {
             </div>
           </div>
           
-          <ExpenseCategoryPieChart 
-            categoryData={categoryData} 
-            categoryGroups={categoryGroups} 
-          />
+          <div className="h-[400px]">
+            <ExpenseCategoryPieChart 
+              categoryData={categoryData} 
+              categoryGroups={categoryGroups} 
+            />
+          </div>
         </div>
       </div>
       
