@@ -28,12 +28,18 @@ const Reports: React.FC = () => {
   ];
   
   const categoryData = [
-    { name: 'Airfare', value: 9850, color: '#3498db' },
-    { name: 'Hotel', value: 7600, color: '#9b59b6' },
-    { name: 'Meals', value: 4200, color: '#e74c3c' },
-    { name: 'Transport', value: 2300, color: '#2ecc71' },
-    { name: 'Car Rental', value: 1750, color: '#f39c12' },
-    { name: 'Other', value: 1100, color: '#7f8c8d' }
+    { name: 'Hotel/Lodging', value: 9850, color: '#3b82f6' },
+    { name: 'Meals', value: 7600, color: '#8b5cf6' },
+    { name: 'Air/Taxi/Uber', value: 6200, color: '#ec4899' },
+    { name: 'Rental Car', value: 4700, color: '#f97316' },
+    { name: 'Mileage', value: 3800, color: '#10b981' },
+    { name: 'Office Supplies', value: 3200, color: '#06b6d4' },
+    { name: 'Business Meals', value: 2800, color: '#eab308' },
+    { name: 'Gasoline', value: 2400, color: '#ef4444' },
+    { name: 'Parking/Tolls', value: 1900, color: '#a855f7' },
+    { name: 'Registration Fees', value: 1600, color: '#14b8a6' },
+    { name: 'Professional Fees', value: 1400, color: '#f43f5e' },
+    { name: 'Baggage Fees', value: 1100, color: '#0ea5e9' }
   ];
   
   const deptData = [
@@ -129,18 +135,6 @@ const Reports: React.FC = () => {
           </div>
           
           <ExpenseCategoryPieChart categoryData={categoryData} />
-          
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {categoryData.map((category, index) => (
-              <div key={index} className="flex items-center text-xs">
-                <div 
-                  className="w-3 h-3 rounded-full mr-2" 
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="truncate">{category.name}</span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
       
