@@ -36,7 +36,9 @@ const ExpenseStats: React.FC<ExpenseStatsProps> = ({ expenseStats }) => {
           key={`stat-${index}`}
           title={stat.title}
           value={stat.value}
-          description={stat.description}
+          description={stat.title === 'Total Expenses' && stat.trend ? 
+            `${stat.trend > 0 ? '+' : ''}${stat.trend}% from last month` : 
+            stat.description}
           icon={getIcon(stat.icon)}
           trend={stat.trend}
         />
