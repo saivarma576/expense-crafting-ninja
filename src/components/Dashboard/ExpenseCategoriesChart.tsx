@@ -3,7 +3,8 @@ import React from 'react';
 import { 
   PieChart, 
   Pie, 
-  Cell
+  Cell,
+  ResponsiveContainer
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
@@ -100,23 +101,25 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
       <div className="flex flex-col items-center">
         <div className="relative w-full max-w-[240px] aspect-square flex items-center justify-center mb-8 mx-auto">
           <ChartContainer config={chartConfig}>
-            <PieChart>
-              <Pie
-                data={categoryData}
-                cx="50%"
-                cy="50%"
-                innerRadius="65%"
-                outerRadius="90%"
-                paddingAngle={2}
-                dataKey="value"
-                stroke="none"
-                nameKey="name"
-              >
-                {categoryData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-            </PieChart>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius="65%"
+                  outerRadius="90%"
+                  paddingAngle={2}
+                  dataKey="value"
+                  stroke="none"
+                  nameKey="name"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
           </ChartContainer>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
