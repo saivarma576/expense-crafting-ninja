@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { 
   Plane, Building, Utensils, Car, FileText, Package, 
-  Fuel, Briefcase, Receipt, CreditCard, BookOpen, 
-  PartyPopper, DollarSign, MailQuestion, ParkingSquare, Luggage
+  Fuel, Briefcase, Receipt, BookOpen, 
+  MailQuestion, ParkingSquare, Luggage
 } from 'lucide-react';
 import YearSelector from './YearSelector';
 import { ChartContainer, ChartTooltipContent } from '../ui/chart';
@@ -31,11 +31,9 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
   // Calculate total for center text
   const totalValue = categoryData.reduce((sum, item) => sum + item.value, 0);
   const formattedTotal = `$${(totalValue / 1000).toFixed(1)}k`;
-
-  // We'll display only the top categories to match the design
-  const topCategories = [...categoryData]
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 6);
+  
+  // Format for display in the chart center
+  const thisMonth = new Date().toLocaleString('default', { month: 'long' });
 
   // Function to get icon by category name
   const getCategoryIcon = (name: string) => {
@@ -98,52 +96,60 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
       </div>
       
-      <div className="flex flex-col h-[calc(100%-3rem)]">
-        <ChartContainer config={chartConfig} className="mb-2 h-40">
-          <PieChart>
-            <Pie
-              data={categoryData}
-              cx="50%"
-              cy="50%"
-              innerRadius={40}
-              outerRadius={70}
-              dataKey="value"
-              stroke="none"
+      <div className="flex flex-col h-[calc(100%-3rem)] justify-center items-center">
+        <div className="relative w-56 h-56 flex items-center justify-center">
+          <ChartContainer config={chartConfig} className="w-full h-full">
+            <PieChart>
+              <Pie
+                data={categoryData}
+                cx="50%"
+                cy="50%"
+                innerRadius={65}
+                outerRadius={85}
+                dataKey="value"
+                stroke="none"
+                startAngle={90}
+                endAngle={-270}
+              >
+                {categoryData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<ChartTooltipContent />} />
+            </PieChart>
+          </ChartContainer>
+          
+          {/* Center content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="flex flex-col items-center"
             >
-              {categoryData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip content={<ChartTooltipContent />} />
-          </PieChart>
-        </ChartContainer>
-
-        <div className="flex flex-col items-center mb-2">
-          <div className="text-2xl font-bold">{formattedTotal}</div>
-          <div className="text-xs text-gray-500">Total</div>
+              <span className="text-2xl font-bold">{formattedTotal}</span>
+              <span className="text-xs text-gray-500 mt-1">
+                This month total<br/>expense
+              </span>
+            </motion.div>
+          </div>
         </div>
         
-        <div className="grid grid-cols-3 gap-2 text-xs overflow-y-auto max-h-32">
-          {categoryData.map((category, index) => (
+        {/* Category legend */}
+        <div className="mt-4 grid grid-cols-4 gap-2 text-xs w-full px-4">
+          {categoryData.slice(0, 8).map((category, index) => (
             <motion.div 
               key={index} 
-              className="flex flex-col items-center gap-1"
+              className="flex items-center gap-1.5"
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + index * 0.03, duration: 0.2 }}
             >
               <div 
-                className="flex items-center justify-center w-8 h-8 rounded-full"
+                className="w-2 h-2 rounded-full shrink-0"
                 style={{ backgroundColor: category.color }}
-              >
-                {getCategoryIcon(category.name)}
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <span className="font-medium text-xs whitespace-nowrap overflow-hidden text-ellipsis max-w-16">{category.name}</span>
-                <span className="text-gray-500 text-xs">${category.value < 1000 
-                  ? category.value.toFixed(0) 
-                  : (category.value / 1000).toFixed(1) + 'k'}</span>
-              </div>
+              />
+              <span className="truncate text-xs">{category.name}</span>
             </motion.div>
           ))}
         </div>

@@ -1,3 +1,4 @@
+
 // This file contains the mock data for the Reports component
 
 export const monthlyData = [
@@ -16,22 +17,22 @@ export const monthlyData = [
 ];
 
 export const categoryData = [
-  { name: 'Mileage', value: 4500, color: '#3498db' },
-  { name: 'Dues Subscriptions', value: 3200, color: '#9b59b6' },
-  { name: 'Auditing Serv Fees', value: 5800, color: '#e74c3c' },
-  { name: 'Hotel/Lodging', value: 7200, color: '#2ecc71' },
-  { name: 'Meals', value: 3800, color: '#f39c12' },
-  { name: 'Others', value: 2100, color: '#7f8c8d' },
-  { name: 'Professional Fees', value: 6500, color: '#1abc9c' },
-  { name: 'Gasoline', value: 3100, color: '#e67e22' },
-  { name: 'Office Supplies', value: 2800, color: '#34495e' },
-  { name: 'Business Meals', value: 4200, color: '#16a085' },
-  { name: 'Postage & Freight', value: 1800, color: '#d35400' },
-  { name: 'Registration Fees', value: 2400, color: '#8e44ad' },
-  { name: 'Parking/Tolls', value: 1500, color: '#2980b9' },
-  { name: 'Air/Taxi/Uber', value: 6800, color: '#c0392b' },
-  { name: 'Baggage Fees', value: 900, color: '#27ae60' },
-  { name: 'Rental Car', value: 4800, color: '#f1c40f' }
+  { name: 'Mileage', value: 4500, color: '#6366F1' },
+  { name: 'Dues Subscriptions', value: 3200, color: '#8B5CF6' },
+  { name: 'Auditing Serv Fees', value: 5800, color: '#EC4899' },
+  { name: 'Hotel/Lodging', value: 7200, color: '#10B981' },
+  { name: 'Meals', value: 3800, color: '#F59E0B' },
+  { name: 'Others', value: 2100, color: '#6B7280' },
+  { name: 'Professional Fees', value: 6500, color: '#059669' },
+  { name: 'Gasoline', value: 3100, color: '#F97316' },
+  { name: 'Office Supplies', value: 2800, color: '#3B82F6' },
+  { name: 'Business Meals', value: 4200, color: '#14B8A6' },
+  { name: 'Postage & Freight', value: 1800, color: '#EF4444' },
+  { name: 'Registration Fees', value: 2400, color: '#8B5CF6' },
+  { name: 'Parking/Tolls', value: 1500, color: '#0EA5E9' },
+  { name: 'Air/Taxi/Uber', value: 6800, color: '#F43F5E' },
+  { name: 'Baggage Fees', value: 900, color: '#22C55E' },
+  { name: 'Rental Car', value: 4800, color: '#FBBF24' }
 ];
 
 export const deptData = [

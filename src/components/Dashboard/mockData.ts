@@ -1,3 +1,4 @@
+
 // Mock data for expense stats
 export const expenseStats = [
   { title: 'Total Expenses', value: '$12,450.65', trend: 8.2, icon: 'dollar' },
@@ -37,24 +38,24 @@ export const recentExpenses = [
   }
 ];
 
-// Category data with colors and values
+// Category data with colors and values - making it more modern and vibrant
 export const categoryData = [
-  { name: 'Mileage', value: 4500, color: '#3498db', formattedValue: '$4.5k' },
-  { name: 'Dues Subscriptions', value: 3200, color: '#9b59b6', formattedValue: '$3.2k' },
-  { name: 'Auditing Serv Fees', value: 5800, color: '#e74c3c', formattedValue: '$5.8k' },
-  { name: 'Hotel/Lodging', value: 7200, color: '#2ecc71', formattedValue: '$7.2k' },
-  { name: 'Meals', value: 3800, color: '#f39c12', formattedValue: '$3.8k' },
-  { name: 'Others', value: 2100, color: '#7f8c8d', formattedValue: '$2.1k' },
-  { name: 'Professional Fees', value: 6500, color: '#1abc9c', formattedValue: '$6.5k' },
-  { name: 'Gasoline', value: 3100, color: '#e67e22', formattedValue: '$3.1k' },
-  { name: 'Office Supplies', value: 2800, color: '#34495e', formattedValue: '$2.8k' },
-  { name: 'Business Meals', value: 4200, color: '#16a085', formattedValue: '$4.2k' },
-  { name: 'Postage & Freight', value: 1800, color: '#d35400', formattedValue: '$1.8k' },
-  { name: 'Registration Fees', value: 2400, color: '#8e44ad', formattedValue: '$2.4k' },
-  { name: 'Parking/Tolls', value: 1500, color: '#2980b9', formattedValue: '$1.5k' },
-  { name: 'Air/Taxi/Uber', value: 6800, color: '#c0392b', formattedValue: '$6.8k' },
-  { name: 'Baggage Fees', value: 900, color: '#27ae60', formattedValue: '$900' },
-  { name: 'Rental Car', value: 4800, color: '#f1c40f', formattedValue: '$4.8k' }
+  { name: 'Mileage', value: 4500, color: '#6366F1', formattedValue: '$4.5k' },
+  { name: 'Dues Subscriptions', value: 3200, color: '#8B5CF6', formattedValue: '$3.2k' },
+  { name: 'Auditing Serv Fees', value: 5800, color: '#EC4899', formattedValue: '$5.8k' },
+  { name: 'Hotel/Lodging', value: 7200, color: '#10B981', formattedValue: '$7.2k' },
+  { name: 'Meals', value: 3800, color: '#F59E0B', formattedValue: '$3.8k' },
+  { name: 'Others', value: 2100, color: '#6B7280', formattedValue: '$2.1k' },
+  { name: 'Professional Fees', value: 6500, color: '#059669', formattedValue: '$6.5k' },
+  { name: 'Gasoline', value: 3100, color: '#F97316', formattedValue: '$3.1k' },
+  { name: 'Office Supplies', value: 2800, color: '#3B82F6', formattedValue: '$2.8k' },
+  { name: 'Business Meals', value: 4200, color: '#14B8A6', formattedValue: '$4.2k' },
+  { name: 'Postage & Freight', value: 1800, color: '#EF4444', formattedValue: '$1.8k' },
+  { name: 'Registration Fees', value: 2400, color: '#8B5CF6', formattedValue: '$2.4k' },
+  { name: 'Parking/Tolls', value: 1500, color: '#0EA5E9', formattedValue: '$1.5k' },
+  { name: 'Air/Taxi/Uber', value: 6800, color: '#F43F5E', formattedValue: '$6.8k' },
+  { name: 'Baggage Fees', value: 900, color: '#22C55E', formattedValue: '$900' },
+  { name: 'Rental Car', value: 4800, color: '#FBBF24', formattedValue: '$4.8k' }
 ];
 
 // Monthly expense trend data
