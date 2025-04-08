@@ -43,6 +43,16 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     color: group.categories[0]?.color || '#ccc'
   }));
   
+  // Define chart config for the ChartContainer
+  const chartConfig = pieData.reduce((config, item) => {
+    return {
+      ...config,
+      [item.name]: {
+        color: item.color
+      }
+    };
+  }, {});
+  
   // Custom legend formatter
   const renderColorfulLegendText = (value: string) => {
     return <span className="text-xs font-medium">{value}</span>;
@@ -77,7 +87,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
           </div>
           
           {/* Pie Chart */}
-          <ChartContainer className="w-full h-full max-h-[240px]">
+          <ChartContainer className="w-full h-full max-h-[240px]" config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
