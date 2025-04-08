@@ -42,7 +42,7 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categ
               endAngle={-270}
             >
               {categoryData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} cornerRadius={4} />
+                <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip
