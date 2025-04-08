@@ -1,15 +1,7 @@
 
 import React from 'react';
-import { 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer 
-} from 'recharts';
 import { ListFilter } from 'lucide-react';
+import AreaChartComponent from '../Charts/AreaChartComponent';
 
 interface MonthData {
   name: string;
@@ -33,47 +25,12 @@ const ExpenseTrendChart: React.FC<ExpenseTrendChartProps> = ({ monthlyData }) =>
         </button>
       </div>
       
-      <div className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-            <XAxis 
-              dataKey="name" 
-              stroke="#94a3b8"
-              tick={{ fontSize: 12 }}
-              tickLine={false}
-            />
-            <YAxis 
-              stroke="#94a3b8"
-              tick={{ fontSize: 12 }}
-              tickLine={false}
-              tickFormatter={(value) => `$${value}`}
-            />
-            <Tooltip
-              contentStyle={{ 
-                backgroundColor: 'white', 
-                borderRadius: '0.5rem',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                border: 'none'
-              }}
-              formatter={(value) => [`$${value}`, 'Amount']}
-            />
-            <Area 
-              type="monotone" 
-              dataKey="value" 
-              stroke="#3b82f6" 
-              strokeWidth={2}
-              fill="url(#colorValue)" 
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+      <AreaChartComponent 
+        data={monthlyData}
+        gradientColor="#3b82f6"
+        strokeColor="#3b82f6"
+        height={300}
+      />
     </div>
   );
 };
