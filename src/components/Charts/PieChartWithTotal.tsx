@@ -2,10 +2,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { 
-  PieChart, Pie, Cell, ResponsiveContainer, Legend
+  PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip
 } from 'recharts';
 import { ChartContainer } from "@/components/ui/chart";
-import { createChartConfig, formatCurrency, renderLegendText } from './chartUtils';
+import { createChartConfig, formatCurrency, renderLegendText, getCategoryIcon } from './chartUtils';
 
 interface PieChartDataPoint {
   name: string;
@@ -33,6 +33,34 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
   // Create chart configuration
   const chartConfig = createChartConfig(data);
   
+  // Custom renderer for the legend that includes icons and formatted amounts
+  const renderCustomLegend = (props: any) => {
+    const { payload } = props;
+    
+    return (
+      <div className="flex flex-wrap justify-center gap-3 pt-3 text-xs">
+        {payload.map((entry: any, index: number) => (
+          <div key={`legend-${index}`} className="flex items-center">
+            <div 
+              className="w-3 h-3 mr-1.5 rounded-sm"
+              style={{ backgroundColor: entry.color }}
+            />
+            <div className="flex items-center">
+              {getCategoryIcon(entry.value)}
+              <span className="font-medium mr-1">{entry.value}</span>
+              <span className="text-muted-foreground">
+                ({formatCurrency(entry.payload.value, true)})
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+  
+  // Sort data by value for better visualization (largest to smallest)
+  const sortedData = [...data].sort((a, b) => b.value - a.value);
+  
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
       {/* Center Total Display */}
@@ -54,7 +82,7 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data}
+              data={sortedData}
               cx="50%"
               cy="50%"
               innerRadius={60}
@@ -62,7 +90,7 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
               paddingAngle={1}
               dataKey="value"
             >
-              {data.map((entry, index) => (
+              {sortedData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
                   fill={entry.color}
@@ -71,18 +99,10 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
               ))}
             </Pie>
             <Legend 
+              content={renderCustomLegend}
               layout="horizontal" 
               verticalAlign="bottom" 
               align="center"
-              formatter={renderLegendText}
-              wrapperStyle={{
-                paddingTop: 20,
-                fontSize: 12,
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'center',
-                gap: '10px'
-              }}
             />
           </PieChart>
         </ResponsiveContainer>

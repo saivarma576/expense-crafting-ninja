@@ -16,7 +16,7 @@ interface AreaChartComponentProps {
   gradientColor?: string;
   strokeColor?: string;
   dataKey?: string;
-  height?: number;
+  height?: number | string;
 }
 
 const AreaChartComponent: React.FC<AreaChartComponentProps> = ({ 
@@ -35,8 +35,11 @@ const AreaChartComponent: React.FC<AreaChartComponentProps> = ({
   
   const gradientId = `color${dataKey}`;
   
+  // Handle height as either a number or string
+  const heightStyle = typeof height === 'number' ? `${height}px` : height;
+  
   return (
-    <div style={{ height: `${height}px` }}>
+    <div style={{ height: heightStyle, width: '100%' }}>
       <ChartContainer config={chartConfig}>
         <AreaChart 
           data={data} 

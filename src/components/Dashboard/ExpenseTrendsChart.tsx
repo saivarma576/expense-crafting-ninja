@@ -29,19 +29,24 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
+      className="glass-card rounded-xl p-6 shadow-lg border border-primary/5 h-[400px]"
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Expense Trends</h2>
+        <div>
+          <h2 className="text-xl font-semibold">Expense Trends</h2>
+          <p className="text-sm text-muted-foreground">Monthly expense activity</p>
+        </div>
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
       </div>
       
-      <AreaChartComponent
-        data={transformedData}
-        gradientColor="#3b82f6"
-        strokeColor="#3b82f6"
-        height={320}
-      />
+      <div className="h-[calc(100%-70px)]">
+        <AreaChartComponent
+          data={transformedData}
+          gradientColor="#3b82f6"
+          strokeColor="#3b82f6"
+          height="100%"
+        />
+      </div>
     </motion.div>
   );
 };
