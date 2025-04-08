@@ -17,6 +17,8 @@ interface PieChartWithTotalProps {
   data: PieChartDataPoint[];
   title?: string;
   subtitle?: string;
+  totalValue?: number;
+  showLegend?: boolean;
   className?: string;
 }
 
@@ -24,11 +26,16 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
   data, 
   title = 'Total',
   subtitle = 'expense',
+  totalValue,
+  showLegend = true,
   className = 'h-[300px]'
 }) => {
-  // Calculate total for center display
-  const totalValue = data.reduce((sum, item) => sum + item.value, 0);
-  const formattedTotal = formatCurrency(totalValue, true);
+  // Calculate total for center display if not provided
+  const calculatedTotal = totalValue !== undefined 
+    ? totalValue 
+    : data.reduce((sum, item) => sum + item.value, 0);
+  
+  const formattedTotal = formatCurrency(calculatedTotal);
   
   // Create chart configuration
   const chartConfig = createChartConfig(data);
@@ -72,38 +79,40 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
           className="flex flex-col items-center"
         >
           <span className="text-3xl font-bold">{formattedTotal}</span>
-          <span className="text-sm text-muted-foreground">This month total</span>
+          <span className="text-sm text-muted-foreground">{title}</span>
           <span className="text-xs text-muted-foreground">{subtitle}</span>
         </motion.div>
       </div>
       
       {/* Pie Chart */}
-      <ChartContainer className="w-full h-full max-h-[240px]" config={chartConfig}>
+      <ChartContainer className="w-full h-full" config={chartConfig}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={sortedData}
               cx="50%"
               cy="50%"
-              innerRadius={60}
+              innerRadius={70}
               outerRadius={90}
               paddingAngle={1}
               dataKey="value"
+              stroke="none"
             >
               {sortedData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
                   fill={entry.color}
-                  stroke="none"
                 />
               ))}
             </Pie>
-            <Legend 
-              content={renderCustomLegend}
-              layout="horizontal" 
-              verticalAlign="bottom" 
-              align="center"
-            />
+            {showLegend && (
+              <Legend 
+                content={renderCustomLegend}
+                layout="horizontal" 
+                verticalAlign="bottom" 
+                align="center"
+              />
+            )}
           </PieChart>
         </ResponsiveContainer>
       </ChartContainer>

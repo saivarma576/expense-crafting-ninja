@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import PieChartWithTotal from '../Charts/PieChartWithTotal';
 import YearSelector from './YearSelector';
-import { formatCurrency, getCategoryIcon } from '../Charts/chartUtils';
+import { formatCurrency } from '../Charts/chartUtils';
 
 interface CategoryData {
   name: string;
@@ -39,12 +39,10 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     }))
   ), [categoryGroups]);
 
-  // Get top expenses for display
-  const topExpenses = useMemo(() => (
-    [...categoryData]
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5)
-  ), [categoryData]);
+  // Calculate total expenses
+  const totalExpenses = useMemo(() => (
+    pieData.reduce((sum, item) => sum + item.value, 0)
+  ), [pieData]);
 
   return (
     <motion.div 
@@ -56,29 +54,34 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
       <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-xl font-semibold">Expense Categories</h2>
-          <p className="text-sm text-muted-foreground">Top 5 categories by spend</p>
+          <p className="text-sm text-muted-foreground">Monthly expense breakdown</p>
         </div>
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
       </div>
       
-      <div className="h-[calc(100%-70px)] grid grid-cols-12 gap-2">
-        <div className="col-span-8">
+      <div className="h-[calc(100%-70px)] flex items-center justify-center">
+        <div className="w-full flex flex-col items-center">
           <PieChartWithTotal 
             data={pieData}
-            className="h-full flex items-center justify-center"
+            title="This month total"
+            subtitle="expense"
+            totalValue={totalExpenses}
+            showLegend={false} // Hide the default legend from the PieChart
+            className="h-[240px]"
           />
-        </div>
-        
-        <div className="col-span-4 flex flex-col justify-center">
-          <h3 className="text-sm font-medium mb-2 text-muted-foreground">Top Expenses</h3>
-          <div className="space-y-2">
-            {topExpenses.map((expense, index) => (
-              <div key={index} className="flex items-center justify-between text-xs p-1.5 rounded hover:bg-muted/50 transition-colors">
-                <div className="flex items-center">
-                  {getCategoryIcon(expense.name)}
-                  <span className="truncate max-w-[100px]">{expense.name}</span>
-                </div>
-                <span className="font-medium">{formatCurrency(expense.value, true)}</span>
+          
+          {/* Custom Legend */}
+          <div className="grid grid-cols-3 gap-x-6 gap-y-2 mt-4 text-sm">
+            {pieData.map((category, index) => (
+              <div key={index} className="flex items-center">
+                <div 
+                  className="w-3 h-3 rounded-full mr-2" 
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="mr-1">{category.name}</span>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {formatCurrency(category.value, true)}
+                </span>
               </div>
             ))}
           </div>
