@@ -5,7 +5,7 @@ import ExpenseTrendChart from './ExpenseTrendChart';
 import ExpenseCategoryPieChart from './ExpenseCategoryPieChart';
 import DepartmentExpenseChart from './DepartmentExpenseChart';
 import RecentReportsList from './RecentReportsList';
-import { monthlyData, categoryData, deptData, recentReports } from './data';
+import { monthlyData, categoryData, categoryGroups, deptData, recentReports } from './data';
 
 // Fix type casting by ensuring recentReports match the ReportItem type
 const typedRecentReports = recentReports.map(report => {
@@ -30,7 +30,10 @@ const Reports: React.FC = () => {
             <p className="text-sm text-muted-foreground mb-4">Distribution across categories</p>
           </div>
           
-          <ExpenseCategoryPieChart categoryData={categoryData} />
+          <ExpenseCategoryPieChart 
+            categoryData={categoryData} 
+            categoryGroups={categoryGroups} 
+          />
         </div>
       </div>
       

@@ -16,11 +16,20 @@ interface CategoryData {
   color: string;
 }
 
-interface ExpenseCategoryPieChartProps {
-  categoryData: CategoryData[];
+interface CategoryGroup {
+  name: string;
+  categories: CategoryData[];
 }
 
-const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categoryData }) => {
+interface ExpenseCategoryPieChartProps {
+  categoryData: CategoryData[];
+  categoryGroups: CategoryGroup[];
+}
+
+const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ 
+  categoryData,
+  categoryGroups 
+}) => {
   // Calculate total for center text
   const totalValue = categoryData.reduce((sum, item) => sum + item.value, 0);
   const formattedTotal = `$${(totalValue / 1000).toFixed(1)}k`;
@@ -68,10 +77,6 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categ
     };
     return acc;
   }, {} as Record<string, { label: string, color: string }>);
-  
-  // Sort categories by value for better visual organization
-  const sortedCategories = [...categoryData].sort((a, b) => b.value - a.value);
-  const topCategories = sortedCategories.slice(0, 12);
 
   // Format the price display
   const formatPrice = (value: number) => {
@@ -83,15 +88,15 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categ
 
   return (
     <div className="flex flex-col h-full">
-      <div className="relative w-full h-52 flex items-center justify-center">
+      <div className="relative w-full h-[130px] flex items-center justify-center">
         <ChartContainer config={chartConfig} className="w-full h-full">
           <PieChart>
             <Pie
               data={categoryData}
               cx="50%"
               cy="50%"
-              innerRadius={60}
-              outerRadius={80}
+              innerRadius={45}
+              outerRadius={65}
               dataKey="value"
               stroke="none"
               startAngle={90}
@@ -114,34 +119,39 @@ const ExpenseCategoryPieChart: React.FC<ExpenseCategoryPieChartProps> = ({ categ
             className="flex flex-col items-center"
           >
             <span className="text-2xl font-bold">{formattedTotal}</span>
-            <span className="text-xs text-gray-500 mt-1">
-              This month total<br/>expense
+            <span className="text-xs text-gray-500">
+              Total expenses
             </span>
           </motion.div>
         </div>
       </div>
       
-      {/* Category legend - 3x4 grid layout */}
-      <div className="grid grid-cols-3 gap-2 text-xs overflow-y-auto">
-        {topCategories.map((category, index) => (
-          <motion.div 
-            key={index} 
-            className="flex items-center gap-1.5"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 + index * 0.03, duration: 0.2 }}
-          >
-            <div 
-              className="w-7 h-7 rounded-md flex items-center justify-center shrink-0 text-white"
-              style={{ backgroundColor: category.color }}
-            >
-              {getCategoryIcon(category.name)}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] leading-tight font-medium truncate max-w-[60px]">{category.name}</span>
-              <span className="text-[10px] font-bold">{formatPrice(category.value)}</span>
-            </div>
-          </motion.div>
+      {/* Category groups display */}
+      <div className="grid grid-cols-3 gap-1 text-xs max-h-[195px] overflow-y-auto">
+        {categoryGroups.map((group, groupIndex) => (
+          <div key={`group-${groupIndex}`} className="mb-2">
+            <div className="font-semibold text-xs text-gray-600 mb-1.5">{group.name}</div>
+            {group.categories.map((category, catIndex) => (
+              <motion.div 
+                key={`cat-${groupIndex}-${catIndex}`} 
+                className="flex items-center gap-1.5 mb-1"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + (groupIndex * 0.03) + (catIndex * 0.01), duration: 0.2 }}
+              >
+                <div 
+                  className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-white"
+                  style={{ backgroundColor: category.color }}
+                >
+                  {getCategoryIcon(category.name)}
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] leading-tight font-medium truncate max-w-[60px]">{category.name}</span>
+                  <span className="text-[10px] font-bold">{formatPrice(category.value)}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         ))}
       </div>
     </div>

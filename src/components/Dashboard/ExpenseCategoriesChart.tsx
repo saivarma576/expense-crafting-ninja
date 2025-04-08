@@ -4,7 +4,9 @@ import { motion } from 'framer-motion';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { 
   BedDouble, Plane, Briefcase, ReceiptText, 
-  Car, Milestone, Coffee, UtensilsCrossed
+  Car, Milestone, Coffee, UtensilsCrossed,
+  Package, Fuel, ParkingCircle, FileText, 
+  BookOpen, Luggage
 } from 'lucide-react';
 import YearSelector from './YearSelector';
 import { ChartContainer, ChartTooltipContent } from '../ui/chart';
@@ -16,20 +18,26 @@ interface CategoryData {
   formattedValue: string;
 }
 
+interface CategoryGroup {
+  name: string;
+  categories: CategoryData[];
+}
+
 interface ExpenseCategoriesChartProps {
   categoryData: CategoryData[];
+  categoryGroups: CategoryGroup[];
   selectedYear: number;
   onYearChange: (direction: 'prev' | 'next') => void;
 }
 
 const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({ 
   categoryData, 
+  categoryGroups,
   selectedYear, 
   onYearChange 
 }) => {
   // Calculate total for center text
   const totalValue = categoryData.reduce((sum, item) => sum + item.value, 0);
-  const formattedTotal = `$${(totalValue / 1000).toFixed(1)}k`;
   
   // Function to get icon by category name
   const getCategoryIcon = (name: string) => {
@@ -50,6 +58,18 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
         return <Coffee className="h-4 w-4" strokeWidth={2} />;
       case 'meals':
         return <UtensilsCrossed className="h-4 w-4" strokeWidth={2} />;
+      case 'postage & freight':
+        return <Package className="h-4 w-4" strokeWidth={2} />;
+      case 'gasoline':
+        return <Fuel className="h-4 w-4" strokeWidth={2} />;
+      case 'parking/tolls':
+        return <ParkingCircle className="h-4 w-4" strokeWidth={2} />;
+      case 'office supplies':
+        return <FileText className="h-4 w-4" strokeWidth={2} />;
+      case 'dues subscriptions':
+        return <BookOpen className="h-4 w-4" strokeWidth={2} />;
+      case 'baggage fees':
+        return <Luggage className="h-4 w-4" strokeWidth={2} />;
       default:
         return <Briefcase className="h-4 w-4" strokeWidth={2} />;
     }
@@ -62,11 +82,6 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     };
     return acc;
   }, {} as Record<string, { label: string, color: string }>);
-
-  // We'll display only top 8 categories in a 2x4 grid
-  const topCategories = [...categoryData]
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 8);
 
   return (
     <motion.div 
@@ -81,15 +96,15 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
       </div>
       
       <div className="flex flex-col h-[calc(100%-2rem)]">
-        <div className="relative w-full h-48 flex items-center justify-center mb-3">
+        <div className="relative w-full h-[140px] flex items-center justify-center">
           <ChartContainer config={chartConfig} className="w-full h-full">
             <PieChart>
               <Pie
                 data={categoryData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={45}
+                outerRadius={65}
                 dataKey="value"
                 stroke="none"
                 startAngle={90}
@@ -111,35 +126,40 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
               transition={{ delay: 0.3, duration: 0.4 }}
               className="flex flex-col items-center"
             >
-              <span className="text-3xl font-bold">${(totalValue / 1000).toFixed(1)}k</span>
-              <span className="text-xs text-gray-500 mt-1">
-                This month total<br/>expense
+              <span className="text-2xl font-bold">${(totalValue / 1000).toFixed(1)}k</span>
+              <span className="text-xs text-gray-500">
+                Total expenses
               </span>
             </motion.div>
           </div>
         </div>
         
-        {/* Category legend - 2x4 grid layout */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs w-full mt-auto">
-          {topCategories.map((category, index) => (
-            <motion.div 
-              key={index} 
-              className="flex items-center gap-2"
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.03, duration: 0.2 }}
-            >
-              <div 
-                className="w-8 h-8 rounded-md flex items-center justify-center shrink-0 text-white"
-                style={{ backgroundColor: category.color }}
-              >
-                {getCategoryIcon(category.name)}
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[10px] leading-tight font-medium truncate max-w-[80px]">{category.name}</span>
-                <span className="text-xs font-bold">{category.formattedValue}</span>
-              </div>
-            </motion.div>
+        {/* Category groups display */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs h-[162px] overflow-y-auto mt-1">
+          {categoryGroups.map((group, groupIndex) => (
+            <div key={`group-${groupIndex}`} className="mb-2">
+              <div className="font-semibold text-xs text-gray-600 mb-1.5">{group.name}</div>
+              {group.categories.map((category, catIndex) => (
+                <motion.div 
+                  key={`cat-${groupIndex}-${catIndex}`} 
+                  className="flex items-center gap-1.5 mb-1"
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + (groupIndex * 0.03) + (catIndex * 0.01), duration: 0.2 }}
+                >
+                  <div 
+                    className="w-6 h-6 rounded-md flex items-center justify-center shrink-0 text-white"
+                    style={{ backgroundColor: category.color }}
+                  >
+                    {getCategoryIcon(category.name)}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] leading-tight font-medium truncate max-w-[80px]">{category.name}</span>
+                    <span className="text-xs font-bold">{category.formattedValue}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           ))}
         </div>
       </div>

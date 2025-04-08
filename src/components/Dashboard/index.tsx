@@ -4,7 +4,7 @@ import ExpenseStats from './ExpenseStats';
 import ExpenseTrendsChart from './ExpenseTrendsChart';
 import ExpenseCategoriesChart from './ExpenseCategoriesChart';
 import RecentExpensesTable from './RecentExpensesTable';
-import { expenseStats, recentExpenses, categoryData, monthlyExpenseData } from './mockData';
+import { expenseStats, recentExpenses, categoryData, categoryGroups, monthlyExpenseData } from './mockData';
 import { toast } from "sonner";
 
 const Dashboard: React.FC = () => {
@@ -52,6 +52,7 @@ const Dashboard: React.FC = () => {
         />
         <ExpenseCategoriesChart 
           categoryData={categoryData}
+          categoryGroups={categoryGroups}
           selectedYear={selectedYear}
           onYearChange={handleYearChange}
         />
