@@ -33,11 +33,11 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
   };
   
   // Helper to format Y-axis values
-  const formatYAxisTick = (value: number) => {
+  const formatYAxisTick = (value: number): string => {
     if (value >= 1000) {
       return `${Math.round(value / 1000)}k`;
     }
-    return value;
+    return value.toString();
   };
   
   return (
