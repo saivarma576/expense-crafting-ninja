@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import ReportsHeader from './ReportsHeader';
 import ExpenseTrendChart from './ExpenseTrendChart';
 import ExpenseCategoryPieChart from './ExpenseCategoryPieChart';
 import DepartmentExpenseChart from './DepartmentExpenseChart';
 import RecentReportsList from './RecentReportsList';
 import { monthlyData, categoryData, categoryGroups, deptData, recentReports } from './data';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Fix type casting by ensuring recentReports match the ReportItem type
 const typedRecentReports = recentReports.map(report => {
@@ -17,6 +18,16 @@ const typedRecentReports = recentReports.map(report => {
 });
 
 const Reports: React.FC = () => {
+  const [selectedYear, setSelectedYear] = useState(2023);
+
+  const handleYearChange = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setSelectedYear(prev => prev - 1);
+    } else {
+      setSelectedYear(prev => prev + 1);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <ReportsHeader />
@@ -25,9 +36,23 @@ const Reports: React.FC = () => {
         <ExpenseTrendChart monthlyData={monthlyData} />
         
         <div className="glass-card rounded-xl p-6 col-span-2">
-          <div>
-            <h2 className="text-lg font-medium">Expense by Category</h2>
-            <p className="text-sm text-muted-foreground mb-4">Distribution across categories</p>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold">Expense Categories</h2>
+            <div className="flex items-center gap-2">
+              <button 
+                className="p-1 rounded hover:bg-muted" 
+                onClick={() => handleYearChange('prev')}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <div className="text-sm font-medium">{selectedYear}</div>
+              <button 
+                className="p-1 rounded hover:bg-muted" 
+                onClick={() => handleYearChange('next')}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
           </div>
           
           <ExpenseCategoryPieChart 
