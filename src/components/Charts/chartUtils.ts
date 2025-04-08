@@ -30,7 +30,7 @@ export function formatCurrency(value: number, compact: boolean = false): string 
  * Renders a legend text with consistent styling
  */
 export function renderLegendText(value: string): JSX.Element {
-  return <span className="text-xs font-medium">{value}</span>;
+  return React.createElement("span", { className: "text-xs font-medium" }, value);
 }
 
 /**
