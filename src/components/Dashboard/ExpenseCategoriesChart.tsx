@@ -22,7 +22,7 @@ import {
   Package,
   Ticket,
   ParkingCircle,
-  GasPump,
+  Fuel, // Changed GasPump to Fuel which is available in lucide-react
   UtilityPole
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -90,7 +90,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
       case 'parking/tolls':
         return <ParkingCircle className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'gasoline':
-        return <GasPump className="h-5 w-5 text-white" strokeWidth={1.5} />;
+        return <Fuel className="h-5 w-5 text-white" strokeWidth={1.5} />; // Changed from GasPump to Fuel
       case 'baggage fees':
         return <Package className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'mileage':
@@ -134,7 +134,10 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
                   endAngle={-270}
                 >
                   {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} cornerRadius={4} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={entry.color} 
+                    />
                   ))}
                 </Pie>
               </PieChart>

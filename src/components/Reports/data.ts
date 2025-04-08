@@ -40,8 +40,8 @@ export const deptData = [
 ];
 
 export const recentReports = [
-  { id: 'rep-001', name: 'Q3 Expense Summary', type: 'quarterly', date: '2023-10-01' },
-  { id: 'rep-002', name: 'Marketing Department Expenses', type: 'department', date: '2023-10-15' },
-  { id: 'rep-003', name: 'Travel Expenses YTD', type: 'category', date: '2023-11-01' },
-  { id: 'rep-004', name: 'Yearly Forecast', type: 'forecast', date: '2023-11-10' }
+  { id: 'rep-001', name: 'Q3 Expense Summary', type: 'quarterly' as const, date: '2023-10-01' },
+  { id: 'rep-002', name: 'Marketing Department Expenses', type: 'department' as const, date: '2023-10-15' },
+  { id: 'rep-003', name: 'Travel Expenses YTD', type: 'category' as const, date: '2023-11-01' },
+  { id: 'rep-004', name: 'Yearly Forecast', type: 'forecast' as const, date: '2023-11-10' }
 ];

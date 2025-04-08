@@ -7,6 +7,15 @@ import DepartmentExpenseChart from './DepartmentExpenseChart';
 import RecentReportsList from './RecentReportsList';
 import { monthlyData, categoryData, deptData, recentReports } from './data';
 
+// Fix type casting by ensuring recentReports match the ReportItem type
+const typedRecentReports = recentReports.map(report => {
+  return {
+    ...report,
+    // Ensure the type is one of the allowed types in ReportItem
+    type: report.type as "quarterly" | "department" | "category" | "forecast"
+  };
+});
+
 const Reports: React.FC = () => {
   return (
     <div className="space-y-8">
@@ -27,7 +36,7 @@ const Reports: React.FC = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <DepartmentExpenseChart deptData={deptData} />
-        <RecentReportsList recentReports={recentReports} />
+        <RecentReportsList recentReports={typedRecentReports} />
       </div>
     </div>
   );
