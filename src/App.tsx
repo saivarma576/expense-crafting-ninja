@@ -11,6 +11,7 @@ import NewExpense from "./components/Expenses/NewExpense";
 import Receipts from "./components/Receipts";
 import Reports from "./components/Reports";
 import Admin from "./components/Admin";
+import Profile from "./components/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="receipts" element={<Receipts />} />
             <Route path="reports" element={<Reports />} />
             <Route path="admin" element={<Admin />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

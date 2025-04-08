@@ -8,18 +8,13 @@ import {
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
 import { 
-  PlaneTakeoff, 
-  Building2, 
-  UtensilsCrossed, 
-  CarFront, 
+  Plane, 
+  Building, 
+  Utensils, 
+  Car, 
   Bus, 
-  MoreHorizontal,
-  CircleDollarSign,
-  Banknote,
-  Heart,
-  Landmark,
-  Wallet,
-  PiggyBank
+  CreditCard,
+  CircleDollarSign
 } from 'lucide-react';
 
 interface CategoryData {
@@ -56,37 +51,37 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
   const getCategoryIcon = (name: string) => {
     switch (name.toLowerCase()) {
       case 'airfare':
-        return <PlaneTakeoff className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <Plane className="h-4 w-4 text-white" strokeWidth={1.5} />;
       case 'hotel':
-        return <Building2 className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <Building className="h-4 w-4 text-white" strokeWidth={1.5} />;
       case 'meals':
-        return <UtensilsCrossed className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <Utensils className="h-4 w-4 text-white" strokeWidth={1.5} />;
       case 'car rental':
-        return <CarFront className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <Car className="h-4 w-4 text-white" strokeWidth={1.5} />;
       case 'transport':
-        return <Bus className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <Bus className="h-4 w-4 text-white" strokeWidth={1.5} />;
       case 'other':
-        return <Wallet className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <CreditCard className="h-4 w-4 text-white" strokeWidth={1.5} />;
       default:
-        return <CircleDollarSign className="h-3.5 w-3.5 text-white" strokeWidth={1.5} />;
+        return <CircleDollarSign className="h-4 w-4 text-white" strokeWidth={1.5} />;
     }
   };
 
-  // Get lighter pastel version of category color for icon backgrounds
-  const getLighterColor = (color: string) => {
-    // Convert hex to RGB and lighten
+  // Create a soft pastel version of the category color
+  const getPastelColor = (color: string) => {
+    // Convert hex to RGB and make it pastel
     const hex = color.replace('#', '');
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
     
-    // Lightening formula
-    const lightenFactor = 0.2;
-    const lighterR = Math.min(255, Math.floor(r + (255 - r) * lightenFactor));
-    const lighterG = Math.min(255, Math.floor(g + (255 - g) * lightenFactor));
-    const lighterB = Math.min(255, Math.floor(b + (255 - b) * lightenFactor));
+    // Pastel formula - mix with white
+    const pastelFactor = 0.7;
+    const pastelR = Math.floor(r * (1-pastelFactor) + 255 * pastelFactor);
+    const pastelG = Math.floor(g * (1-pastelFactor) + 255 * pastelFactor);
+    const pastelB = Math.floor(b * (1-pastelFactor) + 255 * pastelFactor);
     
-    return `rgb(${lighterR}, ${lighterG}, ${lighterB})`;
+    return `rgb(${pastelR}, ${pastelG}, ${pastelB})`;
   };
 
   return (
@@ -130,9 +125,10 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
           {categoryData.map((category, index) => (
             <div key={index} className="flex items-center space-x-2">
               <div 
-                className="flex items-center justify-center w-6 h-6 rounded-lg shadow-sm" 
+                className="flex items-center justify-center w-8 h-8 rounded-md shadow-sm"
                 style={{ 
-                  background: `linear-gradient(135deg, ${category.color}, ${getLighterColor(category.color)})`,
+                  background: `linear-gradient(135deg, ${category.color}, ${getPastelColor(category.color)})`,
+                  boxShadow: `0 2px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02)`
                 }}
               >
                 {getCategoryIcon(category.name)}

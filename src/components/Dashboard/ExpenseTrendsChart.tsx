@@ -26,6 +26,11 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
   selectedYear, 
   onYearChange 
 }) => {
+  // Custom tooltip formatter
+  const formatTooltipValue = (value: number) => {
+    return [`$${value.toLocaleString()}`, 'Expense'];
+  };
+  
   return (
     <div className="glass-card rounded-xl p-6">
       <div className="flex justify-between items-center mb-4">
@@ -63,7 +68,7 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
               axisLine={false}
               tickLine={false}
               tick={{ fontSize: 12 }}
-              tickFormatter={(value) => `$${value}`}
+              tickFormatter={(value) => `$${value.toLocaleString()}`}
               domain={[0, 'dataMax + 500']}
               tickCount={5}
             />
@@ -71,9 +76,10 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
               content={
                 <ChartTooltipContent 
                   labelClassName="font-medium text-foreground" 
-                  formatter={(value) => [`$${value}`, 'Amount']}
+                  formatter={formatTooltipValue}
                 />
               }
+              cursor={{ strokeDasharray: '3 3', stroke: '#9ca3af', strokeWidth: 1 }}
             />
             <Area 
               type="monotone" 
@@ -82,6 +88,7 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#colorExpense)" 
+              activeDot={{ r: 6, strokeWidth: 0 }}
             />
           </AreaChart>
         </ChartContainer>
