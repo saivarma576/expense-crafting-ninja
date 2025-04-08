@@ -39,6 +39,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
 }) => {
   // Total value calculation for the center of the chart
   const totalValue = categoryData.reduce((sum, item) => sum + item.value, 0);
+  const formattedTotal = `$${(totalValue / 1000).toFixed(1)}k`;
 
   // Create chart config from category data
   const chartConfig = categoryData.reduce((config, category) => {
@@ -129,7 +130,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
               transition={{ delay: 0.3, duration: 0.5 }}
               className="text-3xl font-bold"
             >
-              ${(totalValue / 1000).toFixed(1)}k
+              {formattedTotal}
             </motion.div>
             <div className="text-sm text-gray-500">Total</div>
           </div>

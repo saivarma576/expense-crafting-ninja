@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   BarChart, Calendar, Download, PieChart, TrendingUp,
@@ -6,10 +5,10 @@ import {
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart as RechartsBarChart, Bar, 
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart as RechartsPieChart, Pie, Cell 
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import ExpenseCategoryPieChart from './ExpenseCategoryPieChart';
 
 const Reports: React.FC = () => {
   // Mock data for chart
@@ -129,34 +128,7 @@ const Reports: React.FC = () => {
             <p className="text-sm text-muted-foreground mb-4">Distribution across categories</p>
           </div>
           
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <RechartsPieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    borderRadius: '0.5rem',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                    border: 'none'
-                  }}
-                  formatter={(value) => [`$${value}`, 'Amount']}
-                />
-              </RechartsPieChart>
-            </ResponsiveContainer>
-          </div>
+          <ExpenseCategoryPieChart categoryData={categoryData} />
           
           <div className="grid grid-cols-3 gap-2 mt-4">
             {categoryData.map((category, index) => (
