@@ -18,7 +18,14 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Welcome back! Here's your expense overview.
+        </p>
+      </div>
+      
       <ExpenseStats expenseStats={expenseStats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

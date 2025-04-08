@@ -11,6 +11,7 @@ import {
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
 import YearSelector from './YearSelector';
+import { motion } from 'framer-motion';
 
 interface ExpenseTrendsChartProps {
   monthlyExpenseData: Array<{
@@ -32,7 +33,12 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
   };
   
   return (
-    <div className="glass-card rounded-xl p-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
+    >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Expense Trends</h2>
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
@@ -93,7 +99,7 @@ const ExpenseTrendsChart: React.FC<ExpenseTrendsChartProps> = ({
           </AreaChart>
         </ChartContainer>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

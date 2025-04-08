@@ -16,6 +16,7 @@ import {
   CreditCard,
   CircleDollarSign
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface CategoryData {
   name: string;
@@ -51,19 +52,19 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
   const getCategoryIcon = (name: string) => {
     switch (name.toLowerCase()) {
       case 'airfare':
-        return <Plane className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <Plane className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'hotel':
-        return <Building className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <Building className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'meals':
-        return <Utensils className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <Utensils className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'car rental':
-        return <Car className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <Car className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'transport':
-        return <Bus className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <Bus className="h-5 w-5 text-white" strokeWidth={1.5} />;
       case 'other':
-        return <CreditCard className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <CreditCard className="h-5 w-5 text-white" strokeWidth={1.5} />;
       default:
-        return <CircleDollarSign className="h-4 w-4 text-white" strokeWidth={1.5} />;
+        return <CircleDollarSign className="h-5 w-5 text-white" strokeWidth={1.5} />;
     }
   };
 
@@ -85,14 +86,19 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
   };
 
   return (
-    <div className="glass-card rounded-xl p-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
+    >
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Expense Categories</h2>
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
       </div>
       
       <div className="flex flex-col items-center">
-        <div className="relative w-full max-w-[220px] aspect-square flex items-center justify-center mb-6 mx-auto">
+        <div className="relative w-full max-w-[240px] aspect-square flex items-center justify-center mb-8 mx-auto">
           <ChartContainer config={chartConfig}>
             <PieChart>
               <Pie
@@ -114,21 +120,32 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
           </ChartContainer>
           
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="text-2xl font-bold">
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="text-3xl font-bold"
+            >
               ${(totalValue / 1000).toFixed(1)}k
-            </div>
+            </motion.div>
             <div className="text-sm text-gray-500">Total</div>
           </div>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-4 w-full">
           {categoryData.map((category, index) => (
-            <div key={index} className="flex items-center space-x-2">
+            <motion.div 
+              key={index} 
+              className="flex items-center space-x-3"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 + index * 0.05, duration: 0.3 }}
+            >
               <div 
-                className="flex items-center justify-center w-8 h-8 rounded-md shadow-sm"
+                className="flex items-center justify-center w-10 h-10 rounded-full shadow-md"
                 style={{ 
                   background: `linear-gradient(135deg, ${category.color}, ${getPastelColor(category.color)})`,
-                  boxShadow: `0 2px 4px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.02)`
+                  boxShadow: `0 4px 12px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.02)`
                 }}
               >
                 {getCategoryIcon(category.name)}
@@ -137,11 +154,11 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
                 <span className="font-medium">{category.name}</span>
                 <span className="text-gray-500">${category.formattedValue}</span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
