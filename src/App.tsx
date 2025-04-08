@@ -14,6 +14,7 @@ import Admin from "./components/Admin";
 import Profile from "./components/Profile";
 import NotFound from "./pages/NotFound";
 
+// Create a new query client
 const queryClient = new QueryClient();
 
 const App = () => (

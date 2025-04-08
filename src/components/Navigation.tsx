@@ -51,8 +51,12 @@ const Navigation: React.FC = () => {
         <div className="flex w-full justify-between items-center">
           <div className="flex items-center space-x-2">
             <Link to="/dashboard" className="flex items-center space-x-2">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary text-primary-foreground font-bold text-xl">X</div>
-              <span className="font-medium text-xl hidden md:inline-block">Xpense</span>
+              <img 
+                src="/lovable-uploads/9d29db57-d6d6-4fcf-ba00-87eb50e9b908.png" 
+                alt="Turn Pike Logo" 
+                className="h-10 w-auto"
+              />
+              <span className="font-medium text-xl hidden md:inline-block">Turn Pike</span>
             </Link>
           </div>
 
