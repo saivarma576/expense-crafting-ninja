@@ -35,8 +35,8 @@ const Reports: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <ExpenseTrendChart monthlyData={monthlyData} />
         
-        <div className="glass-card rounded-xl p-6 col-span-2">
-          <div className="flex justify-between items-center mb-6">
+        <div className="glass-card rounded-xl p-6 col-span-2 h-[400px]">
+          <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Expense Categories</h2>
             <div className="flex items-center gap-2">
               <button 
@@ -55,7 +55,7 @@ const Reports: React.FC = () => {
             </div>
           </div>
           
-          <div className="h-[400px]">
+          <div className="h-[calc(100%-40px)]">
             <ExpenseCategoryPieChart 
               categoryData={categoryData} 
               categoryGroups={categoryGroups} 
