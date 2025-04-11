@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createChartConfig } from '@/components/Charts/chartUtils';
 import { expenseCategories, getCategoryColorMap } from './CategoryExpenseChart/utils';
@@ -30,7 +30,10 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
   title = "Compare Category Wise Expense Trend",
   currency = "₹"
 }) => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>(expenseCategories);
+  // Default to showing only top 10 categories initially for better readability
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    categories.slice(0, 10).map(cat => cat.name)
+  );
   
   // Map categories to their colors
   const categoryColorMap = getCategoryColorMap();
@@ -54,6 +57,46 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
   };
 
   const chartConfig = createChartConfig(filteredCategoryData);
+  
+  // Calculate insights
+  const [highestCategory, setHighestCategory] = useState({ name: '', amount: 0 });
+  const [lowestCategory, setLowestCategory] = useState({ name: '', amount: 0 });
+  
+  useEffect(() => {
+    // Calculate total amount for each category across all months
+    const categoryTotals: Record<string, number> = {};
+    
+    // Initialize with 0 for all categories
+    categories.forEach(cat => {
+      categoryTotals[cat.name] = 0;
+    });
+    
+    // Sum up values across all months
+    data.forEach(monthData => {
+      categories.forEach(cat => {
+        const value = monthData[cat.name];
+        if (typeof value === 'number') {
+          categoryTotals[cat.name] += value;
+        }
+      });
+    });
+    
+    // Find highest and lowest categories
+    let highest = { name: '', amount: 0 };
+    let lowest = { name: '', amount: Number.MAX_VALUE };
+    
+    Object.entries(categoryTotals).forEach(([name, amount]) => {
+      if (amount > highest.amount) {
+        highest = { name, amount };
+      }
+      if (amount < lowest.amount && amount > 0) {
+        lowest = { name, amount };
+      }
+    });
+    
+    setHighestCategory(highest);
+    setLowestCategory(lowest.amount === Number.MAX_VALUE ? { name: 'None', amount: 0 } : lowest);
+  }, [data, categories]);
 
   return (
     <Card className="col-span-full glass-card border border-primary/5 shadow-lg">
@@ -72,6 +115,27 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
           chartConfig={chartConfig}
           currency={currency}
         />
+        
+        {/* Insights Section */}
+        <div className="px-6 py-4 border-t">
+          <h3 className="text-base font-medium mb-3">Insights</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <div className="text-xs uppercase text-gray-500 font-medium">Highest Claimed Category</div>
+              <div className="text-base font-medium mt-1">{highestCategory.name}</div>
+              <div className="text-sm text-gray-600 mt-0.5">
+                {currency} {highestCategory.amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs uppercase text-gray-500 font-medium">Lowest Claimed Category</div>
+              <div className="text-base font-medium mt-1">{lowestCategory.name}</div>
+              <div className="text-sm text-gray-600 mt-0.5">
+                {currency} {lowestCategory.amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              </div>
+            </div>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
