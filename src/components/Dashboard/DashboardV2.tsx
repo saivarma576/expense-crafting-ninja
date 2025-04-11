@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
@@ -150,7 +149,7 @@ const DashboardV2: React.FC = () => {
         currency={currency}
       />
       
-      {/* New Category Expense Insights Section */}
+      {/* Category Expense Insights Section */}
       <CategoryExpenseInsights 
         topCategories={categoryInsightsData.topCategories}
         fastestGrowing={categoryInsightsData.fastestGrowing}
