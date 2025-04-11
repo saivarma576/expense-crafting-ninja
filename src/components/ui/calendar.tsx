@@ -66,6 +66,7 @@ function Calendar({
           const options = React.Children.toArray(children) as React.ReactElement[];
           const selectedOption = options.find((option) => option.props.value === value);
           const handleChange = (value: string) => {
+            // Fix: Convert string to the expected type for onChange
             onChange?.(value);
           };
           return (
