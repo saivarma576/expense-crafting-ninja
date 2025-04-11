@@ -71,6 +71,22 @@ const DashboardV2: React.FC = () => {
     }
   ];
 
+  // Create stats for ExpenseTrendsSection
+  const stats = [
+    { title: 'Total Expenses', value: '$12,450.65', subValue: '+8.2% from last month' },
+    { title: 'Pending Approval', value: '$2,340.00', subValue: '4 expenses' },
+    { title: 'Receipts to Process', value: '12', subValue: 'Last updated 2h ago' },
+    { title: 'Reimbursed', value: '$9,120.45', subValue: '-3.6% from last month' }
+  ];
+
+  // Transform expenseTypes to match the ExpenseTypeItem interface
+  const expenseTypesData = dashboardData.expenseTypes.map(type => ({
+    id: type.name.toLowerCase().replace(/\s+/g, '-'),
+    label: type.name,
+    value: type.value,
+    color: type.color
+  }));
+
   const handleYearChange = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       setSelectedYear(prev => prev - 1);
@@ -134,15 +150,15 @@ const DashboardV2: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Using components from Dashboard V1 */}
         <ExpenseTrendsSection 
-          monthlyExpenseData={dashboardData.monthlyTrends} 
+          monthlyTrends={dashboardData.monthlyTrends} 
+          expenseTypes={expenseTypesData}
+          stats={stats}
           selectedYear={selectedYear} 
           onYearChange={handleYearChange}
         />
         
         <ExpenseTypeBreakdown 
-          expenseTypes={dashboardData.expenseTypes}
-          selectedYear={selectedYear}
-          onYearChange={handleYearChange}
+          expenseTypes={expenseTypesData}
         />
       </div>
 
