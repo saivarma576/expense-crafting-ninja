@@ -4,7 +4,9 @@ import { motion } from 'framer-motion';
 import { toast } from "sonner";
 import DateRangeFilter from './DateRangeFilter';
 import CategoryExpenseTrend from './CategoryExpenseTrend';
+import CategoryExpenseInsights from './CategoryExpenseInsights';
 import { expenseCategories, monthlyExpenseTrendData, categoryInsights } from './categoryExpenseData';
+import { categoryInsightsData } from './categoryInsightsData';
 import { dashboardData } from './dashboardV2Data';
 import RecentExpensesTable from './RecentExpensesTable';
 import TopStatsCards from './TopStatsCards';
@@ -18,7 +20,7 @@ const DashboardV2: React.FC = () => {
   // Date range filter state
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 3, 1)); // April 1, 2024
   const [endDate, setEndDate] = useState<Date | undefined>(new Date(2025, 2, 31)); // March 31, 2025
-  const [currency, setCurrency] = useState('INR');
+  const [currency, setCurrency] = useState('$');
 
   // Sample data for Recent Expenses Table
   const recentExpenses = [
@@ -135,16 +137,24 @@ const DashboardV2: React.FC = () => {
         <RecentExpensesTable recentExpenses={recentExpenses} />
       </motion.div>
 
-      {/* Category Expense Trend Chart */}
-      <CategoryExpenseTrend 
-        data={monthlyExpenseTrendData} 
-        categories={expenseCategories}
-      />
-
       {/* Bottom Row - Status and Overdue */}
       <BottomStatusSection 
         expenseStatusData={dashboardData.expenseStatusData}
         pendingReviewExpenses={dashboardData.pendingReviewExpenses}
+      />
+
+      {/* Category Expense Trend Chart with Insights */}
+      <CategoryExpenseTrend 
+        data={monthlyExpenseTrendData} 
+        categories={expenseCategories}
+        currency={currency}
+      />
+      
+      {/* New Category Expense Insights Section */}
+      <CategoryExpenseInsights 
+        topCategories={categoryInsightsData.topCategories}
+        fastestGrowing={categoryInsightsData.fastestGrowing}
+        currency={currency}
       />
     </div>
   );
