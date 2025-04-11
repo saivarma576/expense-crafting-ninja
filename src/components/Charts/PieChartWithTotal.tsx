@@ -20,6 +20,7 @@ interface PieChartWithTotalProps {
   totalValue?: number;
   showLegend?: boolean;
   className?: string;
+  currency?: string;
 }
 
 const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({ 
@@ -28,14 +29,15 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
   subtitle = 'expense',
   totalValue,
   showLegend = true,
-  className = 'h-[300px]'
+  className = 'h-[300px]',
+  currency = '$'
 }) => {
   // Calculate total for center display if not provided
   const calculatedTotal = totalValue !== undefined 
     ? totalValue 
     : data.reduce((sum, item) => sum + item.value, 0);
   
-  const formattedTotal = formatCurrency(calculatedTotal);
+  const formattedTotal = currency + calculatedTotal.toLocaleString();
   
   // Create chart configuration
   const chartConfig = createChartConfig(data);
@@ -56,7 +58,7 @@ const PieChartWithTotal: React.FC<PieChartWithTotalProps> = ({
               {getCategoryIcon(entry.value)}
               <span className="font-medium mr-1">{entry.value}</span>
               <span className="text-muted-foreground">
-                ({formatCurrency(entry.payload.value, true)})
+                ({currency}{entry.payload.value.toLocaleString()})
               </span>
             </div>
           </div>
