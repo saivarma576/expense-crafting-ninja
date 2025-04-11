@@ -20,11 +20,11 @@ interface CategoryExpenseTrendProps {
   title?: string;
 }
 
-const formatYAxis = (value: number) => {
+const formatYAxis = (value: number): string => {
   if (value >= 1000) {
     return `${(value / 1000).toFixed(1)}K`;
   }
-  return value;
+  return value.toString();
 };
 
 const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({ 
