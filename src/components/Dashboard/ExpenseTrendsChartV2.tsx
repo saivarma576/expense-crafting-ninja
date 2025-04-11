@@ -61,7 +61,7 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
           <Bar 
             yAxisId="left"
             dataKey="expenses" 
-            fill="#3b82f6" 
+            fill="rgba(104, 124, 254, 0.9)" 
             radius={[4, 4, 0, 0]} 
             barSize={30} 
           />
@@ -69,20 +69,20 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             yAxisId="right"
             type="monotone" 
             dataKey="amount" 
-            stroke="#f97316" 
+            stroke="#ff7f5d" 
             strokeWidth={2}
-            dot={{ fill: '#f97316', r: 4 }}
+            dot={{ fill: '#ff7f5d', r: 4 }}
             activeDot={{ r: 6 }}
           />
         </ComposedChart>
       </ResponsiveContainer>
       <div className="flex justify-center items-center gap-6 mt-2 text-xs">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-blue-500 rounded-sm"></div>
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(104, 124, 254, 0.9)' }}></div>
           <span>Expenses</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ff7f5d' }}></div>
           <span>Amount</span>
         </div>
       </div>

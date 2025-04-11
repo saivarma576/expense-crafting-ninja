@@ -43,10 +43,11 @@ const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
+          className="glass-card rounded-xl shadow-lg border border-primary/5"
         >
           <div className="flex flex-col">
-            <div className="flex justify-between items-center mb-6">
+            {/* Card Header with Title and Period Selector */}
+            <div className="flex justify-between items-center p-6 border-b">
               <h2 className="text-lg font-medium">Expense Trends</h2>
               <div className="flex items-center gap-1 text-xs">
                 <button 
@@ -76,26 +77,30 @@ const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-4 mb-6">
-              <div className="flex flex-col items-center">
-                <span className="text-xl font-bold">{stats.totalExpenses.toLocaleString()}</span>
-                <span className="text-sm text-muted-foreground">Total Expenses</span>
+            {/* Stats Row */}
+            <div className="grid grid-cols-4 bg-gray-50 border-b">
+              <div className="p-3 border-r border-dashed text-center">
+                <h5 className="text-xl font-bold mb-1">{stats.totalExpenses.toLocaleString()}</h5>
+                <p className="text-sm text-muted-foreground">Total Expenses</p>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-xl font-bold">{stats.travelExpenses.toLocaleString()}</span>
-                <span className="text-sm text-muted-foreground">Travel Expenses</span>
+              <div className="p-3 border-r border-dashed text-center">
+                <h5 className="text-xl font-bold mb-1">{stats.travelExpenses.toLocaleString()}</h5>
+                <p className="text-sm text-muted-foreground">Travel Expenses</p>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-xl font-bold">{stats.mealExpenses.toLocaleString()}</span>
-                <span className="text-sm text-muted-foreground">Meal Expenses</span>
+              <div className="p-3 border-r border-dashed text-center">
+                <h5 className="text-xl font-bold mb-1">{stats.mealExpenses.toLocaleString()}</h5>
+                <p className="text-sm text-muted-foreground">Meal Expenses</p>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-xl font-bold">{stats.suppliesExpenses.toLocaleString()}</span>
-                <span className="text-sm text-muted-foreground">Office Supplies</span>
+              <div className="p-3 text-center">
+                <h5 className="text-xl font-bold mb-1">{stats.suppliesExpenses.toLocaleString()}</h5>
+                <p className="text-sm text-muted-foreground">Office Supplies</p>
               </div>
             </div>
 
-            <ExpenseTrendsChartV2 data={monthlyTrends} height={300} />
+            {/* Chart Area */}
+            <div className="p-6">
+              <ExpenseTrendsChartV2 data={monthlyTrends} height={300} />
+            </div>
           </div>
         </motion.div>
       </div>
