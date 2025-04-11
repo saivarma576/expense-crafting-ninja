@@ -31,12 +31,12 @@ interface CategoryExpenseTrendProps {
 
 const formatYAxis = (value: number): string => {
   if (value >= 1000) {
-    return `${(value / 1000).toFixed(1)}K`;
+    return `${(value / 1000).toFixed(0)}K`;
   }
   return value.toString();
 };
 
-// Filter for the specific expense types requested
+// Filter for the specific expense types requested in the exact order
 const filteredCategories = [
   'Mileage',
   'Dues Subscriptions',
@@ -130,15 +130,15 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
           </DropdownMenu>
         </div>
       </CardHeader>
-      <CardContent className="h-[400px]">
+      <CardContent className="h-[450px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
             margin={{
-              top: 40, // Increased top margin to prevent label overlap
+              top: 40,
               right: 30,
               left: 20,
-              bottom: 30,
+              bottom: 100, // Increased bottom margin for the legend
             }}
             stackOffset="sign"
           >
@@ -172,11 +172,11 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
               verticalAlign="bottom"
               align="center"
               wrapperStyle={{ 
-                fontSize: '12px', 
+                fontSize: '11px', 
                 paddingTop: '20px',
                 display: 'grid',
-                gridTemplateColumns: 'repeat(8, 1fr)',
-                gap: '8px',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '6px',
                 width: '100%',
               }}
             />
@@ -191,9 +191,12 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
                 <LabelList 
                   dataKey={category.name} 
                   position="top" 
-                  formatter={(value: number) => value > 1000 ? `${currency}${(value/1000).toFixed(1)}K` : `${currency}${value}`}
-                  style={{ fontSize: 10, fontWeight: 'bold' }}
-                  offset={10}
+                  formatter={(value: number) => {
+                    if (!value || value <= 0) return '';
+                    return value > 1000 ? `${(value/1000).toFixed(0)}K` : value;
+                  }}
+                  style={{ fontSize: 10, fill: '#666', fontWeight: 'bold' }}
+                  offset={5}
                 />
               </Bar>
             ))}

@@ -7,7 +7,7 @@ interface CategoryInsightsProps {
   highestAmount: number;
   lowestCategory: string;
   lowestAmount: number;
-  currency: string;
+  currency?: string;
 }
 
 const CategoryInsights: React.FC<CategoryInsightsProps> = ({
@@ -15,15 +15,15 @@ const CategoryInsights: React.FC<CategoryInsightsProps> = ({
   highestAmount,
   lowestCategory,
   lowestAmount,
-  currency
+  currency = "INR"
 }) => {
   return (
-    <Card className="col-span-full bg-gray-50/70 border border-primary/5 shadow-sm">
+    <Card className="col-span-full bg-gray-50/70 border border-primary/5 shadow-sm mt-6">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-gray-600">Insights</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <div className="space-y-1">
             <p className="text-xs uppercase font-medium text-gray-500">HIGHEST CLAIMED CATEGORY</p>
             <p className="text-base font-medium text-gray-900">{highestCategory}</p>

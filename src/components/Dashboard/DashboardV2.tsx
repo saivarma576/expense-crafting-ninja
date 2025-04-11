@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
@@ -19,7 +20,7 @@ const DashboardV2: React.FC = () => {
   // Date range filter state
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 3, 1)); // April 1, 2024
   const [endDate, setEndDate] = useState<Date | undefined>(new Date(2025, 2, 31)); // March 31, 2025
-  const [currency, setCurrency] = useState('$');
+  const [currency, setCurrency] = useState('INR');
 
   // Sample data for Recent Expenses Table
   const recentExpenses = [
@@ -142,6 +143,7 @@ const DashboardV2: React.FC = () => {
         <CategoryExpenseTrend 
           data={monthlyExpenseTrendData} 
           categories={expenseCategories}
+          title="Compare Category Wise Expense Trend"
           currency={currency}
         />
       </motion.div>
