@@ -66,13 +66,21 @@ const DashboardV2: React.FC = () => {
     }
   ];
 
-  // Updated expense types with correct property names for the interface
+  // Transform expense types data to match the expected format with id and label
   const expenseTypesFormatted = dashboardData.expenseTypes.map(type => ({
-    id: type.id,
-    label: type.label,
+    id: type.name,  // Use name as id since it doesn't exist
+    label: type.name, // Use name as label since it doesn't exist
     value: type.value,
     color: type.color
   }));
+
+  // Transform stats object to array format expected by ExpenseTrendsSection
+  const statsArray = [
+    { title: 'Total Expenses', value: dashboardData.stats.totalExpenses.toLocaleString(), subValue: '' },
+    { title: 'Travel Expenses', value: dashboardData.stats.travelExpenses.toLocaleString(), subValue: '' },
+    { title: 'Meal Expenses', value: dashboardData.stats.mealExpenses.toLocaleString(), subValue: '' },
+    { title: 'Supplies Expenses', value: dashboardData.stats.suppliesExpenses.toLocaleString(), subValue: '' }
+  ];
 
   useEffect(() => {
     // Simulate data loading
@@ -120,7 +128,7 @@ const DashboardV2: React.FC = () => {
       <ExpenseTrendsSection 
         monthlyTrends={dashboardData.monthlyTrends}
         expenseTypes={expenseTypesFormatted}
-        stats={dashboardData.stats}
+        stats={statsArray}
       />
 
       {/* Recent Expenses Table Section */}

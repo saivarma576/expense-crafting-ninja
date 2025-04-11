@@ -31,17 +31,8 @@ interface ExpenseTrendsSectionProps {
     expenses: number;
     amount: number;
   }>;
-  expenseTypes: Array<{
-    id: string;
-    label: string;
-    value: number;
-    color: string;
-  }>;
-  stats: Array<{
-    title: string;
-    value: string;
-    subValue?: string;
-  }>;
+  expenseTypes: ExpenseTypeItem[];
+  stats: ExpenseStatItem[];
 }
 
 const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({

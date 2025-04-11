@@ -1,23 +1,24 @@
 
 import React from 'react';
 
-interface ExpenseTypeData {
-  name: string;
+interface ExpenseTypeItem {
+  id: string;
+  label: string;
   value: number;
   color: string;
 }
 
 interface ExpenseTypeBreakdownProps {
-  data: ExpenseTypeData[];
+  expenseTypes: ExpenseTypeItem[];
 }
 
-const ExpenseTypeBreakdown: React.FC<ExpenseTypeBreakdownProps> = ({ data }) => {
+const ExpenseTypeBreakdown: React.FC<ExpenseTypeBreakdownProps> = ({ expenseTypes }) => {
   return (
     <div className="space-y-4">
-      {data.map((item, index) => (
+      {expenseTypes.map((item, index) => (
         <div key={index} className="flex flex-col">
           <div className="flex justify-between items-center mb-1">
-            <span className="text-sm">{item.name}</span>
+            <span className="text-sm">{item.label}</span>
             <span className="text-sm font-medium">{item.value}</span>
           </div>
           <div className="w-full bg-gray-100 rounded-full h-2">
