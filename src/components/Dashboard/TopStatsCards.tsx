@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowUp,
@@ -7,10 +7,20 @@ import {
   DollarSign,
   FileText,
   Receipt,
-  PlusCircle
+  PlusCircle,
+  ChevronDown,
+  FileText2,
+  CreditCard
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TopStatsCardsProps {
   totalExpense: {
@@ -57,7 +67,7 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
         {/* Total Expense Card */}
         <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg">
           <div className="flex justify-between items-start">
-            <h3 className="text-sm font-medium text-muted-foreground">TOTAL EXPENSE</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase">Total Expense</h3>
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 text-primary">
               <DollarSign className="h-5 w-5" />
             </div>
@@ -69,8 +79,14 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
               <p className="text-sm text-muted-foreground">{totalExpense.count} expenses</p>
             </div>
             
-            <div className="text-sm font-medium flex items-center p-1.5 rounded-full bg-green-50 text-green-600">
-              <ArrowUp className="mr-1 h-3 w-3" /> {totalTrend}% vs last month
+            <div className={cn(
+              "text-sm font-medium flex items-center p-1.5 rounded-full",
+              totalTrend > 0 
+                ? "bg-green-50 text-green-600" 
+                : "bg-red-50 text-red-600"
+            )}>
+              {totalTrend > 0 ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
+              {Math.abs(totalTrend)}% vs last month
             </div>
           </div>
         </div>
@@ -78,7 +94,7 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
         {/* Processed Expense Card */}
         <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg">
           <div className="flex justify-between items-start">
-            <h3 className="text-sm font-medium text-muted-foreground">EXPENSE PROCESSED</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase">Expense Processed</h3>
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 text-primary">
               <FileText className="h-5 w-5" />
             </div>
@@ -90,8 +106,14 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
               <p className="text-sm text-muted-foreground">{processedExpense.count} expenses</p>
             </div>
             
-            <div className="text-sm font-medium flex items-center p-1.5 rounded-full bg-green-50 text-green-600">
-              <ArrowUp className="mr-1 h-3 w-3" /> {processedTrend}% vs last month
+            <div className={cn(
+              "text-sm font-medium flex items-center p-1.5 rounded-full",
+              processedTrend > 0 
+                ? "bg-green-50 text-green-600" 
+                : "bg-red-50 text-red-600"
+            )}>
+              {processedTrend > 0 ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
+              {Math.abs(processedTrend)}% vs last month
             </div>
           </div>
         </div>
@@ -99,7 +121,7 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
         {/* Posted Expense Card */}
         <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg">
           <div className="flex justify-between items-start">
-            <h3 className="text-sm font-medium text-muted-foreground">EXPENSE POSTED</h3>
+            <h3 className="text-sm font-medium text-muted-foreground uppercase">Expense Posted</h3>
             <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 text-primary">
               <Receipt className="h-5 w-5" />
             </div>
@@ -111,26 +133,66 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
               <p className="text-sm text-muted-foreground">{postedExpense.count} expenses</p>
             </div>
             
-            <div className="text-sm font-medium flex items-center p-1.5 rounded-full bg-green-50 text-green-600">
-              <ArrowUp className="mr-1 h-3 w-3" /> {postedTrend}% vs last month
+            <div className={cn(
+              "text-sm font-medium flex items-center p-1.5 rounded-full",
+              postedTrend > 0 
+                ? "bg-green-50 text-green-600" 
+                : "bg-red-50 text-red-600"
+            )}>
+              {postedTrend > 0 ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
+              {Math.abs(postedTrend)}% vs last month
             </div>
           </div>
         </div>
 
-        {/* Quick Create Button Card */}
-        <Link to="/expenses/new" className="block">
-          <motion.div 
-            whileHover={{ y: -5, transition: { duration: 0.2 } }}
-            className="glass-card p-6 rounded-xl flex flex-col justify-center items-center h-full border-b-4 border-primary/10 shadow-lg bg-blue-500 text-white cursor-pointer"
-          >
-            <div className="flex flex-col items-center justify-center space-y-3">
-              <div className="rounded-full bg-white/20 p-3">
-                <PlusCircle className="h-8 w-8" />
+        {/* New Expense Card with Dropdown */}
+        <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg">
+          <div className="flex justify-between items-start">
+            <h3 className="text-sm font-medium text-muted-foreground uppercase font-semibold text-gray-800">Expense</h3>
+          </div>
+          
+          <div className="mt-2 flex">
+            <DropdownMenu>
+              <div className="flex">
+                <Button asChild className="rounded-r-none" variant="default">
+                  <Link to="/expenses/new" className="bg-blue-600 hover:bg-blue-700 text-white flex items-center">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Create Invoice
+                  </Link>
+                </Button>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="default" className="rounded-l-none px-2 bg-blue-600 hover:bg-blue-700 border-l border-blue-500">
+                    <ChevronDown className="h-4 w-4 text-white" />
+                  </Button>
+                </DropdownMenuTrigger>
               </div>
-              <h3 className="text-base font-medium">Create Expense</h3>
-            </div>
-          </motion.div>
-        </Link>
+              <DropdownMenuContent className="w-56 bg-white border shadow-lg">
+                <DropdownMenuItem asChild>
+                  <Link to="/expenses/new?type=po" className="flex items-center cursor-pointer">
+                    <FileText className="mr-2 h-4 w-4" />
+                    <span>PO Invoice</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/expenses/new?type=npo" className="flex items-center cursor-pointer">
+                    <FileText2 className="mr-2 h-4 w-4" />
+                    <span>NPO Invoice</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/expenses/new?type=credit" className="flex items-center cursor-pointer">
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    <span>Credit Memo</span>
+                  </Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          
+          <p className="mt-2 text-xs text-gray-500">
+            Quickly create PO Invoice, NPO Invoice & Credit Memos.
+          </p>
+        </div>
       </div>
     </motion.div>
   );
