@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
@@ -118,7 +117,7 @@ const DashboardV2: React.FC = () => {
       />
 
       {/* Top Stats Cards Section */}
-      <div className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-xl shadow-sm mb-6">
+      <div className="bg-white rounded-xl shadow-sm mb-6">
         <TopStatsCards 
           totalExpense={{
             amount: 115484,
