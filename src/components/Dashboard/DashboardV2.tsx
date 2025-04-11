@@ -94,32 +94,34 @@ const DashboardV2: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Date Range Filter */}
-      <DateRangeFilter 
-        startDate={startDate}
-        endDate={endDate}
-        onStartDateChange={setStartDate}
-        onEndDateChange={setEndDate}
-        currency={currency}
-        onCurrencyChange={setCurrency}
-      />
-
-      {/* Top Stats Cards - Updated with new format */}
-      <TopStatsCards 
-        totalExpense={{
-          amount: 115484,
-          count: 245
-        }}
-        processedExpense={{
-          amount: 78450,
-          count: 168
-        }}
-        postedExpense={{
-          amount: 52340,
-          count: 98
-        }}
-        currency={currency}
-      />
+      {/* Date Range Filter with Border Wrapper */}
+      <div className="border border-gray-200 rounded-xl bg-white p-4 shadow-sm">
+        <DateRangeFilter 
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+          currency={currency}
+          onCurrencyChange={setCurrency}
+        />
+        
+        {/* Top Stats Cards - Updated with new format */}
+        <TopStatsCards 
+          totalExpense={{
+            amount: 115484,
+            count: 245
+          }}
+          processedExpense={{
+            amount: 78450,
+            count: 168
+          }}
+          postedExpense={{
+            amount: 52340,
+            count: 98
+          }}
+          currency={currency}
+        />
+      </div>
 
       {/* Middle Section - Charts */}
       <ExpenseTrendsSection 
