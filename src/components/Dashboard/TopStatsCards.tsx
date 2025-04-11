@@ -2,8 +2,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  DollarSign,
-  FileText,
+  AlertTriangle,
+  Bell,
+  Clock,
   CheckCircle,
   PlusCircle,
   ArrowUp,
@@ -11,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import StatCard from '@/components/ui/StatCard';
+import { Separator } from "@/components/ui/separator";
 
 interface TopStatsCardsProps {
   totalExpense: {
@@ -48,114 +49,104 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       className="space-y-4"
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Expense Received Tile */}
-        <motion.div 
-          whileHover={{ y: -5, transition: { duration: 0.2 } }}
-          className="rounded-xl overflow-hidden shadow-md relative bg-white border border-slate-200/80"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full z-0"></div>
-          <div className="p-6 relative z-10">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Expense Received</p>
-                <h3 className="text-2xl font-bold mb-1 text-slate-800">{currency} {totalExpense.amount.toLocaleString()}</h3>
-                <div className="flex items-center mt-2">
-                  <p className="text-sm text-slate-500">{totalExpense.count} Expenses</p>
-                  <div className="ml-2 flex items-center px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100">
-                    <ArrowUp className="h-3 w-3 text-blue-600 mr-1" />
-                    <span className="text-xs font-medium text-blue-600">{receivedTrend}%</span>
-                  </div>
-                </div>
+        {/* Expense Received Card */}
+        <Card className="overflow-hidden bg-white border border-slate-100 relative">
+          <div className="p-5">
+            <div className="flex items-start mb-2">
+              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-red-50">
+                <AlertTriangle className="h-4 w-4 text-red-500" />
               </div>
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-slate-100 text-blue-600 shadow-sm">
-                <DollarSign className="h-6 w-6" />
+              <div className="ml-2 flex-1">
+                <h3 className="text-sm font-medium text-slate-500">Expense Received</h3>
+              </div>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold text-slate-800">{totalExpense.count}</span>
+              <div className="flex items-center mt-1 text-xs text-slate-500">
+                <span>{currency} {totalExpense.amount.toLocaleString()}</span>
+                <div className="ml-2 flex items-center px-1.5 py-0.5 rounded bg-blue-50">
+                  <ArrowUp className="h-3 w-3 text-blue-600 mr-1" />
+                  <span className="text-xs font-medium text-blue-600">{receivedTrend}%</span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="h-1 w-full bg-blue-500/40"></div>
-        </motion.div>
+          <div className="h-1 w-full bg-red-400"></div>
+        </Card>
 
-        {/* Expense Processed Tile */}
-        <motion.div 
-          whileHover={{ y: -5, transition: { duration: 0.2 } }}
-          className="rounded-xl overflow-hidden shadow-md relative bg-white border border-slate-200/80"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-bl-full z-0"></div>
-          <div className="p-6 relative z-10">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Expense Processed</p>
-                <h3 className="text-2xl font-bold mb-1 text-slate-800">{currency} {processedExpense.amount.toLocaleString()}</h3>
-                <div className="flex items-center mt-2">
-                  <p className="text-sm text-slate-500">{processedExpense.count} Expenses</p>
-                  <div className="ml-2 flex items-center px-2 py-0.5 rounded-full bg-red-50 border border-red-100">
-                    <ArrowDown className="h-3 w-3 text-red-600 mr-1" />
-                    <span className="text-xs font-medium text-red-600">{Math.abs(processedTrend)}%</span>
-                  </div>
-                </div>
+        {/* Expense Processed Card */}
+        <Card className="overflow-hidden bg-white border border-slate-100 relative">
+          <div className="p-5">
+            <div className="flex items-start mb-2">
+              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-orange-50">
+                <Bell className="h-4 w-4 text-orange-500" />
               </div>
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-slate-100 text-emerald-600 shadow-sm">
-                <FileText className="h-6 w-6" />
+              <div className="ml-2 flex-1">
+                <h3 className="text-sm font-medium text-slate-500">Expense Processed</h3>
+              </div>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold text-slate-800">{processedExpense.count}</span>
+              <div className="flex items-center mt-1 text-xs text-slate-500">
+                <span>{currency} {processedExpense.amount.toLocaleString()}</span>
+                <div className="ml-2 flex items-center px-1.5 py-0.5 rounded bg-red-50">
+                  <ArrowDown className="h-3 w-3 text-red-600 mr-1" />
+                  <span className="text-xs font-medium text-red-600">{Math.abs(processedTrend)}%</span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="h-1 w-full bg-emerald-500/40"></div>
-        </motion.div>
+          <div className="h-1 w-full bg-orange-400"></div>
+        </Card>
 
-        {/* Expense Posted Tile */}
-        <motion.div 
-          whileHover={{ y: -5, transition: { duration: 0.2 } }}
-          className="rounded-xl overflow-hidden shadow-md relative bg-white border border-slate-200/80"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/5 rounded-bl-full z-0"></div>
-          <div className="p-6 relative z-10">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2">Expense Posted</p>
-                <h3 className="text-2xl font-bold mb-1 text-slate-800">{currency} {postedExpense.amount.toLocaleString()}</h3>
-                <div className="flex items-center mt-2">
-                  <p className="text-sm text-slate-500">{postedExpense.count} Expenses</p>
-                  <div className="ml-2 flex items-center px-2 py-0.5 rounded-full bg-purple-50 border border-purple-100">
-                    <ArrowUp className="h-3 w-3 text-purple-600 mr-1" />
-                    <span className="text-xs font-medium text-purple-600">{postedTrend}%</span>
-                  </div>
-                </div>
+        {/* Expense Posted Card */}
+        <Card className="overflow-hidden bg-white border border-slate-100 relative">
+          <div className="p-5">
+            <div className="flex items-start mb-2">
+              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-yellow-50">
+                <Clock className="h-4 w-4 text-yellow-500" />
               </div>
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-slate-100 text-purple-600 shadow-sm">
-                <CheckCircle className="h-6 w-6" />
+              <div className="ml-2 flex-1">
+                <h3 className="text-sm font-medium text-slate-500">Expense Posted</h3>
+              </div>
+            </div>
+            <div className="mt-2">
+              <span className="text-2xl font-bold text-slate-800">{postedExpense.count}</span>
+              <div className="flex items-center mt-1 text-xs text-slate-500">
+                <span>{currency} {postedExpense.amount.toLocaleString()}</span>
+                <div className="ml-2 flex items-center px-1.5 py-0.5 rounded bg-purple-50">
+                  <ArrowUp className="h-3 w-3 text-purple-600 mr-1" />
+                  <span className="text-xs font-medium text-purple-600">{postedTrend}%</span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="h-1 w-full bg-purple-500/40"></div>
-        </motion.div>
+          <div className="h-1 w-full bg-yellow-400"></div>
+        </Card>
 
-        {/* Quick Create Tile */}
-        <motion.div 
-          whileHover={{ y: -5, transition: { duration: 0.2 } }}
-          className="rounded-xl overflow-hidden shadow-md relative bg-white border border-slate-200/80"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-slate-500/5 rounded-bl-full z-0"></div>
-          <div className="p-6 relative z-10">
-            <div className="flex flex-col space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-slate-600">QUICK CREATE</h3>
-                <div className="w-10 h-10 rounded-lg bg-slate-100 text-blue-600 flex items-center justify-center shadow-sm">
-                  <PlusCircle className="h-5 w-5" />
-                </div>
+        {/* Quick Create Card */}
+        <Card className="overflow-hidden bg-white border border-slate-100 relative">
+          <div className="p-5">
+            <div className="flex items-start mb-2">
+              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-green-50">
+                <CheckCircle className="h-4 w-4 text-green-500" />
               </div>
-              <div className="space-y-3 mt-2">
-                <Button 
-                  className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-                  onClick={() => window.location.href="/expenses/new"}
-                >
-                  <PlusCircle className="h-4 w-4 mr-2" />
-                  Create Expense
-                </Button>
+              <div className="ml-2 flex-1">
+                <h3 className="text-sm font-medium text-slate-500">Quick Create</h3>
               </div>
             </div>
+            <div className="mt-2">
+              <Button 
+                className="w-full justify-start text-white bg-blue-600 hover:bg-blue-700"
+                onClick={() => window.location.href="/expenses/new"}
+              >
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Create Expense
+              </Button>
+            </div>
           </div>
-          <div className="h-1 w-full bg-blue-500/40"></div>
-        </motion.div>
+          <div className="h-1 w-full bg-green-400"></div>
+        </Card>
       </div>
     </motion.div>
   );
