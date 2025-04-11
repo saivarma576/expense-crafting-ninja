@@ -94,7 +94,6 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
             />
           ))}
 
-          {/* Fix: Use the string key 'totalAmount' instead of a function */}
           <LabelList 
             dataKey="totalAmount" 
             position="top" 
@@ -194,4 +193,3 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
 };
 
 export default BarChartComponent;
-

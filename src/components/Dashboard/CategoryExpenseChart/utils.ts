@@ -24,40 +24,26 @@ export const categoryColors = [
   '#22C55E', // Green
   '#A855F7', // Purple
   '#0EA5E9', // Sky
-  '#6B7280', // Gray
-  '#D946EF', // Fuchsia
-  '#FBBF24', // Yellow
-  '#0284C7', // Dark Blue
-  '#9333EA', // Purple
-  '#71717A', // Zinc
-  '#2DD4BF'  // Light Teal
 ];
 
-// Updated category names to match the image
+// Updated category names to match the user's specified list
 export const expenseCategories = [
-  'Relocation Reimbursement',
-  'Standard Category',
-  'Expense - Other',
-  'Travel - Intercity-Personal Vehicle',
-  'Travel - International',
-  'Per-Diem - Domestic',
-  'Per-Diem - International',
-  'Expense - Internet',
-  'Expense - Mobile',
-  'Expense-Medical',
-  'Travel-Intercity-Cab/Bus/Auto',
-  'Travel-Intercity-Cab/Bus/Flight',
-  'Health and Wellness',
-  'Lodging & Accommodation',
-  'Meals & Entertainment',
-  'Miscellaneous Business Expenses',
-  'Office Supplies & Equipment',
-  'Professional Development',
-  'Cash',
-  'Remote Work Setup',
-  'IT & Software',
-  'Travel & Transportation',
-  'Travel (Personal Vehicle)'
+  'Mileage',
+  'Dues Subscriptions',
+  'Auditing Serv Fees',
+  'Hotel/Lodging',
+  'Meals',
+  'Others',
+  'Professional Fees',
+  'Gasoline',
+  'Office Supplies',
+  'Business Meals',
+  'Postage & Freight',
+  'Registration Fees',
+  'Parking/Tolls',
+  'Air/Taxi/Uber',
+  'Baggage Fees',
+  'Rental Car'
 ];
 
 // Map categories to their colors
