@@ -47,108 +47,101 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="rounded-xl border border-gray-200 p-4 bg-white shadow-sm"
+      className="space-y-4"
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Total Expense Tile */}
-        <Card className="bg-white border-none shadow-none hover:bg-gray-50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 text-blue-600">
-                <DollarSign className="h-5 w-5" />
+        <Card className="bg-white hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 text-blue-600">
+                <DollarSign className="h-6 w-6" />
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Expense</p>
-                <h3 className="text-xl font-bold mt-1">{currency} {totalExpense.amount.toLocaleString()}</h3>
-                <p className="text-xs text-gray-600 mt-1">{totalExpense.count} Expenses</p>
+                <h3 className="text-2xl font-bold mt-1">{currency} {totalExpense.amount.toLocaleString()}</h3>
+                <p className="text-sm text-gray-600 mt-1">{totalExpense.count} Expenses</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Expense Processed Tile */}
-        <Card className="bg-white border-none shadow-none hover:bg-gray-50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-100 text-green-600">
-                <FileText className="h-5 w-5" />
+        <Card className="bg-white hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-green-100 text-green-600">
+                <FileText className="h-6 w-6" />
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Processed</p>
-                <h3 className="text-xl font-bold mt-1">{currency} {processedExpense.amount.toLocaleString()}</h3>
-                <p className="text-xs text-gray-600 mt-1">{processedExpense.count} Expenses</p>
+                <h3 className="text-2xl font-bold mt-1">{currency} {processedExpense.amount.toLocaleString()}</h3>
+                <p className="text-sm text-gray-600 mt-1">{processedExpense.count} Expenses</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Expense Posted Tile */}
-        <Card className="bg-white border-none shadow-none hover:bg-gray-50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-purple-100 text-purple-600">
-                <CheckCircle className="h-5 w-5" />
+        <Card className="bg-white hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-100 text-purple-600">
+                <CheckCircle className="h-6 w-6" />
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Posted</p>
-                <h3 className="text-xl font-bold mt-1">{currency} {postedExpense.amount.toLocaleString()}</h3>
-                <p className="text-xs text-gray-600 mt-1">{postedExpense.count} Expenses</p>
+                <h3 className="text-2xl font-bold mt-1">{currency} {postedExpense.amount.toLocaleString()}</h3>
+                <p className="text-sm text-gray-600 mt-1">{postedExpense.count} Expenses</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Quick Create Tile - Redesigned based on reference */}
-        <Card className="bg-white border-none shadow-none hover:bg-gray-50 transition-colors">
-          <CardContent className="p-4">
-            <div className="flex flex-col">
-              <div className="mb-2">
-                <h3 className="font-semibold text-gray-800">INVOICING</h3>
+        {/* Quick Create Tile */}
+        <Card className="bg-white hover:shadow-md transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex flex-col space-y-3">
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-2">QUICK CREATE</h3>
               </div>
-              <div className="space-y-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+              <div className="space-y-3">
+                <Button 
+                  className="w-full justify-start bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md"
+                  onClick={() => window.location.href="/expenses/new"}
+                >
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Create Expense
+                </Button>
+                
+                <Sheet>
+                  <SheetTrigger asChild>
                     <Button 
-                      className="w-full justify-between bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md"
+                      variant="outline" 
+                      className="w-full justify-start text-gray-700 border-gray-300"
                     >
-                      <span className="flex items-center gap-2">
-                        <PlusCircle className="h-4 w-4" />
-                        Create Invoice
-                      </span>
-                      <ChevronDown className="h-4 w-4 opacity-70" />
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload Receipt to Buffer
                     </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => window.location.href="/expenses/new"}>
-                      Create Expense
-                    </DropdownMenuItem>
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                          Upload Receipt
-                        </DropdownMenuItem>
-                      </SheetTrigger>
-                      <SheetContent>
-                        <div className="p-4 space-y-4">
-                          <h3 className="font-semibold text-lg">Upload Receipt</h3>
-                          <p className="text-sm text-gray-600">
-                            Upload your receipt to be processed later.
-                          </p>
-                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                            <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-500">
-                              Drag and drop your receipt here, or click to browse
-                            </p>
-                            <Button variant="outline" className="mt-4">
-                              Browse Files
-                            </Button>
-                          </div>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <p className="text-xs text-gray-500">Quickly create PO Invoice, NPO Invoice & Credit Memos.</p>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <div className="p-4 space-y-4">
+                      <h3 className="font-semibold text-lg">Upload Receipt</h3>
+                      <p className="text-sm text-gray-600">
+                        Upload your receipt to be processed later.
+                      </p>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
+                        <p className="text-sm text-gray-500">
+                          Drag and drop your receipt here, or click to browse
+                        </p>
+                        <Button variant="outline" className="mt-4">
+                          Browse Files
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
           </CardContent>

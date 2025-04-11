@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
-import DateRangeFilter from './DateRangeFilter';
 import CategoryExpenseTrend from './CategoryExpenseTrend';
 import CategoryExpenseInsights from './CategoryExpenseInsights';
 import { expenseCategories, monthlyExpenseTrendData, categoryInsights } from './categoryExpenseData';
@@ -16,11 +15,7 @@ import BottomStatusSection from './BottomStatusSection';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Date range filter state
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 3, 1)); // April 1, 2024
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date(2025, 2, 31)); // March 31, 2025
-  const [currency, setCurrency] = useState('INR');
+  const [currency, setCurrency] = useState('USD');
 
   // Sample data for Recent Expenses Table
   const recentExpenses = [
@@ -94,34 +89,22 @@ const DashboardV2: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Date Range Filter with Border Wrapper */}
-      <div className="border border-gray-200 rounded-xl bg-white p-4 shadow-sm">
-        <DateRangeFilter 
-          startDate={startDate}
-          endDate={endDate}
-          onStartDateChange={setStartDate}
-          onEndDateChange={setEndDate}
-          currency={currency}
-          onCurrencyChange={setCurrency}
-        />
-        
-        {/* Top Stats Cards - Updated with new format */}
-        <TopStatsCards 
-          totalExpense={{
-            amount: 115484,
-            count: 245
-          }}
-          processedExpense={{
-            amount: 78450,
-            count: 168
-          }}
-          postedExpense={{
-            amount: 52340,
-            count: 98
-          }}
-          currency={currency}
-        />
-      </div>
+      {/* Top Stats Cards */}
+      <TopStatsCards 
+        totalExpense={{
+          amount: 115484,
+          count: 245
+        }}
+        processedExpense={{
+          amount: 78450,
+          count: 168
+        }}
+        postedExpense={{
+          amount: 52340,
+          count: 98
+        }}
+        currency={currency}
+      />
 
       {/* Middle Section - Charts */}
       <ExpenseTrendsSection 
