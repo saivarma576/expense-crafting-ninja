@@ -9,10 +9,18 @@ import ExpenseStatusChart from './ExpenseStatusChart';
 import OverdueExpenses from './OverdueExpenses';
 import { dashboardData } from './dashboardV2Data';
 import { toast } from "sonner";
+import DateRangeFilter from './DateRangeFilter';
+import CategoryExpenseTrend from './CategoryExpenseTrend';
+import { expenseCategories, monthlyExpenseTrendData, categoryInsights } from './categoryExpenseData';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('ALL');
+  
+  // Date range filter state
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 3, 1)); // April 1, 2024
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date(2025, 2, 31)); // March 31, 2025
+  const [currency, setCurrency] = useState('INR');
 
   useEffect(() => {
     // Simulate data loading
@@ -37,6 +45,38 @@ const DashboardV2: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Date Range Filter */}
+      <DateRangeFilter 
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+        currency={currency}
+        onCurrencyChange={setCurrency}
+      />
+
+      {/* Category Expense Trend Chart */}
+      <CategoryExpenseTrend 
+        data={monthlyExpenseTrendData} 
+        categories={expenseCategories}
+      />
+
+      {/* Stats showing insights from the category data */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <StatCard
+          title="HIGHEST CLAIMED CATEGORY"
+          value={categoryInsights.highestCategory}
+          description={`${currency} ${categoryInsights.highestAmount.toLocaleString()}`}
+          className="h-full"
+        />
+        <StatCard
+          title="LOWEST CLAIMED CATEGORY"
+          value={categoryInsights.lowestCategory}
+          description={`${currency} ${categoryInsights.lowestAmount.toLocaleString()}`}
+          className="h-full"
+        />
+      </div>
+
       {/* Top Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <motion.div 
