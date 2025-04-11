@@ -1,7 +1,10 @@
+
 import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from 'framer-motion';
 import ExpenseTrendsChartV2 from './ExpenseTrendsChartV2';
 import ExpenseTypeBreakdown from './ExpenseTypeBreakdown';
+import { Button } from "@/components/ui/button";
 
 interface ExpenseTrendData {
   month: string;
@@ -9,24 +12,36 @@ interface ExpenseTrendData {
   amount: number;
 }
 
-interface ExpenseTypeData {
+interface ExpenseTypeItem {
   id: string;
+  label: string; 
   value: number;
-  label: string;
   color: string;
 }
 
-interface ExpenseStats {
-  totalExpenses: number;
-  travelExpenses: number;
-  mealExpenses: number;
-  suppliesExpenses: number;
+interface ExpenseStatItem {
+  title: string;
+  value: string;
+  subValue?: string;
 }
 
 interface ExpenseTrendsSectionProps {
-  monthlyTrends: ExpenseTrendData[];
-  expenseTypes: ExpenseTypeData[];
-  stats: ExpenseStats;
+  monthlyTrends: Array<{
+    month: string;
+    expenses: number;
+    amount: number;
+  }>;
+  expenseTypes: Array<{
+    id: string;
+    label: string;
+    value: number;
+    color: string;
+  }>;
+  stats: Array<{
+    title: string;
+    value: string;
+    subValue?: string;
+  }>;
 }
 
 const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({
@@ -34,105 +49,93 @@ const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({
   expenseTypes,
   stats
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<'all' | '1m' | '6m' | '1y'>('1y');
+  const [period, setPeriod] = useState<'all' | '1m' | '6m' | '1y'>('1y');
+
+  const handlePeriodChange = (newPeriod: 'all' | '1m' | '6m' | '1y') => {
+    setPeriod(newPeriod);
+  };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-        className="glass-card rounded-xl shadow-lg border border-primary/5 lg:col-span-2"
-      >
-        <div className="flex flex-col">
-          {/* Card Header with Title and Period Selector */}
-          <div className="flex justify-between items-center p-4 border-b">
-            <h2 className="text-base md:text-lg font-semibold">Expense Trends</h2>
-            <div className="flex items-center gap-1">
-              <button 
-                onClick={() => setSelectedPeriod('all')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium ${
-                  selectedPeriod === 'all' 
-                    ? 'bg-primary text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+    >
+      {/* Expense Trends Chart Card */}
+      <Card className="shadow-md overflow-hidden">
+        <CardHeader className="pb-0 flex flex-col space-y-0">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-lg font-semibold text-gray-800">Expense Trends</CardTitle>
+            <div className="flex space-x-2">
+              <Button 
+                variant={period === 'all' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handlePeriodChange('all')}
+                className="text-xs px-3 py-1 h-8"
               >
                 ALL
-              </button>
-              <button 
-                onClick={() => setSelectedPeriod('1m')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium ${
-                  selectedPeriod === '1m' 
-                    ? 'bg-primary text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
+              </Button>
+              <Button 
+                variant={period === '1m' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handlePeriodChange('1m')}
+                className="text-xs px-3 py-1 h-8"
               >
                 1M
-              </button>
-              <button 
-                onClick={() => setSelectedPeriod('6m')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium ${
-                  selectedPeriod === '6m' 
-                    ? 'bg-primary text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
+              </Button>
+              <Button 
+                variant={period === '6m' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handlePeriodChange('6m')}
+                className="text-xs px-3 py-1 h-8"
               >
                 6M
-              </button>
-              <button 
-                onClick={() => setSelectedPeriod('1y')}
-                className={`text-xs px-3 py-1.5 rounded-md font-medium ${
-                  selectedPeriod === '1y' 
-                    ? 'bg-primary text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                }`}
+              </Button>
+              <Button 
+                variant={period === '1y' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => handlePeriodChange('1y')}
+                className="text-xs px-3 py-1 h-8"
               >
                 1Y
-              </button>
+              </Button>
             </div>
           </div>
+        </CardHeader>
 
-          {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 bg-gray-50 border-b">
-            <div className="p-3 border-r border-dashed text-center">
-              <h5 className="text-lg md:text-xl font-bold mb-1">{stats.totalExpenses.toLocaleString()}</h5>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Total Expenses</p>
-            </div>
-            <div className="p-3 border-r border-dashed text-center">
-              <h5 className="text-lg md:text-xl font-bold mb-1">{stats.travelExpenses.toLocaleString()}</h5>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Travel Expenses</p>
-            </div>
-            <div className="p-3 border-r border-dashed text-center">
-              <h5 className="text-lg md:text-xl font-bold mb-1">{stats.mealExpenses.toLocaleString()}</h5>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Meal Expenses</p>
-            </div>
-            <div className="p-3 text-center">
-              <h5 className="text-lg md:text-xl font-bold mb-1">{stats.suppliesExpenses.toLocaleString()}</h5>
-              <p className="text-xs md:text-sm text-muted-foreground truncate">Office Supplies</p>
-            </div>
-          </div>
-
-          {/* Chart Area */}
-          <div className="p-4">
-            <ExpenseTrendsChartV2 data={monthlyTrends} height={300} />
+        <div className="px-4 pt-4 bg-gray-50/50">
+          <div className="grid grid-cols-4 divide-x divide-gray-200 border border-gray-200 rounded-md overflow-hidden">
+            {stats.map((stat, index) => (
+              <div key={`stat-${index}`} className="p-3 bg-white">
+                <h5 className="font-semibold text-base text-gray-900 mb-0.5">{stat.value}</h5>
+                <p className="text-xs text-gray-500 truncate">{stat.title}</p>
+                {stat.subValue && (
+                  <p className="text-xs text-green-600 mt-1">{stat.subValue}</p>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-      </motion.div>
 
-      {/* Keep the expense type breakdown chart */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
-        className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
-      >
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-medium">Expense Types</h2>
-          <div className="text-xs text-gray-500">Last 30 days</div>
-        </div>
-        <ExpenseTypeBreakdown data={expenseTypes} />
-      </motion.div>
-    </div>
+        <CardContent className="pt-4 pb-2">
+          <ExpenseTrendsChartV2 
+            data={monthlyTrends} 
+            height={300}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Expense Types Breakdown Card */}
+      <Card className="shadow-md">
+        <CardHeader className="pb-0">
+          <CardTitle className="text-lg font-semibold text-gray-800">Expense Type Breakdown</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4">
+          <ExpenseTypeBreakdown expenseTypes={expenseTypes} />
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

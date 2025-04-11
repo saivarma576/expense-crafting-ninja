@@ -66,6 +66,14 @@ const DashboardV2: React.FC = () => {
     }
   ];
 
+  // Updated expense types with correct property names for the interface
+  const expenseTypesFormatted = dashboardData.expenseTypes.map(type => ({
+    id: type.id,
+    label: type.label,
+    value: type.value,
+    color: type.color
+  }));
+
   useEffect(() => {
     // Simulate data loading
     const timer = setTimeout(() => {
@@ -111,7 +119,7 @@ const DashboardV2: React.FC = () => {
       {/* Middle Section - Charts */}
       <ExpenseTrendsSection 
         monthlyTrends={dashboardData.monthlyTrends}
-        expenseTypes={dashboardData.expenseTypes}
+        expenseTypes={expenseTypesFormatted}
         stats={dashboardData.stats}
       />
 

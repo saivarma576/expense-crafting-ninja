@@ -29,11 +29,11 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
   };
 
   return (
-    <div style={{ width: '100%', height: height }}>
+    <div style={{ width: '100%', height }}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
-          margin={{ top: 5, right: 10, left: 0, bottom: 15 }}
+          margin={{ top: 8, right: 16, left: 0, bottom: 20 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
           <XAxis 
@@ -48,6 +48,7 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             axisLine={false}
             tickLine={false}
             tick={{ fontSize: 11, fill: '#6b7280' }}
+            tickFormatter={(value) => value.toString()}
             domain={[0, 'auto']}
           />
           <YAxis 
@@ -56,6 +57,7 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             axisLine={false}
             tickLine={false}
             tick={{ fontSize: 11, fill: '#6b7280' }}
+            tickFormatter={(value) => `$${value}`}
             domain={[0, 'auto']}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -72,8 +74,8 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             dataKey="amount" 
             stroke="#ff7f5d" 
             strokeWidth={2}
-            dot={{ fill: '#ff7f5d', r: 3 }}
-            activeDot={{ r: 5 }}
+            dot={{ fill: '#ff7f5d', r: 4 }}
+            activeDot={{ r: 6, strokeWidth: 0 }}
           />
         </ComposedChart>
       </ResponsiveContainer>
