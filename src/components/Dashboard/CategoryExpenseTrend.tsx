@@ -1,7 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronDown } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export interface CategoryExpense {
   name: string;
@@ -74,20 +82,52 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
   title = "Compare Category Wise Expense Trend",
   currency = "$"
 }) => {
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(filteredCategories);
+  
   // Filter categories to only show the requested ones
   const filteredCategoryData = categories.filter(cat => 
-    filteredCategories.includes(cat.name)
+    selectedCategories.includes(cat.name)
   ).map((cat, index) => ({
     ...cat,
     color: pastelColors[index % pastelColors.length] // Assign pastel colors
   }));
 
+  const handleCategoryToggle = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
   return (
     <Card className="col-span-full glass-card border border-primary/5 shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-base font-medium">{title}</CardTitle>
-        <div className="text-sm text-muted-foreground">
-          {filteredCategoryData.length} Categories Selected
+        <div className="flex items-center gap-2">
+          <div className="text-sm text-muted-foreground">
+            {selectedCategories.length} Category Selected
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 border-dashed">
+                <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              {categories.map((category) => (
+                <DropdownMenuCheckboxItem
+                  key={category.name}
+                  checked={selectedCategories.includes(category.name)}
+                  onCheckedChange={() => handleCategoryToggle(category.name)}
+                >
+                  {category.name}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="h-[400px]">
@@ -123,7 +163,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
               }}
             />
             <Tooltip 
-              formatter={(value: number) => [`${currency} ${value.toLocaleString()}`, '']}
+              formatter={(value: number) => [`${currency}${value.toLocaleString()}`, '']}
               labelFormatter={(label) => `${label}`}
               contentStyle={{ borderRadius: '8px', border: '1px solid #E4E4E7' }}
             />
@@ -144,7 +184,8 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
                   dataKey={category.name} 
                   position="top" 
                   formatter={(value: number) => value > 1000 ? `${currency}${(value/1000).toFixed(1)}K` : `${currency}${value}`}
-                  style={{ fontSize: 10 }}
+                  style={{ fontSize: 10, fontWeight: 'bold' }}
+                  offset={10}
                 />
               </Bar>
             ))}

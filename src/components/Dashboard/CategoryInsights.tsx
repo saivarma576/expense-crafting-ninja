@@ -1,6 +1,6 @@
 
 import React from 'react';
-import StatCard from '../ui/StatCard';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface CategoryInsightsProps {
   highestCategory: string;
@@ -18,20 +18,31 @@ const CategoryInsights: React.FC<CategoryInsightsProps> = ({
   currency
 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <StatCard
-        title="HIGHEST CLAIMED CATEGORY"
-        value={highestCategory}
-        description={`${currency} ${highestAmount.toLocaleString()}`}
-        className="h-full"
-      />
-      <StatCard
-        title="LOWEST CLAIMED CATEGORY"
-        value={lowestCategory}
-        description={`${currency} ${lowestAmount.toLocaleString()}`}
-        className="h-full"
-      />
-    </div>
+    <Card className="col-span-full bg-gray-50/70 border border-primary/5 shadow-sm">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium text-gray-600">Insights</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="space-y-1">
+            <p className="text-xs uppercase font-medium text-gray-500">HIGHEST CLAIMED CATEGORY</p>
+            <p className="text-base font-medium text-gray-900">{highestCategory}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs uppercase font-medium text-gray-500">AMOUNT CLAIMED</p>
+            <p className="text-base font-medium text-gray-900">{currency} {highestAmount.toLocaleString()}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs uppercase font-medium text-gray-500">LOWEST CLAIMED CATEGORY</p>
+            <p className="text-base font-medium text-gray-900">{lowestCategory}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs uppercase font-medium text-gray-500">AMOUNT CLAIMED</p>
+            <p className="text-base font-medium text-gray-900">{currency} {lowestAmount.toLocaleString()}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

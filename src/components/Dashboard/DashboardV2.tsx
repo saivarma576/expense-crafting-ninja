@@ -103,15 +103,6 @@ const DashboardV2: React.FC = () => {
         onCurrencyChange={setCurrency}
       />
 
-      {/* Stats showing insights from the category data */}
-      <CategoryInsights 
-        highestCategory={categoryInsights.highestCategory}
-        highestAmount={categoryInsights.highestAmount}
-        lowestCategory={categoryInsights.lowestCategory}
-        lowestAmount={categoryInsights.lowestAmount}
-        currency={currency}
-      />
-
       {/* Top Stats Cards */}
       <TopStatsCards 
         submittedExpenses={dashboardData.submittedExpenses}
@@ -142,19 +133,46 @@ const DashboardV2: React.FC = () => {
         pendingReviewExpenses={dashboardData.pendingReviewExpenses}
       />
 
-      {/* Category Expense Trend Chart with Insights */}
-      <CategoryExpenseTrend 
-        data={monthlyExpenseTrendData} 
-        categories={expenseCategories}
-        currency={currency}
-      />
+      {/* Category Expense Trend Chart */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
+      >
+        <CategoryExpenseTrend 
+          data={monthlyExpenseTrendData} 
+          categories={expenseCategories}
+          currency={currency}
+        />
+      </motion.div>
+      
+      {/* Category Insights Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+      >
+        <CategoryInsights 
+          highestCategory={categoryInsights.highestCategory}
+          highestAmount={categoryInsights.highestAmount}
+          lowestCategory={categoryInsights.lowestCategory}
+          lowestAmount={categoryInsights.lowestAmount}
+          currency={currency}
+        />
+      </motion.div>
       
       {/* Category Expense Insights Section */}
-      <CategoryExpenseInsights 
-        topCategories={categoryInsightsData.topCategories}
-        fastestGrowing={categoryInsightsData.fastestGrowing}
-        currency={currency}
-      />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.9 }}
+      >
+        <CategoryExpenseInsights 
+          topCategories={categoryInsightsData.topCategories}
+          fastestGrowing={categoryInsightsData.fastestGrowing}
+          currency={currency}
+        />
+      </motion.div>
     </div>
   );
 };

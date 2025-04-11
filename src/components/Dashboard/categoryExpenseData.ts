@@ -1,4 +1,3 @@
-
 import { CategoryExpense, MonthCategoryData } from './CategoryExpenseTrend';
 
 export const expenseCategories: CategoryExpense[] = [
