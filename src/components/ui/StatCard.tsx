@@ -10,6 +10,7 @@ interface StatCardProps {
   icon?: React.ReactNode;
   trend?: number;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -18,7 +19,8 @@ const StatCard: React.FC<StatCardProps> = ({
   description,
   icon,
   trend,
-  className
+  className,
+  children
 }) => {
   return (
     <motion.div 
@@ -54,6 +56,7 @@ const StatCard: React.FC<StatCardProps> = ({
           </div>
         )}
       </div>
+      {children}
     </motion.div>
   );
 };
