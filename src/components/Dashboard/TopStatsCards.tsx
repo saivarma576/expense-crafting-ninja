@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import {
   ArrowUp,
@@ -9,7 +9,7 @@ import {
   Receipt,
   PlusCircle,
   ChevronDown,
-  FileText2,
+  FileText as FileText2,
   CreditCard
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -145,23 +145,22 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
           </div>
         </div>
 
-        {/* New Expense Card with Dropdown */}
-        <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg">
-          <div className="flex justify-between items-start">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase font-semibold text-gray-800">Expense</h3>
+        {/* New Expense Card - Modern Design */}
+        <div className="glass-card p-6 rounded-xl flex flex-col justify-between border border-gray-100 shadow-sm bg-white">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-800 uppercase">EXPENSE</h3>
           </div>
           
-          <div className="mt-2 flex">
+          <div className="mt-2">
             <DropdownMenu>
               <div className="flex">
-                <Button asChild className="rounded-r-none" variant="default">
-                  <Link to="/expenses/new" className="bg-blue-600 hover:bg-blue-700 text-white flex items-center">
-                    <PlusCircle className="mr-2 h-4 w-4" />
+                <Button asChild className="bg-blue-500 hover:bg-blue-600 text-white rounded-r-none">
+                  <Link to="/expenses/new" className="flex items-center">
                     Create Invoice
                   </Link>
                 </Button>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="default" className="rounded-l-none px-2 bg-blue-600 hover:bg-blue-700 border-l border-blue-500">
+                  <Button className="rounded-l-none px-2 bg-blue-500 hover:bg-blue-600 border-l border-blue-400">
                     <ChevronDown className="h-4 w-4 text-white" />
                   </Button>
                 </DropdownMenuTrigger>
