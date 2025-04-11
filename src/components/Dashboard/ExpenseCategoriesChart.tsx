@@ -44,6 +44,9 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     pieData.reduce((sum, item) => sum + item.value, 0)
   ), [pieData]);
 
+  // Format title to Title Case
+  const formattedTitle = "Expense Categories";
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -53,7 +56,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
     >
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h2 className="text-xl font-semibold">Expense Categories</h2>
+          <h2 className="text-xl font-semibold">{formattedTitle}</h2>
           <p className="text-sm text-muted-foreground">Monthly expense breakdown</p>
         </div>
         <YearSelector selectedYear={selectedYear} onYearChange={onYearChange} />
@@ -68,6 +71,7 @@ const ExpenseCategoriesChart: React.FC<ExpenseCategoriesChartProps> = ({
             totalValue={totalExpenses}
             showLegend={false} // Hide the default legend from the PieChart
             className="h-[240px]"
+            currency="$" // Add dollar symbol
           />
           
           {/* Custom Legend - Styled with boxy effect to match the reference image */}

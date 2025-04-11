@@ -98,10 +98,16 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
     setLowestCategory(lowest.amount === Number.MAX_VALUE ? { name: 'None', amount: 0 } : lowest);
   }, [data, categories]);
 
+  // Format title to Title Case
+  const formattedTitle = title
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+
   return (
     <Card className="col-span-full glass-card border border-primary/5 shadow-lg">
       <CardHeader className="flex flex-row items-center justify-between pb-2 border-b">
-        <CardTitle className="text-base font-medium">{title}</CardTitle>
+        <CardTitle className="text-base font-medium">{formattedTitle}</CardTitle>
         <CategoryDropdown 
           categories={categories}
           selectedCategories={selectedCategories}
@@ -119,7 +125,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
           />
         </div>
         
-        {/* Categories Legend - Added as a separate section */}
+        {/* Categories Legend - Above Insights */}
         <div className="px-6 py-3 border-t">
           <div className="flex flex-wrap gap-2">
             {filteredCategoryData.map((cat) => (
@@ -138,7 +144,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
         </div>
         
         {/* Insights Section - Now clearly separated */}
-        <div className="px-6 py-4 border-t mt-2 bg-gray-50/30">
+        <div className="px-6 py-4 border-t mt-0 bg-gray-50/30">
           <h3 className="text-base font-medium mb-3">Insights</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="border rounded-lg p-4 bg-gray-50/50">

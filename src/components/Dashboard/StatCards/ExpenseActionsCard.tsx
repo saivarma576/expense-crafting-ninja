@@ -38,15 +38,15 @@ const ExpenseActionsCard: React.FC<ExpenseActionsCardProps> = ({
       <div className="flex flex-col space-y-3">
         <DropdownMenu>
           <div className="flex w-full">
-            <Button asChild className="bg-blue-500 hover:bg-blue-600 text-white rounded-r-none flex-grow text-sm">
+            <Button asChild className="bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-r-none flex-grow text-sm">
               <Link to="/expenses/new" className="flex items-center justify-center">
                 <PlusCircle className="mr-1.5 h-4 w-4" />
                 Create Expense
               </Link>
             </Button>
             <DropdownMenuTrigger asChild>
-              <Button className="rounded-l-none px-2 bg-blue-500 hover:bg-blue-600 border-l border-blue-400">
-                <ChevronDown className="h-4 w-4 text-white" />
+              <Button className="rounded-l-none px-2 bg-blue-100 hover:bg-blue-200 text-blue-700 border-l border-blue-200">
+                <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
           </div>

@@ -1,15 +1,8 @@
 
 import React from 'react';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { 
-  ArrowUp, 
-  ArrowDown, 
-  DollarSign, 
-  FileText, 
-  Receipt,
-  LucideIcon 
-} from 'lucide-react';
-import { cn } from "@/lib/utils";
+import { DollarSign, FileText, Receipt } from 'lucide-react';
 
 interface StatCardProps {
   title: string;
@@ -17,7 +10,8 @@ interface StatCardProps {
   amount: number;
   count: number;
   trend: number;
-  currency: string;
+  currency?: string;
+  className?: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({
@@ -26,18 +20,20 @@ const StatCard: React.FC<StatCardProps> = ({
   amount,
   count,
   trend,
-  currency
+  currency = '$',
+  className,
 }) => {
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    if (amount >= 1000) {
-      return `$ ${(amount / 1000).toFixed(2)}K`;
-    }
-    return `$ ${amount.toFixed(2)}`;
-  };
+  // Convert title to Title Case (capitalize first letter of each word)
+  const formattedTitle = title
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
 
-  // Get the appropriate icon
-  const getIcon = () => {
+  // Format the amount with a dollar sign
+  const formattedAmount = `${currency}${amount.toLocaleString()}`;
+
+  // Render the appropriate icon
+  const renderIcon = () => {
     switch (icon) {
       case 'dollar-sign':
         return <DollarSign className="h-5 w-5" />;
@@ -51,31 +47,32 @@ const StatCard: React.FC<StatCardProps> = ({
   };
 
   return (
-    <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg hover:shadow-xl transition-all duration-300">
+    <motion.div 
+      whileHover={{ y: -5, transition: { duration: 0.2 } }}
+      className={cn(
+        "glass-card p-6 rounded-xl flex flex-col space-y-4 border-b-4 border-primary/10 shadow-lg",
+        className
+      )}
+    >
       <div className="flex justify-between items-start">
-        <h3 className="text-sm font-medium text-muted-foreground uppercase">{title}</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">{formattedTitle}</h3>
         <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 text-primary">
-          {getIcon()}
+          {renderIcon()}
         </div>
       </div>
-      
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="text-2xl font-semibold">{formatCurrency(amount)}</div>
-          <p className="text-sm text-muted-foreground truncate">{count} expenses</p>
-        </div>
-        
-        <div className={cn(
-          "text-xs font-medium flex items-center p-1.5 rounded-full",
-          trend > 0 
-            ? "bg-green-50 text-green-600" 
-            : "bg-red-50 text-red-600"
-        )}>
-          {trend > 0 ? <ArrowUp className="mr-1 h-3 w-3" /> : <ArrowDown className="mr-1 h-3 w-3" />}
-          {Math.abs(trend)}% vs last month
+      <div className="flex flex-col space-y-1">
+        <div className="text-2xl font-semibold">{formattedAmount}</div>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">{count} expenses</p>
+          <div className={cn(
+            "text-xs font-medium flex items-center px-2 py-1 rounded-full",
+            trend > 0 ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
+          )}>
+            {trend > 0 ? '+' : ''}{trend}%
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

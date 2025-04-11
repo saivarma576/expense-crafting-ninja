@@ -30,15 +30,13 @@ interface RecentExpensesTableProps {
 const RecentExpensesTable: React.FC<RecentExpensesTableProps> = ({ recentExpenses }) => {
   const navigate = useNavigate();
 
+  // Format title to Title Case
+  const formattedTitle = "Recent Expenses";
+
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
-    >
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Recent Expenses</h2>
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-medium">{formattedTitle}</h2>
         <button 
           onClick={() => navigate('/expenses')}
           className="flex items-center text-sm text-primary font-medium hover:text-primary/80 transition-colors"
@@ -93,7 +91,7 @@ const RecentExpensesTable: React.FC<RecentExpensesTableProps> = ({ recentExpense
           </TableBody>
         </Table>
       </div>
-    </motion.div>
+    </>
   );
 };
 
