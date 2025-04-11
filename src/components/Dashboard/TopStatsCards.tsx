@@ -5,12 +5,10 @@ import {
   DollarSign,
   FileText,
   CheckCircle,
-  Upload,
   PlusCircle
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import StatCard from '@/components/ui/StatCard';
 
 interface TopStatsCardsProps {
@@ -121,35 +119,6 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Create Expense
                 </Button>
-                
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start text-gray-700 border-gray-200 hover:bg-gray-50 rounded-lg transition-all duration-200 shadow-sm hover:shadow"
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Upload Receipt to Buffer
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <div className="p-4 space-y-4">
-                      <h3 className="font-semibold text-lg">Upload Receipt</h3>
-                      <p className="text-sm text-gray-600">
-                        Upload your receipt to be processed later.
-                      </p>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                        <Upload className="h-10 w-10 mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-500">
-                          Drag and drop your receipt here, or click to browse
-                        </p>
-                        <Button variant="outline" className="mt-4">
-                          Browse Files
-                        </Button>
-                      </div>
-                    </div>
-                  </SheetContent>
-                </Sheet>
               </div>
             </div>
           </div>
