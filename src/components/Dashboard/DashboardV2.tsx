@@ -12,8 +12,9 @@ import TopStatsCards from './TopStatsCards';
 import CategoryInsights from './CategoryInsights';
 import BottomStatusSection from './BottomStatusSection';
 import WelcomeHeader from './WelcomeHeader';
-import ExpenseTrendsSection from './ExpenseTrendsSection';
-import ExpenseTypeBreakdown from './ExpenseTypeBreakdown';
+import ExpenseTrendsChart from './ExpenseTrendsChart';
+import ExpenseCategoriesChart from './ExpenseCategoriesChart';
+import { expenseStats, categoryData, categoryGroups, monthlyExpenseData } from './mockData';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -79,14 +80,6 @@ const DashboardV2: React.FC = () => {
     { title: 'Reimbursed', value: '$9,120.45', subValue: '-3.6% from last month' }
   ];
 
-  // Transform expenseTypes to match the ExpenseTypeItem interface
-  const expenseTypesData = dashboardData.expenseTypes.map(type => ({
-    id: type.name.toLowerCase().replace(/\s+/g, '-'),
-    label: type.name,
-    value: type.value,
-    color: type.color
-  }));
-
   const handleYearChange = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {
       setSelectedYear(prev => prev - 1);
@@ -149,14 +142,17 @@ const DashboardV2: React.FC = () => {
       {/* Middle Section - Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Using components from Dashboard V1 */}
-        <ExpenseTrendsSection 
-          monthlyTrends={dashboardData.monthlyTrends} 
-          expenseTypes={expenseTypesData}
-          stats={stats}
+        <ExpenseTrendsChart 
+          monthlyExpenseData={monthlyExpenseData}
+          selectedYear={selectedYear}
+          onYearChange={handleYearChange}
         />
         
-        <ExpenseTypeBreakdown 
-          expenseTypes={expenseTypesData}
+        <ExpenseCategoriesChart 
+          categoryData={categoryData}
+          categoryGroups={categoryGroups}
+          selectedYear={selectedYear}
+          onYearChange={handleYearChange}
         />
       </div>
 
