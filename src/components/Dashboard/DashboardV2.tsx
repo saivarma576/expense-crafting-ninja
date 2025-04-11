@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import DateRangeFilter from './DateRangeFilter';
 import CategoryExpenseTrend from './CategoryExpenseTrend';
 import { expenseCategories, monthlyExpenseTrendData, categoryInsights } from './categoryExpenseData';
+import RecentExpensesTable from './RecentExpensesTable';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,6 +22,55 @@ const DashboardV2: React.FC = () => {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(2024, 3, 1)); // April 1, 2024
   const [endDate, setEndDate] = useState<Date | undefined>(new Date(2025, 2, 31)); // March 31, 2025
   const [currency, setCurrency] = useState('INR');
+
+  // Sample data for Recent Expenses Table
+  const recentExpenses = [
+    {
+      id: '1001',
+      title: 'Flight to New York',
+      date: '2025-04-01',
+      amount: 1250.00,
+      status: 'approved',
+      expenseTypes: ['Travel'],
+      description: 'Business trip to client meeting'
+    },
+    {
+      id: '1002',
+      title: 'Hotel Stay',
+      date: '2025-04-02',
+      amount: 890.75,
+      status: 'submitted',
+      expenseTypes: ['Accommodation'],
+      description: '3 nights at Grand Hotel'
+    },
+    {
+      id: '1003',
+      title: 'Team Dinner',
+      date: '2025-04-05',
+      amount: 345.50,
+      status: 'approved',
+      expenseTypes: ['Meals'],
+      description: 'Client dinner meeting'
+    },
+    {
+      id: '1004',
+      title: 'Office Supplies',
+      date: '2025-04-08',
+      amount: 125.30,
+      status: 'draft',
+      expenseTypes: ['Supplies'],
+      description: 'Monthly stationery purchase'
+    },
+    {
+      id: '1005',
+      title: 'Conference Registration',
+      date: '2025-04-10',
+      amount: 799.00,
+      status: 'rejected',
+      expenseTypes: ['Professional Development'],
+      description: 'Annual industry conference'
+    }
+  ];
 
   useEffect(() => {
     // Simulate data loading
@@ -53,12 +103,6 @@ const DashboardV2: React.FC = () => {
         onEndDateChange={setEndDate}
         currency={currency}
         onCurrencyChange={setCurrency}
-      />
-
-      {/* Category Expense Trend Chart */}
-      <CategoryExpenseTrend 
-        data={monthlyExpenseTrendData} 
-        categories={expenseCategories}
       />
 
       {/* Stats showing insights from the category data */}
@@ -229,168 +273,20 @@ const DashboardV2: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Bottom Section - Tables and Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Latest Expenses Table */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-medium">Latest Expenses</h2>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">SORT BY:</span>
-              <select className="text-xs border border-input rounded-md px-2 py-1">
-                <option>Today</option>
-                <option>This Week</option>
-                <option>This Month</option>
-              </select>
-            </div>
-          </div>
+      {/* Recent Expenses Table Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <RecentExpensesTable recentExpenses={recentExpenses} />
+      </motion.div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <tbody>
-                {dashboardData.latestExpenses.map((expense, index) => (
-                  <tr key={index} className="border-b border-border/30 last:border-none">
-                    <td className="py-4 pr-4 w-10 text-center">{expense.id}</td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{expense.vendor}</span>
-                        <span className="text-xs text-muted-foreground">Vendor</span>
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{expense.reportNumber}</span>
-                        <span className="text-xs text-muted-foreground">Report Number</span>
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{expense.date}</span>
-                        <span className="text-xs text-muted-foreground">Expense Date</span>
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">${expense.amount.toLocaleString()}</span>
-                        <span className="text-xs text-muted-foreground">Amount</span>
-                      </div>
-                    </td>
-                    <td className="py-4">
-                      <div className="px-3 py-1 text-xs font-medium rounded-full text-green-700 bg-green-100 inline-block">
-                        {expense.status}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-xs text-muted-foreground">Showing 5 of 25 Results</span>
-            <div className="flex items-center gap-1">
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                &lt;
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md bg-muted">
-                1
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                2
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                3
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                &gt;
-              </button>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Latest Reimbursements Table */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="glass-card rounded-xl p-6 shadow-lg border border-primary/5"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-medium">Latest Reimbursements</h2>
-            <button className="flex items-center gap-1 px-3 py-1 border border-input rounded-md text-xs">
-              Report <ArrowRight className="h-3 w-3" />
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <tbody>
-                {dashboardData.latestReimbursements.map((reimbursement, index) => (
-                  <tr key={index} className="border-b border-border/30 last:border-none">
-                    <td className="py-4 pr-4 w-10 text-center">{reimbursement.id}</td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{reimbursement.employee}</span>
-                        <span className="text-xs text-muted-foreground">Employee</span>
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{reimbursement.paymentMethod}</span>
-                        <span className="text-xs text-muted-foreground">Payment Method</span>
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{reimbursement.referenceNumber}</span>
-                        <span className="text-xs text-muted-foreground">Reference Number</span>
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{reimbursement.date}</span>
-                        <span className="text-xs text-muted-foreground">Payment Date</span>
-                      </div>
-                    </td>
-                    <td className="py-4">
-                      <div className="flex flex-col">
-                        <span className="font-medium">${reimbursement.amount.toLocaleString()}</span>
-                        <span className="text-xs text-muted-foreground">Amount</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-xs text-muted-foreground">Showing 5 of 25 Results</span>
-            <div className="flex items-center gap-1">
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                &lt;
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md bg-muted">
-                1
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                2
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                3
-              </button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border rounded-md">
-                &gt;
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
+      {/* Category Expense Trend Chart - Moved here from top */}
+      <CategoryExpenseTrend 
+        data={monthlyExpenseTrendData} 
+        categories={expenseCategories}
+      />
 
       {/* Bottom Row - Status and Overdue */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
