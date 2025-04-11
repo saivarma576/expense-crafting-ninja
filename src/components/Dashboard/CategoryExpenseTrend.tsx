@@ -56,24 +56,24 @@ const filteredCategories = [
   'Rental Car'
 ];
 
-// Slightly darker pastel colors for better visibility
+// Significantly darker pastel colors for better visibility
 const pastelColors = [
-  '#B8D1F3', // Darker Soft Blue
-  '#F5CAB0', // Darker Soft Peach
-  '#D0C8F0', // Darker Soft Purple
-  '#FFCCD2', // Darker Soft Pink
-  '#E0ECC8', // Darker Soft Green
-  '#F0E5A0', // Darker Soft Yellow
-  '#F0B085', // Darker Soft Orange
-  '#E0DFF0', // Darker Soft Gray
-  '#B8F0D4', // Darker Soft Mint
-  '#F0B8E0', // Darker Soft Magenta
-  '#C8DFDF', // Darker Soft Teal
-  '#F0CBB0', // Darker Soft Amber
-  '#C8D0F0', // Darker Soft Indigo
-  '#E5C8F0', // Darker Soft Lavender
-  '#B8E5F0', // Darker Soft Cyan
-  '#F0D9A8'  // Darker Soft Gold
+  '#A8C1E3', // Darker Soft Blue
+  '#E5BAA0', // Darker Soft Peach
+  '#C0B8E0', // Darker Soft Purple
+  '#EFBCC2', // Darker Soft Pink
+  '#D0DCB8', // Darker Soft Green
+  '#E0D590', // Darker Soft Yellow
+  '#E0A075', // Darker Soft Orange
+  '#D0CFE0', // Darker Soft Gray
+  '#A8E0C4', // Darker Soft Mint
+  '#E0A8D0', // Darker Soft Magenta
+  '#B8CFCF', // Darker Soft Teal
+  '#E0BBA0', // Darker Soft Amber
+  '#B8C0E0', // Darker Soft Indigo
+  '#D5B8E0', // Darker Soft Lavender
+  '#A8D5E0', // Darker Soft Cyan
+  '#E0C998'  // Darker Soft Gold
 ];
 
 const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({ 
@@ -89,7 +89,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
     selectedCategories.includes(cat.name)
   ).map((cat, index) => ({
     ...cat,
-    color: pastelColors[index % pastelColors.length] // Assign darker pastel colors
+    color: pastelColors[index % pastelColors.length] // Assign significantly darker pastel colors
   }));
 
   const handleCategoryToggle = (category: string) => {
