@@ -27,7 +27,7 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
     return null;
   };
 
-  const formatYAxis = (value: any) => {
+  const formatYAxis = (value: number) => {
     if (value >= 1000) {
       return `${(value / 1000).toFixed(0)}k`;
     }
