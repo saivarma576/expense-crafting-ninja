@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, ComposedChart } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface ExpenseTrendData {
   month: string;
@@ -17,10 +17,9 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background/95 border border-border p-2 rounded shadow-md text-xs">
+        <div className="bg-white border border-gray-200 p-3 rounded shadow-md text-xs">
           <p className="font-semibold">{label}</p>
-          <p className="text-primary">Expenses: {payload[0].value}</p>
-          <p className="text-orange-500">Amount: ${payload[1].value.toLocaleString()}</p>
+          <p className="text-blue-600">Amount: ${payload[0].value.toLocaleString()}</p>
         </div>
       );
     }
@@ -28,67 +27,52 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
     return null;
   };
 
+  const formatYAxis = (value: number) => {
+    if (value >= 1000) {
+      return `${value / 1000}k`;
+    }
+    return value;
+  };
+
   return (
     <div style={{ width: '100%', height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
+        <AreaChart
           data={data}
-          margin={{ top: 8, right: 16, left: 0, bottom: 20 }}
+          margin={{ top: 10, right: 30, left: 15, bottom: 20 }}
         >
+          <defs>
+            <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+            </linearGradient>
+          </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
           <XAxis 
             dataKey="month" 
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 11, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: '#6b7280' }}
             dy={10}
           />
           <YAxis 
-            yAxisId="left"
+            tickFormatter={formatYAxis}
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 11, fill: '#6b7280' }}
-            tickFormatter={(value) => value.toString()}
-            domain={[0, 'auto']}
-          />
-          <YAxis 
-            yAxisId="right"
-            orientation="right"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 11, fill: '#6b7280' }}
-            tickFormatter={(value) => `$${value}`}
-            domain={[0, 'auto']}
+            tick={{ fontSize: 12, fill: '#6b7280' }}
+            domain={[0, 'dataMax + 1000']}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar 
-            yAxisId="left"
-            dataKey="expenses" 
-            fill="rgba(104, 124, 254, 0.9)" 
-            radius={[4, 4, 0, 0]} 
-            barSize={24} 
-          />
-          <Line 
-            yAxisId="right"
+          <Area 
             type="monotone" 
             dataKey="amount" 
-            stroke="#ff7f5d" 
-            strokeWidth={2}
-            dot={{ fill: '#ff7f5d', r: 4 }}
-            activeDot={{ r: 6, strokeWidth: 0 }}
+            stroke="#3b82f6" 
+            strokeWidth={2.5}
+            fillOpacity={1}
+            fill="url(#colorAmount)" 
           />
-        </ComposedChart>
+        </AreaChart>
       </ResponsiveContainer>
-      <div className="flex justify-center items-center gap-6 mt-2 text-xs">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: 'rgba(104, 124, 254, 0.9)' }}></div>
-          <span>Expenses</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ff7f5d' }}></div>
-          <span>Amount</span>
-        </div>
-      </div>
     </div>
   );
 };

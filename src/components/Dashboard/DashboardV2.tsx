@@ -12,8 +12,7 @@ import TopStatsCards from './TopStatsCards';
 import CategoryInsights from './CategoryInsights';
 import BottomStatusSection from './BottomStatusSection';
 import WelcomeHeader from './WelcomeHeader';
-import ExpenseTrendsChart from './ExpenseTrendsChart';
-import ExpenseCategoriesChart from './ExpenseCategoriesChart';
+import ExpenseTrendsChartV2 from './ExpenseTrendsChartV2';
 import { expenseStats, categoryData, categoryGroups, monthlyExpenseData } from './mockData';
 
 const DashboardV2: React.FC = () => {
@@ -88,6 +87,35 @@ const DashboardV2: React.FC = () => {
     }
   };
 
+  // Mock expense trends data that matches the image
+  const expenseTrendsData = [
+    { month: 'Jan', expenses: 10, amount: 4000 },
+    { month: 'Feb', expenses: 15, amount: 3500 },
+    { month: 'Mar', expenses: 20, amount: 4900 },
+    { month: 'Apr', expenses: 25, amount: 6700 },
+    { month: 'May', expenses: 20, amount: 5500 },
+    { month: 'Jun', expenses: 25, amount: 6500 },
+    { month: 'Jul', expenses: 30, amount: 7800 },
+    { month: 'Aug', expenses: 28, amount: 7500 },
+    { month: 'Sep', expenses: 32, amount: 8200 },
+    { month: 'Oct', expenses: 35, amount: 9500 },
+    { month: 'Nov', expenses: 38, amount: 9700 },
+    { month: 'Dec', expenses: 37, amount: 9400 },
+  ];
+
+  // Data for the donut chart that matches categories in the image
+  const expenseCategoriesData = [
+    { name: 'Travel', value: 19800, color: '#10B981' },
+    { name: 'Food', value: 8000, color: '#14B8A6' },
+    { name: 'Transportation', value: 9100, color: '#6366F1' },
+    { name: 'Office', value: 4600, color: '#3B82F6' },
+    { name: 'Professional Services', value: 17900, color: '#8B5CF6' },
+    { name: 'Other', value: 2100, color: '#6B7280' }
+  ];
+
+  // Calculate total for display in the donut chart
+  const totalExpenseAmount = expenseCategoriesData.reduce((sum, item) => sum + item.value, 0);
+
   useEffect(() => {
     // Simulate data loading
     const timer = setTimeout(() => {
@@ -139,21 +167,90 @@ const DashboardV2: React.FC = () => {
         />
       </div>
 
-      {/* Middle Section - Charts */}
+      {/* Middle Section - Charts (styled to match the image) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Using components from Dashboard V1 */}
-        <ExpenseTrendsChart 
-          monthlyExpenseData={monthlyExpenseData}
-          selectedYear={selectedYear}
-          onYearChange={handleYearChange}
-        />
+        {/* Expense Trends Chart */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-semibold">Expense Trends</h2>
+              <p className="text-sm text-muted-foreground">Monthly expense activity</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button className="p-1 hover:bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <span className="text-sm font-medium">{selectedYear}</span>
+              <button className="p-1 hover:bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div className="h-[300px]">
+            <ExpenseTrendsChartV2 data={expenseTrendsData} />
+          </div>
+        </div>
         
-        <ExpenseCategoriesChart 
-          categoryData={categoryData}
-          categoryGroups={categoryGroups}
-          selectedYear={selectedYear}
-          onYearChange={handleYearChange}
-        />
+        {/* Expense Categories Chart */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-semibold">Expense Categories</h2>
+              <p className="text-sm text-muted-foreground">Monthly expense breakdown</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <button className="p-1 hover:bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </button>
+              <span className="text-sm font-medium">{selectedYear}</span>
+              <button className="p-1 hover:bg-gray-100 rounded">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="relative w-[180px] h-[180px]">
+              <div className="flex items-center justify-center absolute inset-0">
+                <div className="text-center">
+                  <div className="text-3xl font-bold">${(totalExpenseAmount / 1000).toFixed(0)},400</div>
+                  <div className="text-sm text-muted-foreground">
+                    This month total<br />expense
+                  </div>
+                </div>
+              </div>
+              {/* This would be a donut chart in actual implementation */}
+              <svg width="180" height="180" viewBox="0 0 180 180">
+                <circle cx="90" cy="90" r="70" fill="none" stroke="#10B981" strokeWidth="20" strokeDasharray="440" strokeDashoffset="120" />
+                <circle cx="90" cy="90" r="70" fill="none" stroke="#14B8A6" strokeWidth="20" strokeDasharray="440" strokeDashoffset="340" transform="rotate(72 90 90)" />
+                <circle cx="90" cy="90" r="70" fill="none" stroke="#6366F1" strokeWidth="20" strokeDasharray="440" strokeDashoffset="360" transform="rotate(108 90 90)" />
+                <circle cx="90" cy="90" r="70" fill="none" stroke="#3B82F6" strokeWidth="20" strokeDasharray="440" strokeDashoffset="385" transform="rotate(180 90 90)" />
+                <circle cx="90" cy="90" r="70" fill="none" stroke="#8B5CF6" strokeWidth="20" strokeDasharray="440" strokeDashoffset="340" transform="rotate(216 90 90)" />
+                <circle cx="90" cy="90" r="70" fill="none" stroke="#6B7280" strokeWidth="20" strokeDasharray="440" strokeDashoffset="420" transform="rotate(310 90 90)" />
+                <circle cx="90" cy="90" r="54" fill="white" />
+              </svg>
+            </div>
+            
+            {/* Category Legend */}
+            <div className="flex flex-wrap justify-center gap-3 mt-5">
+              {expenseCategoriesData.map((category, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center px-3 py-1.5 rounded-full"
+                  style={{ 
+                    backgroundColor: `${category.color}15`,
+                    border: `1px solid ${category.color}30`
+                  }}
+                >
+                  <div 
+                    className="w-2.5 h-2.5 rounded-full mr-2" 
+                    style={{ backgroundColor: category.color }}
+                  />
+                  <span className="text-sm font-medium">{category.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Recent Expenses Table Section */}
