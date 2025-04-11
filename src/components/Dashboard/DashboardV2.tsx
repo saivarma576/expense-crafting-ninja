@@ -104,11 +104,20 @@ const DashboardV2: React.FC = () => {
         onCurrencyChange={setCurrency}
       />
 
-      {/* Top Stats Cards */}
+      {/* Top Stats Cards - Updated with new format */}
       <TopStatsCards 
-        submittedExpenses={dashboardData.submittedExpenses}
-        inReviewExpenses={dashboardData.inReviewExpenses}
-        reimbursedExpenses={dashboardData.reimbursedExpenses}
+        totalExpense={{
+          amount: 115484,
+          count: 245
+        }}
+        processedExpense={{
+          amount: 78450,
+          count: 168
+        }}
+        postedExpense={{
+          amount: 52340,
+          count: 98
+        }}
         currency={currency}
       />
 
