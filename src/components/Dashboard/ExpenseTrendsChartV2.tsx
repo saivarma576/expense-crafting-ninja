@@ -33,20 +33,21 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
-          margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+          margin={{ top: 5, right: 10, left: 0, bottom: 15 }}
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
           <XAxis 
             dataKey="month" 
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
+            dy={10}
           />
           <YAxis 
             yAxisId="left"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             domain={[0, 'auto']}
           />
           <YAxis 
@@ -54,7 +55,7 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             orientation="right"
             axisLine={false}
             tickLine={false}
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: '#6b7280' }}
             domain={[0, 'auto']}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -63,7 +64,7 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             dataKey="expenses" 
             fill="rgba(104, 124, 254, 0.9)" 
             radius={[4, 4, 0, 0]} 
-            barSize={30} 
+            barSize={24} 
           />
           <Line 
             yAxisId="right"
@@ -71,18 +72,18 @@ const ExpenseTrendsChartV2: React.FC<ExpenseTrendsChartV2Props> = ({ data, heigh
             dataKey="amount" 
             stroke="#ff7f5d" 
             strokeWidth={2}
-            dot={{ fill: '#ff7f5d', r: 4 }}
-            activeDot={{ r: 6 }}
+            dot={{ fill: '#ff7f5d', r: 3 }}
+            activeDot={{ r: 5 }}
           />
         </ComposedChart>
       </ResponsiveContainer>
       <div className="flex justify-center items-center gap-6 mt-2 text-xs">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'rgba(104, 124, 254, 0.9)' }}></div>
+          <div className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: 'rgba(104, 124, 254, 0.9)' }}></div>
           <span>Expenses</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#ff7f5d' }}></div>
+          <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#ff7f5d' }}></div>
           <span>Amount</span>
         </div>
       </div>
