@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 interface TopStatsCardsProps {
   totalExpense: {
@@ -30,13 +30,33 @@ interface TopStatsCardsProps {
   currency: string;
 }
 
+interface TrendProps {
+  value: number;
+  label: string;
+}
+
+const Trend: React.FC<TrendProps> = ({ value, label }) => {
+  const isPositive = value >= 0;
+  return (
+    <div className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full">
+      <span className={cn(
+        "flex items-center",
+        isPositive ? "text-green-600" : "text-red-600"
+      )}>
+        {isPositive ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
+        {Math.abs(value)}% {label}
+      </span>
+    </div>
+  );
+};
+
 const TopStatsCards: React.FC<TopStatsCardsProps> = ({
   totalExpense,
   processedExpense,
   postedExpense,
   currency
 }) => {
-  // Sample trend percentages (replace with actual data in production)
+  // Sample trend percentages
   const receivedTrend = 8.2;
   const processedTrend = -2.5;
   const postedTrend = 12.7;
@@ -46,108 +66,95 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="space-y-4"
+      className="grid grid-cols-1 md:grid-cols-4 gap-5"
     >
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Expense Received Card */}
-        <Card className="overflow-hidden bg-white border border-slate-100 relative">
-          <div className="p-5">
-            <div className="flex items-start mb-2">
-              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-red-50">
-                <AlertTriangle className="h-4 w-4 text-red-500" />
-              </div>
-              <div className="ml-2 flex-1">
-                <h3 className="text-sm font-medium text-slate-500">Expense Received</h3>
-              </div>
+      {/* High Severity Card */}
+      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-red-50">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
             </div>
-            <div className="mt-2">
-              <span className="text-2xl font-bold text-slate-800">{totalExpense.count}</span>
-              <div className="flex items-center mt-1 text-xs text-slate-500">
-                <span>{currency} {totalExpense.amount.toLocaleString()}</span>
-                <div className="ml-2 flex items-center px-1.5 py-0.5 rounded bg-blue-50">
-                  <ArrowUp className="h-3 w-3 text-blue-600 mr-1" />
-                  <span className="text-xs font-medium text-blue-600">{receivedTrend}%</span>
-                </div>
+            <h3 className="text-gray-600 font-medium">Expense Received</h3>
+          </div>
+          <div className="mt-3">
+            <span className="text-3xl font-bold text-gray-900">{totalExpense.count}</span>
+            <div className="flex items-center mt-1.5 text-sm text-gray-600">
+              <span>{currency} {totalExpense.amount.toLocaleString()}</span>
+              <div className="ml-3">
+                <Trend value={receivedTrend} label="vs. last month" />
               </div>
             </div>
           </div>
-          <div className="h-1 w-full bg-red-400"></div>
-        </Card>
+        </div>
+        <div className="h-1 w-full bg-red-500"></div>
+      </Card>
 
-        {/* Expense Processed Card */}
-        <Card className="overflow-hidden bg-white border border-slate-100 relative">
-          <div className="p-5">
-            <div className="flex items-start mb-2">
-              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-orange-50">
-                <Bell className="h-4 w-4 text-orange-500" />
-              </div>
-              <div className="ml-2 flex-1">
-                <h3 className="text-sm font-medium text-slate-500">Expense Processed</h3>
-              </div>
+      {/* Medium Severity Card */}
+      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-orange-50">
+              <Bell className="h-5 w-5 text-orange-500" />
             </div>
-            <div className="mt-2">
-              <span className="text-2xl font-bold text-slate-800">{processedExpense.count}</span>
-              <div className="flex items-center mt-1 text-xs text-slate-500">
-                <span>{currency} {processedExpense.amount.toLocaleString()}</span>
-                <div className="ml-2 flex items-center px-1.5 py-0.5 rounded bg-red-50">
-                  <ArrowDown className="h-3 w-3 text-red-600 mr-1" />
-                  <span className="text-xs font-medium text-red-600">{Math.abs(processedTrend)}%</span>
-                </div>
+            <h3 className="text-gray-600 font-medium">Expense Processed</h3>
+          </div>
+          <div className="mt-3">
+            <span className="text-3xl font-bold text-gray-900">{processedExpense.count}</span>
+            <div className="flex items-center mt-1.5 text-sm text-gray-600">
+              <span>{currency} {processedExpense.amount.toLocaleString()}</span>
+              <div className="ml-3">
+                <Trend value={processedTrend} label="vs. last month" />
               </div>
             </div>
           </div>
-          <div className="h-1 w-full bg-orange-400"></div>
-        </Card>
+        </div>
+        <div className="h-1 w-full bg-orange-500"></div>
+      </Card>
 
-        {/* Expense Posted Card */}
-        <Card className="overflow-hidden bg-white border border-slate-100 relative">
-          <div className="p-5">
-            <div className="flex items-start mb-2">
-              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-yellow-50">
-                <Clock className="h-4 w-4 text-yellow-500" />
-              </div>
-              <div className="ml-2 flex-1">
-                <h3 className="text-sm font-medium text-slate-500">Expense Posted</h3>
-              </div>
+      {/* Low Severity Card */}
+      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-yellow-50">
+              <Clock className="h-5 w-5 text-yellow-500" />
             </div>
-            <div className="mt-2">
-              <span className="text-2xl font-bold text-slate-800">{postedExpense.count}</span>
-              <div className="flex items-center mt-1 text-xs text-slate-500">
-                <span>{currency} {postedExpense.amount.toLocaleString()}</span>
-                <div className="ml-2 flex items-center px-1.5 py-0.5 rounded bg-purple-50">
-                  <ArrowUp className="h-3 w-3 text-purple-600 mr-1" />
-                  <span className="text-xs font-medium text-purple-600">{postedTrend}%</span>
-                </div>
+            <h3 className="text-gray-600 font-medium">Expense Posted</h3>
+          </div>
+          <div className="mt-3">
+            <span className="text-3xl font-bold text-gray-900">{postedExpense.count}</span>
+            <div className="flex items-center mt-1.5 text-sm text-gray-600">
+              <span>{currency} {postedExpense.amount.toLocaleString()}</span>
+              <div className="ml-3">
+                <Trend value={postedTrend} label="vs. last month" />
               </div>
             </div>
           </div>
-          <div className="h-1 w-full bg-yellow-400"></div>
-        </Card>
+        </div>
+        <div className="h-1 w-full bg-yellow-500"></div>
+      </Card>
 
-        {/* Quick Create Card */}
-        <Card className="overflow-hidden bg-white border border-slate-100 relative">
-          <div className="p-5">
-            <div className="flex items-start mb-2">
-              <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full bg-green-50">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </div>
-              <div className="ml-2 flex-1">
-                <h3 className="text-sm font-medium text-slate-500">Quick Create</h3>
-              </div>
+      {/* Resolved Card */}
+      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-green-50">
+              <CheckCircle className="h-5 w-5 text-green-500" />
             </div>
-            <div className="mt-2">
-              <Button 
-                className="w-full justify-start text-white bg-blue-600 hover:bg-blue-700"
-                onClick={() => window.location.href="/expenses/new"}
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Create Expense
-              </Button>
-            </div>
+            <h3 className="text-gray-600 font-medium">Quick Create</h3>
           </div>
-          <div className="h-1 w-full bg-green-400"></div>
-        </Card>
-      </div>
+          <div className="mt-3">
+            <Button 
+              className="w-full justify-center text-white bg-blue-600 hover:bg-blue-700"
+              onClick={() => window.location.href="/expenses/new"}
+            >
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Create Expense
+            </Button>
+          </div>
+        </div>
+        <div className="h-1 w-full bg-green-500"></div>
+      </Card>
     </motion.div>
   );
 };
