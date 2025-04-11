@@ -109,15 +109,36 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
         />
       </CardHeader>
       <CardContent className="p-0">
-        <BarChartComponent 
-          data={data}
-          categories={filteredCategoryData}
-          chartConfig={chartConfig}
-          currency={currency}
-        />
+        {/* Chart Section */}
+        <div className="p-2">
+          <BarChartComponent 
+            data={data}
+            categories={filteredCategoryData}
+            chartConfig={chartConfig}
+            currency={currency}
+          />
+        </div>
         
-        {/* Insights Section - Fixed layout to prevent overlapping */}
-        <div className="px-6 py-4 border-t mt-4">
+        {/* Categories Legend - Added as a separate section */}
+        <div className="px-6 py-3 border-t">
+          <div className="flex flex-wrap gap-2">
+            {filteredCategoryData.map((cat) => (
+              <div 
+                key={cat.name}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50 border text-sm"
+              >
+                <span 
+                  className="w-3 h-3 rounded-sm inline-block"
+                  style={{ backgroundColor: cat.color }}
+                ></span>
+                <span>{cat.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        {/* Insights Section - Now clearly separated */}
+        <div className="px-6 py-4 border-t mt-2 bg-gray-50/30">
           <h3 className="text-base font-medium mb-3">Insights</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="border rounded-lg p-4 bg-gray-50/50">
