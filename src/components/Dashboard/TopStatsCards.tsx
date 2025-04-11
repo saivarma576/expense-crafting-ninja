@@ -6,7 +6,9 @@ import {
   Bell,
   Clock,
   CheckCircle,
-  PlusCircle
+  PlusCircle,
+  TrendingUp,
+  TrendingDown
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,15 +38,28 @@ interface TrendProps {
 const Trend: React.FC<TrendProps> = ({ value, label }) => {
   const isPositive = value >= 0;
   return (
-    <div className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full">
+    <div className="inline-flex items-center text-xs font-medium">
       <span className={cn(
-        "flex items-center",
+        "flex items-center gap-1",
         isPositive ? "text-green-600" : "text-red-600"
       )}>
+        {isPositive ? (
+          <TrendingUp className="h-3.5 w-3.5" />
+        ) : (
+          <TrendingDown className="h-3.5 w-3.5" />
+        )}
         {Math.abs(value)}% {label}
       </span>
     </div>
   );
+};
+
+const formatCurrency = (amount: number, currency: string): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
 };
 
 const TopStatsCards: React.FC<TopStatsCardsProps> = ({
@@ -73,7 +88,11 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Expense Received</p>
-            <p className="text-2xl font-semibold">{totalExpense.count}</p>
+            <div className="flex flex-col">
+              <p className="text-2xl font-semibold">{totalExpense.count}</p>
+              <p className="text-sm text-gray-500">{formatCurrency(totalExpense.amount, currency)}</p>
+              <Trend value={receivedTrend} label="vs last month" />
+            </div>
           </div>
         </div>
       </Card>
@@ -86,7 +105,11 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Expense Processed</p>
-            <p className="text-2xl font-semibold">{processedExpense.count}</p>
+            <div className="flex flex-col">
+              <p className="text-2xl font-semibold">{processedExpense.count}</p>
+              <p className="text-sm text-gray-500">{formatCurrency(processedExpense.amount, currency)}</p>
+              <Trend value={processedTrend} label="vs last month" />
+            </div>
           </div>
         </div>
       </Card>
@@ -99,7 +122,11 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Expense Posted</p>
-            <p className="text-2xl font-semibold">{postedExpense.count}</p>
+            <div className="flex flex-col">
+              <p className="text-2xl font-semibold">{postedExpense.count}</p>
+              <p className="text-sm text-gray-500">{formatCurrency(postedExpense.amount, currency)}</p>
+              <Trend value={postedTrend} label="vs last month" />
+            </div>
           </div>
         </div>
       </Card>
