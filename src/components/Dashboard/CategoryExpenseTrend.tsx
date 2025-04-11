@@ -56,24 +56,24 @@ const filteredCategories = [
   'Rental Car'
 ];
 
-// Lighter pastel colors for a more appealing look
+// Slightly darker pastel colors for better visibility
 const pastelColors = [
-  '#D3E4FD', // Soft Blue
-  '#FDE1D3', // Soft Peach
-  '#E5DEFF', // Soft Purple
-  '#FFDEE2', // Soft Pink
-  '#F2FCE2', // Soft Green
-  '#FEF7CD', // Soft Yellow
-  '#FEC6A1', // Soft Orange
-  '#F1F0FB', // Soft Gray
-  '#D3FDEC', // Soft Mint
-  '#FFD6F3', // Soft Magenta
-  '#E4F1F1', // Soft Teal
-  '#FBE5D6', // Soft Amber
-  '#E5E9FF', // Soft Indigo
-  '#F3E5FF', // Soft Lavender
-  '#D6F5FF', // Soft Cyan
-  '#FFEDCC'  // Soft Gold
+  '#B8D1F3', // Darker Soft Blue
+  '#F5CAB0', // Darker Soft Peach
+  '#D0C8F0', // Darker Soft Purple
+  '#FFCCD2', // Darker Soft Pink
+  '#E0ECC8', // Darker Soft Green
+  '#F0E5A0', // Darker Soft Yellow
+  '#F0B085', // Darker Soft Orange
+  '#E0DFF0', // Darker Soft Gray
+  '#B8F0D4', // Darker Soft Mint
+  '#F0B8E0', // Darker Soft Magenta
+  '#C8DFDF', // Darker Soft Teal
+  '#F0CBB0', // Darker Soft Amber
+  '#C8D0F0', // Darker Soft Indigo
+  '#E5C8F0', // Darker Soft Lavender
+  '#B8E5F0', // Darker Soft Cyan
+  '#F0D9A8'  // Darker Soft Gold
 ];
 
 const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({ 
@@ -89,7 +89,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
     selectedCategories.includes(cat.name)
   ).map((cat, index) => ({
     ...cat,
-    color: pastelColors[index % pastelColors.length] // Assign pastel colors
+    color: pastelColors[index % pastelColors.length] // Assign darker pastel colors
   }));
 
   const handleCategoryToggle = (category: string) => {
@@ -116,7 +116,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
                 <ChevronDown className="h-3.5 w-3.5 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 bg-white">
               {categories.map((category) => (
                 <DropdownMenuCheckboxItem
                   key={category.name}
@@ -165,12 +165,20 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
             <Tooltip 
               formatter={(value: number) => [`${currency}${value.toLocaleString()}`, '']}
               labelFormatter={(label) => `${label}`}
-              contentStyle={{ borderRadius: '8px', border: '1px solid #E4E4E7' }}
+              contentStyle={{ borderRadius: '8px', border: '1px solid #E4E4E7', backgroundColor: 'white' }}
             />
             <Legend 
               layout="horizontal" 
-              verticalAlign="bottom" 
-              wrapperStyle={{ fontSize: '12px', paddingTop: '20px' }}
+              verticalAlign="bottom"
+              align="center"
+              wrapperStyle={{ 
+                fontSize: '12px', 
+                paddingTop: '20px',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(8, 1fr)',
+                gap: '8px',
+                width: '100%',
+              }}
             />
             {filteredCategoryData.map((category) => (
               <Bar 
