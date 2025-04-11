@@ -41,6 +41,11 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
     setLegendPage((prev) => (prev - 1 + totalPages) % totalPages);
   };
 
+  // Calculate total for each month to display at top of bars
+  const getTotalAmount = (item: MonthCategoryData) => {
+    return item.totalAmount;
+  };
+
   return (
     <div className="h-[450px]">
       <ChartContainer 
@@ -50,13 +55,13 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
         <BarChart
           data={data}
           margin={{
-            top: 30,
+            top: 50, // Increased top margin to accommodate the total amount label
             right: 30,
             left: 20,
             bottom: 100,
           }}
           barGap={1}
-          barSize={16}
+          barSize={30} // Increased bar width from 16 to 30
         >
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E4E4E7" />
           <XAxis 
@@ -71,7 +76,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
             tickLine={false}
             tick={{ fontSize: 12 }}
             label={{ 
-              value: `Expense Amount (${currency})`, 
+              value: `Expense Amount (${currency === "₹" ? "$" : currency})`, 
               angle: -90, 
               position: 'left',
               style: { textAnchor: 'middle', fontSize: 12, fill: '#6B7280' },
@@ -80,7 +85,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
             domain={[0, 'dataMax + 5000']}
           />
           <RechartsTooltip 
-            content={<ChartTooltip currency={currency} active={false} payload={[]} label="" />}
+            content={<ChartTooltip currency={currency === "₹" ? "$" : currency} active={false} payload={[]} label="" />}
             cursor={{ fill: 'rgba(224, 224, 224, 0.2)' }}
           />
           
@@ -93,6 +98,15 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
               radius={[2, 2, 0, 0]}
             />
           ))}
+
+          {/* Add the total amount label at the top of each bar */}
+          <LabelList 
+            dataKey={getTotalAmount} 
+            position="top" 
+            formatter={(value: number) => `${currency === "₹" ? "$" : currency}${value.toLocaleString()}`}
+            style={{ fontSize: 11, fill: '#6B7280', fontWeight: 'bold' }}
+            offset={10}
+          />
         </BarChart>
       </ChartContainer>
       

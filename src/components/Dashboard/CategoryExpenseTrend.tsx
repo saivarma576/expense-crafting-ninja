@@ -28,7 +28,7 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
   data, 
   categories,
   title = "Compare Category Wise Expense Trend",
-  currency = "₹"
+  currency = "$" // Changed default from ₹ to $
 }) => {
   // Default to showing only top 10 categories initially for better readability
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -116,22 +116,22 @@ const CategoryExpenseTrend: React.FC<CategoryExpenseTrendProps> = ({
           currency={currency}
         />
         
-        {/* Insights Section */}
+        {/* Insights Section - Fixed layout to prevent overlapping */}
         <div className="px-6 py-4 border-t">
           <h3 className="text-base font-medium mb-3">Insights</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+            <div className="border rounded-lg p-4 bg-gray-50/50">
               <div className="text-xs uppercase text-gray-500 font-medium">Highest Claimed Category</div>
-              <div className="text-base font-medium mt-1">{highestCategory.name}</div>
-              <div className="text-sm text-gray-600 mt-0.5">
-                {currency} {highestCategory.amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              <div className="text-base font-medium mt-2 truncate">{highestCategory.name}</div>
+              <div className="text-sm text-gray-600 mt-1">
+                {currency} {highestCategory.amount.toLocaleString('en-US', { maximumFractionDigits: 2 })}
               </div>
             </div>
-            <div>
+            <div className="border rounded-lg p-4 bg-gray-50/50">
               <div className="text-xs uppercase text-gray-500 font-medium">Lowest Claimed Category</div>
-              <div className="text-base font-medium mt-1">{lowestCategory.name}</div>
-              <div className="text-sm text-gray-600 mt-0.5">
-                {currency} {lowestCategory.amount.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+              <div className="text-base font-medium mt-2 truncate">{lowestCategory.name}</div>
+              <div className="text-sm text-gray-600 mt-1">
+                {currency} {lowestCategory.amount.toLocaleString('en-US', { maximumFractionDigits: 2 })}
               </div>
             </div>
           </div>
