@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, LabelList, Cell } from 'recharts';
 import { ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { ChartContainer } from '@/components/ui/chart';
@@ -7,7 +8,7 @@ import { formatYAxis } from './utils';
 import ChartTooltip from './ChartTooltip';
 import { CategoryExpense, MonthCategoryData } from '../CategoryExpenseTrend';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface BarChartComponentProps {
   data: MonthCategoryData[];
@@ -78,7 +79,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
             }}
             domain={[0, 'dataMax + 5000']}
           />
-          <Tooltip 
+          <RechartsTooltip 
             content={<ChartTooltip currency={currency} active={false} payload={[]} label="" />}
             cursor={{ fill: 'rgba(224, 224, 224, 0.2)' }}
           />
