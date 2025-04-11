@@ -6,9 +6,7 @@ import {
   Bell,
   Clock,
   CheckCircle,
-  PlusCircle,
-  ArrowUp,
-  ArrowDown
+  PlusCircle
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,7 +41,6 @@ const Trend: React.FC<TrendProps> = ({ value, label }) => {
         "flex items-center",
         isPositive ? "text-green-600" : "text-red-600"
       )}>
-        {isPositive ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
         {Math.abs(value)}% {label}
       </span>
     </div>
@@ -66,94 +63,64 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="grid grid-cols-1 md:grid-cols-4 gap-5"
+      className="grid grid-cols-1 md:grid-cols-4 gap-4"
     >
-      {/* High Severity Card */}
-      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-red-50">
-              <AlertTriangle className="h-5 w-5 text-red-500" />
-            </div>
-            <h3 className="text-gray-600 font-medium">Expense Received</h3>
+      {/* Expense Received Card */}
+      <Card className="rounded-lg border bg-gradient-to-br from-red-50 to-white border-red-100 shadow-sm">
+        <div className="p-4 flex items-center gap-4">
+          <div className="rounded-full bg-red-100 p-2 flex-shrink-0">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
           </div>
-          <div className="mt-3">
-            <span className="text-3xl font-bold text-gray-900">{totalExpense.count}</span>
-            <div className="flex items-center mt-1.5 text-sm text-gray-600">
-              <span>{currency} {totalExpense.amount.toLocaleString()}</span>
-              <div className="ml-3">
-                <Trend value={receivedTrend} label="vs. last month" />
-              </div>
-            </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Expense Received</p>
+            <p className="text-2xl font-semibold">{totalExpense.count}</p>
           </div>
         </div>
-        <div className="h-1 w-full bg-red-500"></div>
       </Card>
 
-      {/* Medium Severity Card */}
-      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-orange-50">
-              <Bell className="h-5 w-5 text-orange-500" />
-            </div>
-            <h3 className="text-gray-600 font-medium">Expense Processed</h3>
+      {/* Expense Processed Card */}
+      <Card className="rounded-lg border bg-gradient-to-br from-orange-50 to-white border-orange-100 shadow-sm">
+        <div className="p-4 flex items-center gap-4">
+          <div className="rounded-full bg-orange-100 p-2 flex-shrink-0">
+            <Bell className="h-5 w-5 text-orange-600" />
           </div>
-          <div className="mt-3">
-            <span className="text-3xl font-bold text-gray-900">{processedExpense.count}</span>
-            <div className="flex items-center mt-1.5 text-sm text-gray-600">
-              <span>{currency} {processedExpense.amount.toLocaleString()}</span>
-              <div className="ml-3">
-                <Trend value={processedTrend} label="vs. last month" />
-              </div>
-            </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Expense Processed</p>
+            <p className="text-2xl font-semibold">{processedExpense.count}</p>
           </div>
         </div>
-        <div className="h-1 w-full bg-orange-500"></div>
       </Card>
 
-      {/* Low Severity Card */}
-      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-yellow-50">
-              <Clock className="h-5 w-5 text-yellow-500" />
-            </div>
-            <h3 className="text-gray-600 font-medium">Expense Posted</h3>
+      {/* Expense Posted Card */}
+      <Card className="rounded-lg border bg-gradient-to-br from-yellow-50 to-white border-yellow-100 shadow-sm">
+        <div className="p-4 flex items-center gap-4">
+          <div className="rounded-full bg-yellow-100 p-2 flex-shrink-0">
+            <Clock className="h-5 w-5 text-yellow-600" />
           </div>
-          <div className="mt-3">
-            <span className="text-3xl font-bold text-gray-900">{postedExpense.count}</span>
-            <div className="flex items-center mt-1.5 text-sm text-gray-600">
-              <span>{currency} {postedExpense.amount.toLocaleString()}</span>
-              <div className="ml-3">
-                <Trend value={postedTrend} label="vs. last month" />
-              </div>
-            </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Expense Posted</p>
+            <p className="text-2xl font-semibold">{postedExpense.count}</p>
           </div>
         </div>
-        <div className="h-1 w-full bg-yellow-500"></div>
       </Card>
 
-      {/* Resolved Card */}
-      <Card className="overflow-hidden bg-white border border-transparent shadow-sm relative">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-full bg-green-50">
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            </div>
-            <h3 className="text-gray-600 font-medium">Quick Create</h3>
+      {/* Quick Create Card */}
+      <Card className="rounded-lg border bg-gradient-to-br from-green-50 to-white border-green-100 shadow-sm">
+        <div className="p-4 flex items-center gap-4">
+          <div className="rounded-full bg-green-100 p-2 flex-shrink-0">
+            <CheckCircle className="h-5 w-5 text-green-600" />
           </div>
-          <div className="mt-3">
+          <div>
+            <p className="text-sm text-muted-foreground">Quick Create</p>
             <Button 
-              className="w-full justify-center text-white bg-blue-600 hover:bg-blue-700"
+              className="mt-1 text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 h-auto text-sm"
               onClick={() => window.location.href="/expenses/new"}
             >
-              <PlusCircle className="h-4 w-4 mr-2" />
+              <PlusCircle className="h-4 w-4 mr-1" />
               Create Expense
             </Button>
           </div>
         </div>
-        <div className="h-1 w-full bg-green-500"></div>
       </Card>
     </motion.div>
   );
