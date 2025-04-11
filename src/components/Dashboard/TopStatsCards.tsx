@@ -2,16 +2,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-  AlertTriangle,
-  Bell,
-  Clock,
-  CheckCircle,
-  PlusCircle,
-  TrendingUp,
-  TrendingDown,
+  ArrowUp,
+  ArrowDown,
   DollarSign,
   FileText,
-  CircleCheck
+  CheckCircle,
+  PlusCircle,
+  User,
+  CreditCard
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,19 +38,18 @@ interface TrendProps {
 
 const Trend: React.FC<TrendProps> = ({ value, label }) => {
   const isPositive = value >= 0;
+  
   return (
-    <div className="inline-flex items-center text-xs font-medium">
-      <span className={cn(
-        "flex items-center gap-1",
-        isPositive ? "text-green-600" : "text-red-600"
-      )}>
-        {isPositive ? (
-          <TrendingUp className="h-3.5 w-3.5" />
-        ) : (
-          <TrendingDown className="h-3.5 w-3.5" />
-        )}
-        {Math.abs(value)}%
-      </span>
+    <div className={cn(
+      "inline-flex items-center text-xs font-medium",
+      isPositive ? "text-green-500" : "text-red-500"
+    )}>
+      {isPositive ? (
+        <ArrowUp className="h-3.5 w-3.5 mr-1" />
+      ) : (
+        <ArrowDown className="h-3.5 w-3.5 mr-1" />
+      )}
+      {isPositive ? "+" : ""}{value}%
     </div>
   );
 };
@@ -61,7 +58,7 @@ const formatCurrency = (amount: number, currency: string): string => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 };
 
@@ -72,9 +69,10 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
   currency
 }) => {
   // Sample trend percentages
-  const receivedTrend = 8.2;
-  const processedTrend = -2.5;
-  const postedTrend = 12.7;
+  const receivedTrend = 16.24;
+  const processedTrend = -3.57;
+  const postedTrend = 29.08;
+  const balanceTrend = 0.00;
 
   return (
     <motion.div 
@@ -83,84 +81,70 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       transition={{ duration: 0.4 }}
       className="grid grid-cols-1 md:grid-cols-4 gap-4"
     >
-      {/* Expense Received Card */}
-      <Card className="rounded-lg border bg-gradient-to-br from-blue-50 to-white border-blue-100 shadow-sm relative overflow-hidden">
+      {/* Total Expenses Card */}
+      <Card className="border bg-white shadow-sm">
         <div className="p-4">
-          <div className="absolute top-4 right-4 rounded-full bg-blue-500 p-3">
-            <DollarSign className="h-5 w-5 text-white" />
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase">TOTAL EARNINGS</p>
+            <Trend value={receivedTrend} />
           </div>
-          <div className="pr-14">
-            <p className="text-sm font-medium text-blue-600 uppercase mb-1">Expense Received</p>
-            <div className="flex flex-col">
-              <p className="text-2xl font-bold text-blue-700">
-                {currency} {totalExpense.amount.toLocaleString()}
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-gray-600">{totalExpense.count} Expenses</p>
-                <Trend value={receivedTrend} />
-              </div>
+          <p className="text-2xl font-bold mb-3">${(totalExpense.amount / 1000).toFixed(2)}K</p>
+          <div className="flex justify-between items-center">
+            <a href="#" className="text-sm text-blue-500 hover:underline">View net earnings</a>
+            <div className="bg-green-100 p-2 rounded-md">
+              <DollarSign className="h-5 w-5 text-green-500" />
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Expense Processed Card */}
-      <Card className="rounded-lg border bg-gradient-to-br from-green-50 to-white border-green-100 shadow-sm relative overflow-hidden">
+      {/* Orders Card */}
+      <Card className="border bg-white shadow-sm">
         <div className="p-4">
-          <div className="absolute top-4 right-4 rounded-full bg-green-500 p-3">
-            <FileText className="h-5 w-5 text-white" />
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase">ORDERS</p>
+            <Trend value={processedTrend} />
           </div>
-          <div className="pr-14">
-            <p className="text-sm font-medium text-green-600 uppercase mb-1">Expense Processed</p>
-            <div className="flex flex-col">
-              <p className="text-2xl font-bold text-green-700">
-                {currency} {processedExpense.amount.toLocaleString()}
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-gray-600">{processedExpense.count} Expenses</p>
-                <Trend value={processedTrend} />
-              </div>
+          <p className="text-2xl font-bold mb-3">{processedExpense.count.toLocaleString()}</p>
+          <div className="flex justify-between items-center">
+            <a href="#" className="text-sm text-blue-500 hover:underline">View all orders</a>
+            <div className="bg-blue-100 p-2 rounded-md">
+              <FileText className="h-5 w-5 text-blue-500" />
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Expense Posted Card */}
-      <Card className="rounded-lg border bg-gradient-to-br from-purple-50 to-white border-purple-100 shadow-sm relative overflow-hidden">
+      {/* Customers Card */}
+      <Card className="border bg-white shadow-sm">
         <div className="p-4">
-          <div className="absolute top-4 right-4 rounded-full bg-purple-500 p-3">
-            <CheckCircle className="h-5 w-5 text-white" />
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase">CUSTOMERS</p>
+            <Trend value={postedTrend} />
           </div>
-          <div className="pr-14">
-            <p className="text-sm font-medium text-purple-600 uppercase mb-1">Expense Posted</p>
-            <div className="flex flex-col">
-              <p className="text-2xl font-bold text-purple-700">
-                {currency} {postedExpense.amount.toLocaleString()}
-              </p>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-sm text-gray-600">{postedExpense.count} Expenses</p>
-                <Trend value={postedTrend} />
-              </div>
+          <p className="text-2xl font-bold mb-3">{(postedExpense.count * 1.5).toFixed(2)}M</p>
+          <div className="flex justify-between items-center">
+            <a href="#" className="text-sm text-blue-500 hover:underline">See details</a>
+            <div className="bg-amber-100 p-2 rounded-md">
+              <User className="h-5 w-5 text-amber-500" />
             </div>
           </div>
         </div>
       </Card>
 
-      {/* Quick Create Card */}
-      <Card className="rounded-lg border bg-white shadow-sm relative overflow-hidden">
+      {/* My Balance Card */}
+      <Card className="border bg-white shadow-sm">
         <div className="p-4">
-          <div className="absolute top-4 right-4 rounded-full bg-blue-500 p-3">
-            <PlusCircle className="h-5 w-5 text-white" />
+          <div className="flex justify-between items-start mb-2">
+            <p className="text-xs font-medium text-gray-500 uppercase">MY BALANCE</p>
+            <span className="text-xs font-medium text-gray-500">+{balanceTrend.toFixed(2)}%</span>
           </div>
-          <div className="pr-14">
-            <p className="text-lg font-medium text-gray-800 mb-2">Quick Create</p>
-            <Button 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white mt-2"
-              onClick={() => window.location.href="/expenses/new"}
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Create Expense
-            </Button>
+          <p className="text-2xl font-bold mb-3">${(totalExpense.amount * 0.3).toFixed(2)}K</p>
+          <div className="flex justify-between items-center">
+            <a href="#" className="text-sm text-blue-500 hover:underline">Withdraw money</a>
+            <div className="bg-blue-100 p-2 rounded-md">
+              <CreditCard className="h-5 w-5 text-blue-500" />
+            </div>
           </div>
         </div>
       </Card>
