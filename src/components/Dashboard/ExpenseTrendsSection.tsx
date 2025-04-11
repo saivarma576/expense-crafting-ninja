@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import ExpenseTrendsChartV2 from './ExpenseTrendsChartV2';
 import ExpenseTypeBreakdown from './ExpenseTypeBreakdown';
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ExpenseTrendData {
   month: string;
@@ -41,9 +42,18 @@ const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({
   stats
 }) => {
   const [period, setPeriod] = useState<'all' | '1m' | '6m' | '1y'>('1y');
+  const [selectedYear, setSelectedYear] = useState(2023);
 
   const handlePeriodChange = (newPeriod: 'all' | '1m' | '6m' | '1y') => {
     setPeriod(newPeriod);
+  };
+
+  const handleYearChange = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setSelectedYear(prev => prev - 1);
+    } else {
+      setSelectedYear(prev => prev + 1);
+    }
   };
 
   return (
@@ -90,6 +100,27 @@ const ExpenseTrendsSection: React.FC<ExpenseTrendsSectionProps> = ({
                 className="text-xs px-3 py-1 h-8"
               >
                 1Y
+              </Button>
+            </div>
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleYearChange('prev')}
+                className="h-8 w-8"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-medium mx-2">{selectedYear}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleYearChange('next')}
+                className="h-8 w-8"
+              >
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>

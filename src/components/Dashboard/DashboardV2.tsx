@@ -153,8 +153,6 @@ const DashboardV2: React.FC = () => {
           monthlyTrends={dashboardData.monthlyTrends} 
           expenseTypes={expenseTypesData}
           stats={stats}
-          selectedYear={selectedYear} 
-          onYearChange={handleYearChange}
         />
         
         <ExpenseTypeBreakdown 
