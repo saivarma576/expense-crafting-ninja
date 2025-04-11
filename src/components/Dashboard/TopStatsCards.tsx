@@ -6,13 +6,10 @@ import {
   ArrowDown,
   DollarSign,
   FileText,
-  CheckCircle,
-  PlusCircle,
-  User,
-  CreditCard
+  Users,
+  Wallet
 } from 'lucide-react';
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface TopStatsCardsProps {
@@ -41,7 +38,7 @@ const Trend: React.FC<TrendProps> = ({ value, label }) => {
   
   return (
     <div className={cn(
-      "inline-flex items-center text-xs font-medium",
+      "flex items-center text-xs font-medium",
       isPositive ? "text-green-500" : "text-red-500"
     )}>
       {isPositive ? (
@@ -49,7 +46,7 @@ const Trend: React.FC<TrendProps> = ({ value, label }) => {
       ) : (
         <ArrowDown className="h-3.5 w-3.5 mr-1" />
       )}
-      {isPositive ? "+" : ""}{value}%
+      <span>{isPositive ? "+" : "-"}{Math.abs(value).toFixed(2)}%</span>
     </div>
   );
 };
@@ -81,18 +78,25 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       transition={{ duration: 0.4 }}
       className="grid grid-cols-1 md:grid-cols-4 gap-4"
     >
-      {/* Total Expenses Card */}
+      {/* Total Earnings Card */}
       <Card className="border bg-white shadow-sm">
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-2">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-gray-500 uppercase">TOTAL EARNINGS</p>
             <Trend value={receivedTrend} />
           </div>
-          <p className="text-2xl font-bold mb-3">${(totalExpense.amount / 1000).toFixed(2)}K</p>
-          <div className="flex justify-between items-center">
-            <a href="#" className="text-sm text-blue-500 hover:underline">View net earnings</a>
-            <div className="bg-green-100 p-2 rounded-md">
-              <DollarSign className="h-5 w-5 text-green-500" />
+          
+          <div className="flex items-end justify-between mt-4">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">
+                ${(totalExpense.amount / 1000).toFixed(2)}K
+              </h4>
+              <a href="#" className="text-sm text-blue-500 hover:underline">View net earnings</a>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="bg-green-100 p-3 rounded-md">
+                <DollarSign className="h-5 w-5 text-green-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -100,16 +104,23 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
 
       {/* Orders Card */}
       <Card className="border bg-white shadow-sm">
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-2">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-gray-500 uppercase">ORDERS</p>
             <Trend value={processedTrend} />
           </div>
-          <p className="text-2xl font-bold mb-3">{processedExpense.count.toLocaleString()}</p>
-          <div className="flex justify-between items-center">
-            <a href="#" className="text-sm text-blue-500 hover:underline">View all orders</a>
-            <div className="bg-blue-100 p-2 rounded-md">
-              <FileText className="h-5 w-5 text-blue-500" />
+          
+          <div className="flex items-end justify-between mt-4">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">
+                {processedExpense.count.toLocaleString()}
+              </h4>
+              <a href="#" className="text-sm text-blue-500 hover:underline">View all orders</a>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="bg-blue-100 p-3 rounded-md">
+                <FileText className="h-5 w-5 text-blue-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -117,16 +128,23 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
 
       {/* Customers Card */}
       <Card className="border bg-white shadow-sm">
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-2">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-gray-500 uppercase">CUSTOMERS</p>
             <Trend value={postedTrend} />
           </div>
-          <p className="text-2xl font-bold mb-3">{(postedExpense.count * 1.5).toFixed(2)}M</p>
-          <div className="flex justify-between items-center">
-            <a href="#" className="text-sm text-blue-500 hover:underline">See details</a>
-            <div className="bg-amber-100 p-2 rounded-md">
-              <User className="h-5 w-5 text-amber-500" />
+          
+          <div className="flex items-end justify-between mt-4">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">
+                {(postedExpense.count * 1.5).toFixed(2)}M
+              </h4>
+              <a href="#" className="text-sm text-blue-500 hover:underline">See details</a>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="bg-amber-100 p-3 rounded-md">
+                <Users className="h-5 w-5 text-amber-600" />
+              </div>
             </div>
           </div>
         </div>
@@ -134,16 +152,25 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
 
       {/* My Balance Card */}
       <Card className="border bg-white shadow-sm">
-        <div className="p-4">
-          <div className="flex justify-between items-start mb-2">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
             <p className="text-xs font-medium text-gray-500 uppercase">MY BALANCE</p>
-            <span className="text-xs font-medium text-gray-500">+{balanceTrend.toFixed(2)}%</span>
+            <div className="text-xs font-medium text-gray-500">
+              +{balanceTrend.toFixed(2)}%
+            </div>
           </div>
-          <p className="text-2xl font-bold mb-3">${(totalExpense.amount * 0.3).toFixed(2)}K</p>
-          <div className="flex justify-between items-center">
-            <a href="#" className="text-sm text-blue-500 hover:underline">Withdraw money</a>
-            <div className="bg-blue-100 p-2 rounded-md">
-              <CreditCard className="h-5 w-5 text-blue-500" />
+          
+          <div className="flex items-end justify-between mt-4">
+            <div>
+              <h4 className="text-xl font-semibold mb-4">
+                ${(totalExpense.amount * 0.3).toFixed(2)}K
+              </h4>
+              <a href="#" className="text-sm text-blue-500 hover:underline">Withdraw money</a>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="bg-blue-100 p-3 rounded-md">
+                <Wallet className="h-5 w-5 text-blue-600" />
+              </div>
             </div>
           </div>
         </div>
