@@ -6,19 +6,12 @@ import {
   FileText,
   CheckCircle,
   Upload,
-  Receipt,
-  PlusCircle,
-  ChevronDown
+  PlusCircle
 } from 'lucide-react';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import StatCard from '@/components/ui/StatCard';
 
 interface TopStatsCardsProps {
   totalExpense: {
@@ -51,63 +44,78 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {/* Total Expense Tile */}
-        <Card className="bg-white hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-blue-100 text-blue-600">
-                <DollarSign className="h-6 w-6" />
-              </div>
+        <motion.div 
+          whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          className="rounded-xl overflow-hidden bg-gradient-to-br from-white/90 to-white/70 shadow-lg border border-gray-100"
+        >
+          <div className="p-6">
+            <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Expense</p>
-                <h3 className="text-2xl font-bold mt-1">{currency} {totalExpense.amount.toLocaleString()}</h3>
+                <h3 className="text-2xl font-bold mt-1 text-gray-800">{currency} {totalExpense.amount.toLocaleString()}</h3>
                 <p className="text-sm text-gray-600 mt-1">{totalExpense.count} Expenses</p>
               </div>
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 shadow-sm">
+                <DollarSign className="h-6 w-6" />
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
         {/* Expense Processed Tile */}
-        <Card className="bg-white hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-green-100 text-green-600">
-                <FileText className="h-6 w-6" />
-              </div>
+        <motion.div 
+          whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          className="rounded-xl overflow-hidden bg-gradient-to-br from-white/90 to-white/70 shadow-lg border border-gray-100"
+        >
+          <div className="p-6">
+            <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Processed</p>
-                <h3 className="text-2xl font-bold mt-1">{currency} {processedExpense.amount.toLocaleString()}</h3>
+                <h3 className="text-2xl font-bold mt-1 text-gray-800">{currency} {processedExpense.amount.toLocaleString()}</h3>
                 <p className="text-sm text-gray-600 mt-1">{processedExpense.count} Expenses</p>
               </div>
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-50 text-green-600 shadow-sm">
+                <FileText className="h-6 w-6" />
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
         {/* Expense Posted Tile */}
-        <Card className="bg-white hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-purple-100 text-purple-600">
-                <CheckCircle className="h-6 w-6" />
-              </div>
+        <motion.div 
+          whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          className="rounded-xl overflow-hidden bg-gradient-to-br from-white/90 to-white/70 shadow-lg border border-gray-100"
+        >
+          <div className="p-6">
+            <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Posted</p>
-                <h3 className="text-2xl font-bold mt-1">{currency} {postedExpense.amount.toLocaleString()}</h3>
+                <h3 className="text-2xl font-bold mt-1 text-gray-800">{currency} {postedExpense.amount.toLocaleString()}</h3>
                 <p className="text-sm text-gray-600 mt-1">{postedExpense.count} Expenses</p>
               </div>
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-purple-50 text-purple-600 shadow-sm">
+                <CheckCircle className="h-6 w-6" />
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
 
         {/* Quick Create Tile */}
-        <Card className="bg-white hover:shadow-md transition-shadow">
-          <CardContent className="p-6">
+        <motion.div 
+          whileHover={{ y: -5, transition: { duration: 0.2 } }}
+          className="rounded-xl overflow-hidden bg-gradient-to-br from-white/90 to-white/70 shadow-lg border border-gray-100"
+        >
+          <div className="p-6">
             <div className="flex flex-col space-y-3">
-              <div>
-                <h3 className="font-semibold text-gray-800 mb-2">QUICK CREATE</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="font-semibold text-gray-800">QUICK CREATE</h3>
+                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                  <PlusCircle className="h-4 w-4 text-blue-600" />
+                </div>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 mt-2">
                 <Button 
-                  className="w-full justify-start bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md"
+                  className="w-full justify-start bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow"
                   onClick={() => window.location.href="/expenses/new"}
                 >
                   <PlusCircle className="h-4 w-4 mr-2" />
@@ -118,7 +126,7 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
                   <SheetTrigger asChild>
                     <Button 
                       variant="outline" 
-                      className="w-full justify-start text-gray-700 border-gray-300"
+                      className="w-full justify-start text-gray-700 border-gray-200 hover:bg-gray-50 rounded-lg transition-all duration-200 shadow-sm hover:shadow"
                     >
                       <Upload className="h-4 w-4 mr-2" />
                       Upload Receipt to Buffer
@@ -144,8 +152,8 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
                 </Sheet>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );

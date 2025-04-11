@@ -89,22 +89,24 @@ const DashboardV2: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Top Stats Cards */}
-      <TopStatsCards 
-        totalExpense={{
-          amount: 115484,
-          count: 245
-        }}
-        processedExpense={{
-          amount: 78450,
-          count: 168
-        }}
-        postedExpense={{
-          amount: 52340,
-          count: 98
-        }}
-        currency={currency}
-      />
+      {/* Top Stats Cards Section */}
+      <div className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-xl shadow-sm mb-6">
+        <TopStatsCards 
+          totalExpense={{
+            amount: 115484,
+            count: 245
+          }}
+          processedExpense={{
+            amount: 78450,
+            count: 168
+          }}
+          postedExpense={{
+            amount: 52340,
+            count: 98
+          }}
+          currency={currency}
+        />
+      </div>
 
       {/* Middle Section - Charts */}
       <ExpenseTrendsSection 
