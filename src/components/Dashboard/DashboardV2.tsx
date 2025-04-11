@@ -12,8 +12,8 @@ import TopStatsCards from './TopStatsCards';
 import CategoryInsights from './CategoryInsights';
 import BottomStatusSection from './BottomStatusSection';
 import WelcomeHeader from './WelcomeHeader';
-import ExpenseTrendsChart from './ExpenseTrendsChart';
-import ExpenseCategoriesChart from './ExpenseCategoriesChart';
+import ExpenseTrendsSection from './ExpenseTrendsSection';
+import ExpenseTypeBreakdown from './ExpenseTypeBreakdown';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -132,54 +132,15 @@ const DashboardV2: React.FC = () => {
 
       {/* Middle Section - Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ExpenseTrendsChart 
-          monthlyExpenseData={dashboardData.monthlyTrends.map(item => ({
-            month: item.month,
-            amount: item.amount
-          }))} 
-          selectedYear={selectedYear}
+        {/* Using components from Dashboard V1 */}
+        <ExpenseTrendsSection 
+          monthlyExpenseData={dashboardData.monthlyTrends} 
+          selectedYear={selectedYear} 
           onYearChange={handleYearChange}
         />
         
-        <ExpenseCategoriesChart 
-          categoryData={dashboardData.expenseTypes.map(type => ({
-            name: type.name,
-            value: type.value,
-            color: type.color,
-            formattedValue: `$${type.value.toLocaleString()}`
-          }))}
-          categoryGroups={[
-            {
-              name: "Business",
-              categories: dashboardData.expenseTypes.filter(type => 
-                ["Travel", "Professional Services"].includes(type.name)).map(type => ({
-                  name: type.name,
-                  value: type.value,
-                  color: type.color,
-                  formattedValue: `$${type.value.toLocaleString()}`
-                }))
-            },
-            {
-              name: "Operations",
-              categories: dashboardData.expenseTypes.filter(type => 
-                ["Food", "Transportation", "Office"].includes(type.name)).map(type => ({
-                  name: type.name,
-                  value: type.value,
-                  color: type.color,
-                  formattedValue: `$${type.value.toLocaleString()}`
-                }))
-            },
-            {
-              name: "Miscellaneous",
-              categories: dashboardData.expenseTypes.filter(type => 
-                ["Other"].includes(type.name)).map(type => ({
-                  name: type.name,
-                  value: type.value,
-                  color: type.color,
-                  formattedValue: `$${type.value.toLocaleString()}`
-                }))
-            }
-          ]}
+        <ExpenseTypeBreakdown 
+          expenseTypes={dashboardData.expenseTypes}
           selectedYear={selectedYear}
           onYearChange={handleYearChange}
         />
