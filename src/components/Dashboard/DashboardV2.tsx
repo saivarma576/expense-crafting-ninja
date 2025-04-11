@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from "sonner";
@@ -9,15 +10,17 @@ import { dashboardData } from './dashboardV2Data';
 import RecentExpensesTable from './RecentExpensesTable';
 import TopStatsCards from './TopStatsCards';
 import CategoryInsights from './CategoryInsights';
-import ExpenseTrendsSection from './ExpenseTrendsSection';
 import BottomStatusSection from './BottomStatusSection';
 import WelcomeHeader from './WelcomeHeader';
+import ExpenseTrendsChart from './ExpenseTrendsChart';
+import ExpenseCategoriesChart from './ExpenseCategoriesChart';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currency, setCurrency] = useState('USD');
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(new Date().setDate(new Date().getDate() - 30)));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+  const [selectedYear, setSelectedYear] = useState(2023);
 
   // Sample data for Recent Expenses Table
   const recentExpenses = [
@@ -68,21 +71,13 @@ const DashboardV2: React.FC = () => {
     }
   ];
 
-  // Transform expense types data to match the expected format with id and label
-  const expenseTypesFormatted = dashboardData.expenseTypes.map(type => ({
-    id: type.name,  // Use name as id since it doesn't exist
-    label: type.name, // Use name as label since it doesn't exist
-    value: type.value,
-    color: type.color
-  }));
-
-  // Transform stats object to array format expected by ExpenseTrendsSection
-  const statsArray = [
-    { title: 'Total Expenses', value: dashboardData.stats.totalExpenses.toLocaleString(), subValue: '' },
-    { title: 'Travel Expenses', value: dashboardData.stats.travelExpenses.toLocaleString(), subValue: '' },
-    { title: 'Meal Expenses', value: dashboardData.stats.mealExpenses.toLocaleString(), subValue: '' },
-    { title: 'Supplies Expenses', value: dashboardData.stats.suppliesExpenses.toLocaleString(), subValue: '' }
-  ];
+  const handleYearChange = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
+      setSelectedYear(prev => prev - 1);
+    } else {
+      setSelectedYear(prev => prev + 1);
+    }
+  };
 
   useEffect(() => {
     // Simulate data loading
@@ -136,11 +131,59 @@ const DashboardV2: React.FC = () => {
       </div>
 
       {/* Middle Section - Charts */}
-      <ExpenseTrendsSection 
-        monthlyTrends={dashboardData.monthlyTrends}
-        expenseTypes={expenseTypesFormatted}
-        stats={statsArray}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ExpenseTrendsChart 
+          monthlyExpenseData={dashboardData.monthlyTrends.map(item => ({
+            month: item.month,
+            amount: item.amount
+          }))} 
+          selectedYear={selectedYear}
+          onYearChange={handleYearChange}
+        />
+        
+        <ExpenseCategoriesChart 
+          categoryData={dashboardData.expenseTypes.map(type => ({
+            name: type.name,
+            value: type.value,
+            color: type.color,
+            formattedValue: `$${type.value.toLocaleString()}`
+          }))}
+          categoryGroups={[
+            {
+              name: "Business",
+              categories: dashboardData.expenseTypes.filter(type => 
+                ["Travel", "Professional Services"].includes(type.name)).map(type => ({
+                  name: type.name,
+                  value: type.value,
+                  color: type.color,
+                  formattedValue: `$${type.value.toLocaleString()}`
+                }))
+            },
+            {
+              name: "Operations",
+              categories: dashboardData.expenseTypes.filter(type => 
+                ["Food", "Transportation", "Office"].includes(type.name)).map(type => ({
+                  name: type.name,
+                  value: type.value,
+                  color: type.color,
+                  formattedValue: `$${type.value.toLocaleString()}`
+                }))
+            },
+            {
+              name: "Miscellaneous",
+              categories: dashboardData.expenseTypes.filter(type => 
+                ["Other"].includes(type.name)).map(type => ({
+                  name: type.name,
+                  value: type.value,
+                  color: type.color,
+                  formattedValue: `$${type.value.toLocaleString()}`
+                }))
+            }
+          ]}
+          selectedYear={selectedYear}
+          onYearChange={handleYearChange}
+        />
+      </div>
 
       {/* Recent Expenses Table Section */}
       <motion.div 
