@@ -41,7 +41,7 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
       className="space-y-4"
     >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Total Expense Tile */}
+        {/* Expense Received Tile */}
         <motion.div 
           whileHover={{ y: -5, transition: { duration: 0.2 } }}
           className="rounded-xl overflow-hidden bg-gradient-to-br from-white/90 to-white/70 shadow-lg border border-gray-100"
@@ -49,7 +49,7 @@ const TopStatsCards: React.FC<TopStatsCardsProps> = ({
           <div className="p-6">
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Total Expense</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Expense Received</p>
                 <h3 className="text-2xl font-bold mt-1 text-gray-800">{currency} {totalExpense.amount.toLocaleString()}</h3>
                 <p className="text-sm text-gray-600 mt-1">{totalExpense.count} Expenses</p>
               </div>
