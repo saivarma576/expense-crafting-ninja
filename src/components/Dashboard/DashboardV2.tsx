@@ -12,10 +12,13 @@ import TopStatsCards from './TopStatsCards';
 import CategoryInsights from './CategoryInsights';
 import ExpenseTrendsSection from './ExpenseTrendsSection';
 import BottomStatusSection from './BottomStatusSection';
+import WelcomeHeader from './WelcomeHeader';
 
 const DashboardV2: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currency, setCurrency] = useState('USD');
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date(new Date().setDate(new Date().getDate() - 30)));
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
 
   // Sample data for Recent Expenses Table
   const recentExpenses = [
@@ -105,6 +108,15 @@ const DashboardV2: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Welcome Header with Date Range Picker */}
+      <WelcomeHeader 
+        userName="Anna"
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
+
       {/* Top Stats Cards Section */}
       <div className="bg-gradient-to-r from-gray-50 to-white p-4 rounded-xl shadow-sm mb-6">
         <TopStatsCards 
