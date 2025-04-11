@@ -41,11 +41,6 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
     setLegendPage((prev) => (prev - 1 + totalPages) % totalPages);
   };
 
-  // Calculate total for each month to display at top of bars
-  const getTotalAmount = (item: MonthCategoryData) => {
-    return item.totalAmount;
-  };
-
   return (
     <div className="h-[450px]">
       <ChartContainer 
@@ -99,9 +94,9 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
             />
           ))}
 
-          {/* Add the total amount label at the top of each bar */}
+          {/* Fix: Use the string key 'totalAmount' instead of a function */}
           <LabelList 
-            dataKey={getTotalAmount} 
+            dataKey="totalAmount" 
             position="top" 
             formatter={(value: number) => `${currency === "₹" ? "$" : currency}${value.toLocaleString()}`}
             style={{ fontSize: 11, fill: '#6B7280', fontWeight: 'bold' }}
@@ -199,3 +194,4 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
 };
 
 export default BarChartComponent;
+
