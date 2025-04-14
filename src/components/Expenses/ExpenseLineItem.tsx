@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Zap, FileCheck, AlertCircle, MessageSquare } from 'lucide-react';
+import { Input } from "@/components/ui/input"; // Added missing Input import
 
 // Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
@@ -88,11 +89,36 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const [llmSuggestions, setLlmSuggestions] = useState<Record<string, string | null>>({});
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
+  // Generate a consistent ID for the form values
+  const formId = editingItem?.id || `item-${Date.now()}`;
+
   // All form values in a single object for passing to components
-  const formValues = {
-    type, amount, date, description, account, accountName, costCenter, costCenterName,
-    wbs, notes, merchantName, glAccount, zipCode, city, mealsRate, hotelRate, throughDate,
-    perDiemExplanation, departureTime, returnTime, miles, mileageRate, receiptUrl, receiptName
+  const formValues: ExpenseLineItemFormData = {
+    id: formId, // Added the required id property
+    type, 
+    amount, 
+    date, 
+    description, 
+    account, 
+    accountName, 
+    costCenter, 
+    costCenterName,
+    wbs, 
+    notes, 
+    merchantName, 
+    glAccount, 
+    zipCode, 
+    city, 
+    mealsRate, 
+    hotelRate, 
+    throughDate,
+    perDiemExplanation, 
+    departureTime, 
+    returnTime, 
+    miles, 
+    mileageRate, 
+    receiptUrl, 
+    receiptName
   };
 
   // Effect to auto-calculate mileage amount
@@ -334,9 +360,9 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   };
 
   const runValidation = () => {
-    // Create the expense object
+    // Create the expense object with the required id property
     const expense: ExpenseLineItemFormData = {
-      id: editingItem?.id || `item-${Date.now()}`,
+      id: formId,
       type,
       amount,
       date,
@@ -392,7 +418,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     if (!validateForm()) return;
     
     onSave({
-      id: editingItem?.id || `item-${Date.now()}`,
+      id: formId,
       type,
       amount,
       date,
