@@ -15,6 +15,8 @@ import { FormValues } from './CreateExpense/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 const initialLineItems = [
   {
@@ -63,10 +65,24 @@ const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
+  // New state for the travel expense toggle
+  const [isTravelExpense, setIsTravelExpense] = useState<boolean>(expenseData?.isBusinessTravel === 'yes');
+  
+  // State for travel information
+  const [fromDate, setFromDate] = useState<Date | undefined>(expenseData?.fromDate);
+  const [toDate, setToDate] = useState<Date | undefined>(expenseData?.toDate);
+  const [mealsProvided, setMealsProvided] = useState<string>(expenseData?.mealsProvided || 'no');
+  const [meals, setMeals] = useState<string[]>(expenseData?.meals || []);
+  
   useEffect(() => {
     console.log("Expense data received:", expenseData);
     if (expenseData) {
       toast.success("Form data successfully transferred to expense screen");
+      setIsTravelExpense(expenseData.isBusinessTravel === 'yes');
+      setFromDate(expenseData.fromDate);
+      setToDate(expenseData.toDate);
+      setMealsProvided(expenseData.mealsProvided || 'no');
+      setMeals(expenseData.meals || []);
     }
   }, [expenseData]);
   
@@ -136,9 +152,24 @@ const NewExpense: React.FC = () => {
     }
   }, [expenseData]);
 
+  // Handle toggle change for travel expense
+  const handleTravelToggleChange = (checked: boolean) => {
+    setIsTravelExpense(checked);
+  };
+
+  // Format date range for display in the travel header
+  const formattedDateRange = () => {
+    if (fromDate && toDate) {
+      const fromDateStr = format(fromDate, 'MMM dd, yyyy');
+      const toDateStr = format(toDate, 'MMM dd, yyyy');
+      return `${fromDateStr} - ${toDateStr}`;
+    }
+    return dateRange;
+  };
+
   // Render travel information summary if this is a business travel expense
   const renderTravelExpenseHeader = () => {
-    if (expenseData?.isBusinessTravel !== 'yes') return null;
+    if (!isTravelExpense) return null;
     
     return (
       <div className="mb-4 bg-blue-50 rounded-lg p-4 border border-blue-100">
@@ -153,13 +184,13 @@ const NewExpense: React.FC = () => {
           </div>
           <div>
             <p className="text-gray-500">Duration</p>
-            <p className="font-medium">{dateRange}</p>
+            <p className="font-medium">{formattedDateRange()}</p>
           </div>
-          {expenseData.mealsProvided === 'yes' && expenseData.meals && expenseData.meals.length > 0 && (
+          {mealsProvided === 'yes' && meals && meals.length > 0 && (
             <div>
               <p className="text-gray-500">Meals Provided</p>
               <div className="flex gap-1 flex-wrap mt-1">
-                {expenseData.meals.map((meal) => (
+                {meals.map((meal) => (
                   <Badge key={meal} variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
                     {meal.charAt(0).toUpperCase() + meal.slice(1)}
                   </Badge>
@@ -188,6 +219,19 @@ const NewExpense: React.FC = () => {
 
       {/* Main content */}
       <div className="px-6 py-5">
+        {/* Travel expense toggle - temporary */}
+        <div className="mb-4 flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+          <div className="flex items-center gap-2">
+            <Plane className="h-5 w-5 text-blue-500" />
+            <Label htmlFor="travel-toggle" className="font-medium">Travel Expense</Label>
+          </div>
+          <Switch
+            id="travel-toggle"
+            checked={isTravelExpense}
+            onCheckedChange={handleTravelToggleChange}
+          />
+        </div>
+        
         {/* Travel Expense Header (conditional) */}
         {renderTravelExpenseHeader()}
         
