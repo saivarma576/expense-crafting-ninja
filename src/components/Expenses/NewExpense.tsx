@@ -236,7 +236,7 @@ const NewExpense: React.FC = () => {
 
       <div className="px-6 py-5">
         <TravelExpenseDetails 
-          isTravelExpense={true}
+          isTravelExpense={isTravelExpense}
           travelPurpose={travelPurpose}
           travelComments={travelComments}
           fromDate={fromDate}
