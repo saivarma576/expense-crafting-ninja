@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { CreditCard, ArrowLeft, FileCheck } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
+import { format } from 'date-fns';
 import { FormValues } from './types';
-import ProgressIndicator from './ProgressIndicator';
+import { cn } from '@/lib/utils';
 
 import {
   FormField,
@@ -12,69 +13,139 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 
 interface StepTwoProps {
   onBack: () => void;
-  onSubmit: () => void;
+  onNext: () => void;
 }
 
-const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ onBack, onNext }) => {
   const { control, watch } = useFormContext<FormValues>();
-  const expenseTitle = watch('expenseTitle');
+  const fromDate = watch('fromDate');
+  const toDate = watch('toDate');
+
+  const isNextDisabled = !fromDate || !toDate;
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <ProgressIndicator step={2} />
+    <div className="space-y-6 animate-fade-in pb-4">
+      <div className="space-y-4">
+        <h2 className="text-lg font-medium flex items-center gap-2">
+          <span className="text-2xl">📅</span> Trip Duration
+        </h2>
+        
+        <div className="grid gap-6 pt-2">
+          <FormField
+            control={control}
+            name="fromDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>From Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal h-14 rounded-xl",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Select start date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={control}
+            name="toDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>To Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full pl-3 text-left font-normal h-14 rounded-xl",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Select end date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) => 
+                        date < new Date() || 
+                        (fromDate ? date < fromDate : false)
+                      }
+                      initialFocus
+                      className="pointer-events-auto"
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
       
-      <Card className="bg-gray-50/50 p-6 border rounded-lg shadow-sm">
-        <FormField
-          control={control}
-          name="expenseTitle"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="flex items-center gap-2 text-lg mb-3">
-                <CreditCard className="h-5 w-5 text-primary" />
-                Expense Title
-              </FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter a descriptive title for this expense" 
-                  {...field} 
-                  className="transition-all focus-within:shadow-md"
-                />
-              </FormControl>
-              <FormMessage />
-              {field.value && (
-                <div className="mt-3 text-sm text-gray-500 animate-fade-in">
-                  This title will help you identify the expense later.
-                </div>
-              )}
-            </FormItem>
-          )}
-        />
-      </Card>
-      
-      <div className="pt-4 flex justify-between">
+      <div className="flex justify-between pt-6">
         <Button 
           type="button" 
-          variant="outline" 
+          variant="outline"
           onClick={onBack}
-          className="group"
+          className="group rounded-full px-4"
         >
           <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           Back
         </Button>
         <Button 
-          type="submit"
-          onClick={onSubmit}
-          className="bg-green-600 hover:bg-green-700 group"
-          disabled={!expenseTitle}
+          type="button" 
+          onClick={onNext}
+          className="group rounded-full px-6"
+          disabled={isNextDisabled}
         >
-          <FileCheck className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-          Create Expense
+          Continue
+          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
     </div>

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormValues } from './types';
+import { X } from 'lucide-react';
 
 import {
   Dialog,
@@ -18,11 +19,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
+import StepThree from './StepThree';
+import StepFour from './StepFour';
+import ProgressIndicator from './ProgressIndicator';
 
 interface CreateExpenseDialogProps {
   isOpen: boolean;
@@ -40,6 +42,9 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
       mealsProvided: "",
       meals: [],
       expenseTitle: "",
+      fromDate: undefined,
+      toDate: undefined,
+      travelPurpose: undefined,
     }
   });
 
@@ -52,8 +57,10 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   };
 
   const handleStepForward = () => {
-    if (step < 3) {
+    if (step < 4) {
       setStep(step + 1);
+    } else {
+      form.handleSubmit(onSubmit)();
     }
   };
 
@@ -71,44 +78,47 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
     onClose();
   };
 
-  const renderContent = () => {
+  const renderStep = () => {
     switch (step) {
       case 1:
         return <StepOne onNext={handleStepForward} onCancel={handleCancel} />;
       case 2:
-        return <StepTwo onBack={handleStepBack} onSubmit={form.handleSubmit(onSubmit)} />;
+        return <StepTwo onBack={handleStepBack} onNext={handleStepForward} />;
+      case 3:
+        return <StepThree onBack={handleStepBack} onNext={handleStepForward} />;
+      case 4:
+        return <StepFour onBack={handleStepBack} onSubmit={form.handleSubmit(onSubmit)} />;
       default:
         return null;
     }
   };
 
-  const progressPercentage = (step / 2) * 100;
-
   if (uiStyle === 'sheet') {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent className="sm:max-w-md flex flex-col overflow-y-auto">
-          <SheetHeader className="space-y-2">
+          <SheetHeader className="space-y-2 mb-6">
             <SheetTitle className="flex items-center gap-2 animate-fade-in">
               Create New Expense
             </SheetTitle>
             <SheetDescription className="animate-fade-in">
-              {step === 1 ? 
-                "Let's gather some basic information about your expense." : 
-                "Just a few more details to set up your expense."}
+              Let's set up your expense step by step.
             </SheetDescription>
-            <Progress value={progressPercentage} className="h-1 animate-fade-in" />
           </SheetHeader>
-          <div className="py-4 flex-1">
-            <Card className="border-0 shadow-none">
-              <CardContent className="p-0">
-                <FormProvider {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {renderContent()}
-                  </form>
-                </FormProvider>
-              </CardContent>
-            </Card>
+          
+          <div className="flex flex-1 h-full overflow-y-auto">
+            <FormProvider {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 h-full">
+                <div className="flex flex-1 h-full">
+                  <div className="hidden sm:block">
+                    <ProgressIndicator step={step} totalSteps={4} />
+                  </div>
+                  <div className="flex-1 min-h-0 overflow-y-auto">
+                    {renderStep()}
+                  </div>
+                </div>
+              </form>
+            </FormProvider>
           </div>
         </SheetContent>
       </Sheet>
@@ -117,28 +127,29 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
-        <DialogHeader className="space-y-2">
-          <DialogTitle className="flex items-center gap-2 animate-fade-in">
+      <DialogContent className="sm:max-w-3xl flex flex-col max-h-[90vh] p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-4">
+          <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl">
             Create New Expense
           </DialogTitle>
           <DialogDescription className="animate-fade-in">
-            {step === 1 ? 
-              "Let's gather some basic information about your expense." : 
-              "Just a few more details to set up your expense."}
+            Let's set up your expense step by step.
           </DialogDescription>
-          <Progress value={progressPercentage} className="h-1 animate-fade-in" />
         </DialogHeader>
-        <div className="py-4 overflow-y-auto">
-          <Card className="border-0 shadow-none">
-            <CardContent className="p-0">
-              <FormProvider {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                  {renderContent()}
-                </form>
-              </FormProvider>
-            </CardContent>
-          </Card>
+        
+        <div className="flex flex-1 overflow-hidden">
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 overflow-hidden">
+              <div className="flex flex-1 h-full">
+                <div className="py-6 pl-6 hidden sm:block">
+                  <ProgressIndicator step={step} totalSteps={4} />
+                </div>
+                <div className="flex-1 p-6 overflow-y-auto glass-card mx-6 mb-6 rounded-xl">
+                  {renderStep()}
+                </div>
+              </div>
+            </form>
+          </FormProvider>
         </div>
       </DialogContent>
     </Dialog>
