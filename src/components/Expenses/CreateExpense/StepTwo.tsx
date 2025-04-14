@@ -26,6 +26,14 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
     onSubmit();
   };
 
+  // Determine if continue button should be disabled
+  const isContinueDisabled = 
+    !watchTravelPurpose || 
+    !watchFromDate || 
+    !watchToDate || 
+    (watchMealsProvided === 'yes' && (!watchMeals || watchMeals.length === 0)) ||
+    (watchMealsProvided !== 'yes' && watchMealsProvided !== 'no');
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="space-y-5">
@@ -53,12 +61,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
           type="submit" 
           onClick={handleSubmit}
           size="sm"
-          disabled={
-            !watchTravelPurpose || 
-            !watchFromDate || 
-            !watchToDate || 
-            (watchMealsProvided === 'yes' && (!watchMeals || watchMeals.length === 0))
-          }
+          disabled={isContinueDisabled}
         >
           Continue
         </Button>

@@ -36,7 +36,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   
-  // Use a constant value instead of state to avoid re-renders
+  // Use a constant value for uiStyle to avoid re-renders
   const uiStyle: UiStyle = 'dialog';
 
   const form = useForm<FormValues>({

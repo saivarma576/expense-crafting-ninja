@@ -25,7 +25,7 @@ const MealSelection: React.FC = () => {
       ? currentMeals.filter((m) => m !== meal)
       : [...currentMeals, meal];
     
-    setValue('meals', updatedMeals);
+    setValue('meals', updatedMeals, { shouldValidate: true });
   };
 
   return (
@@ -66,45 +66,29 @@ const MealSelection: React.FC = () => {
         <div className="space-y-3 pt-2 animate-fade-in">
           <FormLabel>Select which meals were provided:</FormLabel>
           <div className="grid grid-cols-3 gap-3">
-            <div 
-              className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('breakfast') ? 'bg-primary/10 border-primary' : ''}`}
-              onClick={() => handleMealChange('breakfast')}
-            >
-              <Checkbox 
-                checked={watchMeals?.includes('breakfast')} 
-                onCheckedChange={() => handleMealChange('breakfast')}
-              />
-              <div className="flex items-center">
-                <EggFried className="h-4 w-4 mr-1.5 text-amber-500" />
-                <span className="text-sm">Breakfast</span>
+            {[
+              { meal: 'breakfast', icon: EggFried, color: 'text-amber-500', label: 'Breakfast' },
+              { meal: 'lunch', icon: Soup, color: 'text-green-500', label: 'Lunch' },
+              { meal: 'dinner', icon: UtensilsCrossed, color: 'text-blue-500', label: 'Dinner' }
+            ].map(({ meal, icon: Icon, color, label }) => (
+              <div 
+                key={meal}
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
+                  watchMeals?.includes(meal as Meal) ? 'bg-primary/10 border-primary' : ''
+                }`}
+                onClick={() => handleMealChange(meal as Meal)}
+              >
+                <Checkbox 
+                  id={`meal-${meal}`}
+                  checked={watchMeals?.includes(meal as Meal)} 
+                  onCheckedChange={() => handleMealChange(meal as Meal)}
+                />
+                <div className="flex items-center">
+                  <Icon className={`h-4 w-4 mr-1.5 ${color}`} />
+                  <span className="text-sm">{label}</span>
+                </div>
               </div>
-            </div>
-            <div 
-              className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('lunch') ? 'bg-primary/10 border-primary' : ''}`}
-              onClick={() => handleMealChange('lunch')}
-            >
-              <Checkbox 
-                checked={watchMeals?.includes('lunch')} 
-                onCheckedChange={() => handleMealChange('lunch')}
-              />
-              <div className="flex items-center">
-                <Soup className="h-4 w-4 mr-1.5 text-green-500" />
-                <span className="text-sm">Lunch</span>
-              </div>
-            </div>
-            <div 
-              className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('dinner') ? 'bg-primary/10 border-primary' : ''}`}
-              onClick={() => handleMealChange('dinner')}
-            >
-              <Checkbox 
-                checked={watchMeals?.includes('dinner')} 
-                onCheckedChange={() => handleMealChange('dinner')}
-              />
-              <div className="flex items-center">
-                <UtensilsCrossed className="h-4 w-4 mr-1.5 text-blue-500" />
-                <span className="text-sm">Dinner</span>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       )}
