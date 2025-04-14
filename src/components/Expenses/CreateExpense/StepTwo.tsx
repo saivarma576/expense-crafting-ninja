@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { Calendar as CalendarIcon, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Check, Mic, Handshake, FileText, Coffee } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
-import { format } from 'date-fns';
-import { FormValues } from './types';
-import { cn } from '@/lib/utils';
+import { FormValues, Meal } from './types';
 
 import {
   FormField,
@@ -14,138 +12,156 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface StepTwoProps {
   onBack: () => void;
-  onNext: () => void;
+  onSubmit: () => void;
 }
 
-const StepTwo: React.FC<StepTwoProps> = ({ onBack, onNext }) => {
-  const { control, watch } = useFormContext<FormValues>();
-  const fromDate = watch('fromDate');
-  const toDate = watch('toDate');
+const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
+  const { control, watch, setValue } = useFormContext<FormValues>();
+  const watchMealsProvided = watch('mealsProvided');
+  const watchMeals = watch('meals');
+  const watchTravelPurpose = watch('travelPurpose');
 
-  const isNextDisabled = !fromDate || !toDate;
+  const handleMealChange = (meal: Meal) => {
+    const currentMeals = watchMeals || [];
+    const updatedMeals = currentMeals.includes(meal)
+      ? currentMeals.filter((m) => m !== meal)
+      : [...currentMeals, meal];
+    
+    setValue('meals', updatedMeals);
+  };
 
   return (
-    <div className="space-y-6 animate-fade-in pb-4">
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium flex items-center gap-2">
-          <span className="text-2xl">📅</span> Trip Duration
-        </h2>
-        
-        <div className="grid gap-6 pt-2">
-          <FormField
-            control={control}
-            name="fromDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>From Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+    <div className="space-y-6 animate-fade-in">
+      <div className="space-y-5">
+        {/* Purpose of Travel dropdown */}
+        <FormField
+          control={control}
+          name="travelPurpose"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Purpose of Travel</FormLabel>
+              <Select 
+                onValueChange={field.onChange} 
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select purpose" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="conferences" className="flex items-center">
+                    <div className="flex items-center">
+                      <Mic className="h-4 w-4 mr-2 text-primary" />
+                      <span>Conferences</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="meeting">
+                    <div className="flex items-center">
+                      <Handshake className="h-4 w-4 mr-2 text-primary" />
+                      <span>Meetings</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="others">
+                    <div className="flex items-center">
+                      <FileText className="h-4 w-4 mr-2 text-primary" />
+                      <span>Others</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Meals provided section */}
+        <FormField
+          control={control}
+          name="mealsProvided"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Were meals provided during the trip?</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  className="flex space-x-4"
+                >
+                  <FormItem className="flex items-center space-x-2">
                     <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal h-14 rounded-xl",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Select start date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
-                      </Button>
+                      <RadioGroupItem value="yes" />
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => date < new Date()}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={control}
-            name="toDate"
-            render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>To Date</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
+                    <FormLabel className="font-normal">Yes</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-2">
                     <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal h-14 rounded-xl",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Select end date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-5 w-5 opacity-50" />
-                      </Button>
+                      <RadioGroupItem value="no" />
                     </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value}
-                      onSelect={field.onChange}
-                      disabled={(date) => 
-                        date < new Date() || 
-                        (fromDate ? date < fromDate : false)
-                      }
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+                    <FormLabel className="font-normal">No</FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Meal selection checkboxes */}
+        {watchMealsProvided === 'yes' && (
+          <div className="space-y-3 pt-2 animate-fade-in">
+            <FormLabel>Select which meals were provided:</FormLabel>
+            <div className="grid grid-cols-3 gap-3">
+              <div 
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('breakfast') ? 'bg-primary/10 border-primary' : ''}`}
+                onClick={() => handleMealChange('breakfast')}
+              >
+                <Checkbox checked={watchMeals?.includes('breakfast')} />
+                <span className="text-sm">🥐 Breakfast</span>
+              </div>
+              <div 
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('lunch') ? 'bg-primary/10 border-primary' : ''}`}
+                onClick={() => handleMealChange('lunch')}
+              >
+                <Checkbox checked={watchMeals?.includes('lunch')} />
+                <span className="text-sm">🍛 Lunch</span>
+              </div>
+              <div 
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('dinner') ? 'bg-primary/10 border-primary' : ''}`}
+                onClick={() => handleMealChange('dinner')}
+              >
+                <Checkbox checked={watchMeals?.includes('dinner')} />
+                <span className="text-sm">🍽️ Dinner</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
-      <div className="flex justify-between pt-6">
+      <div className="flex justify-between pt-2">
         <Button 
           type="button" 
           variant="outline"
           onClick={onBack}
-          className="group rounded-full px-4"
+          size="sm"
         >
-          <ArrowLeft className="mr-2 h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
         <Button 
-          type="button" 
-          onClick={onNext}
-          className="group rounded-full px-6"
-          disabled={isNextDisabled}
+          type="submit" 
+          onClick={onSubmit}
+          size="sm"
+          disabled={!watchTravelPurpose || (watchMealsProvided === 'yes' && (!watchMeals || watchMeals.length === 0))}
         >
-          Continue
-          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          Create Expense
+          <Check className="ml-2 h-4 w-4" />
         </Button>
       </div>
     </div>

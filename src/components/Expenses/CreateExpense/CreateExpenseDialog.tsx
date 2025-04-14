@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
 import {
   Sheet,
   SheetContent,
@@ -22,9 +23,7 @@ import {
 
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
-import StepThree from './StepThree';
-import StepFour from './StepFour';
-import ProgressIndicator from './ProgressIndicator';
+import { Progress } from '@/components/ui/progress';
 
 interface CreateExpenseDialogProps {
   isOpen: boolean;
@@ -57,11 +56,16 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   };
 
   const handleStepForward = () => {
-    if (step < 4) {
+    if (step < 2) {
       setStep(step + 1);
     } else {
       form.handleSubmit(onSubmit)();
     }
+  };
+
+  const handleProceedToExpense = () => {
+    navigate('/expenses/new');
+    onClose();
   };
 
   const onSubmit = (data: FormValues) => {
@@ -81,22 +85,20 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <StepOne onNext={handleStepForward} onCancel={handleCancel} />;
+        return <StepOne onNext={handleStepForward} onCancel={handleCancel} onProceedToExpense={handleProceedToExpense} />;
       case 2:
-        return <StepTwo onBack={handleStepBack} onNext={handleStepForward} />;
-      case 3:
-        return <StepThree onBack={handleStepBack} onNext={handleStepForward} />;
-      case 4:
-        return <StepFour onBack={handleStepBack} onSubmit={form.handleSubmit(onSubmit)} />;
+        return <StepTwo onBack={handleStepBack} onSubmit={form.handleSubmit(onSubmit)} />;
       default:
         return null;
     }
   };
 
+  const progressValue = (step / 2) * 100;
+
   if (uiStyle === 'sheet') {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent className="sm:max-w-md flex flex-col overflow-y-auto">
+        <SheetContent className="sm:max-w-md">
           <SheetHeader className="space-y-2 mb-6">
             <SheetTitle className="flex items-center gap-2 animate-fade-in">
               Create New Expense
@@ -106,20 +108,13 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
             </SheetDescription>
           </SheetHeader>
           
-          <div className="flex flex-1 h-full overflow-y-auto">
-            <FormProvider {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 h-full">
-                <div className="flex flex-1 h-full">
-                  <div className="hidden sm:block">
-                    <ProgressIndicator step={step} totalSteps={4} />
-                  </div>
-                  <div className="flex-1 min-h-0 overflow-y-auto">
-                    {renderStep()}
-                  </div>
-                </div>
-              </form>
-            </FormProvider>
-          </div>
+          <Progress value={progressValue} className="mb-6" />
+          
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {renderStep()}
+            </form>
+          </FormProvider>
         </SheetContent>
       </Sheet>
     );
@@ -127,8 +122,8 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-3xl flex flex-col max-h-[90vh] p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-4">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl">
             Create New Expense
           </DialogTitle>
@@ -137,17 +132,12 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
           </DialogDescription>
         </DialogHeader>
         
-        <div className="flex flex-1 overflow-hidden">
+        <Progress value={progressValue} className="mx-6" />
+        
+        <div className="p-6">
           <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-1 overflow-hidden">
-              <div className="flex flex-1 h-full">
-                <div className="py-6 pl-6 hidden sm:block">
-                  <ProgressIndicator step={step} totalSteps={4} />
-                </div>
-                <div className="flex-1 p-6 overflow-y-auto glass-card mx-6 mb-6 rounded-xl">
-                  {renderStep()}
-                </div>
-              </div>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {renderStep()}
             </form>
           </FormProvider>
         </div>

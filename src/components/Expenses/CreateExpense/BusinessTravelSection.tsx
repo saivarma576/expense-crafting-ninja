@@ -11,11 +11,10 @@ import {
   FormMessage,
   FormDescription,
 } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 
 const BusinessTravelSection: React.FC = () => {
-  const { control, watch, setValue } = useFormContext<FormValues>();
+  const { control } = useFormContext<FormValues>();
   
   return (
     <div className="space-y-4 pl-4 border-l-2 border-primary/20">
@@ -23,11 +22,25 @@ const BusinessTravelSection: React.FC = () => {
         Please provide additional information about your business travel expense.
       </p>
       
-      <div className="space-y-4">
-        <FormDescription>
-          You'll be asked for travel dates and purpose in the next steps.
-        </FormDescription>
-      </div>
+      <FormField
+        control={control}
+        name="expenseTitle"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Expense Title</FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="E.g., Business Trip to New York" 
+                {...field} 
+              />
+            </FormControl>
+            <FormDescription>
+              You'll provide more details in the next steps.
+            </FormDescription>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </div>
   );
 };
