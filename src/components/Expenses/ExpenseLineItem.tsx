@@ -1,57 +1,29 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Clock, DollarSign, MapPin, Calendar, SquareAsterisk } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SquareAsterisk } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseType } from '@/types/expense';
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 // Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
-import BasicInfoFields from './BasicInfoFields';
-import DynamicFields from './DynamicFields';
 import ReceiptUpload from './ReceiptUpload';
 import ReceiptPreview from './ReceiptPreview';
-import { generateTypeSpecificFields, glAccounts, costCenters } from './ExpenseFieldUtils';
+import { ExpenseLineItemFormData, FormProps } from './ExpenseForm/types';
+import CommonFields from './ExpenseForm/CommonFields';
+import HotelFields from './ExpenseForm/HotelFields';
+import MealsFields from './ExpenseForm/MealsFields';
+import MileageFields from './ExpenseForm/MileageFields';
+import GlAccountField from './ExpenseForm/GlAccountField';
+import NotesField from './ExpenseForm/NotesField';
+import FormActions from './ExpenseForm/FormActions';
+import { STANDARD_RATES } from './ExpenseFieldUtils';
 
-interface ExpenseLineItemProps {
-  onSave: (lineItem: ExpenseLineItemType) => void;
-  onCancel: () => void;
-  editingItem?: ExpenseLineItemType;
-}
+export type { ExpenseLineItemFormData as ExpenseLineItemType };
 
-export interface ExpenseLineItemType {
-  id: string;
-  type: ExpenseType;
-  amount: number;
-  date: string;
-  description: string;
-  receiptUrl?: string;
-  receiptName?: string;
-  account?: string;
-  accountName?: string;
-  costCenter?: string;
-  costCenterName?: string;
-  wbs?: string;
-  notes?: string;
-  glAccount?: string;
-  zipCode?: string;
-  city?: string;
-  mealsRate?: number;
-  hotelRate?: number;
-  throughDate?: string;
-  perDiemExplanation?: string;
-  departureTime?: string;
-  returnTime?: string;
-  miles?: number;
-  mileageRate?: number;
-}
-
-const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({ 
+const ExpenseLineItem: React.FC<FormProps> = ({ 
   onSave, 
   onCancel,
   editingItem
@@ -67,6 +39,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   const [costCenterName, setCostCenterName] = useState(editingItem?.costCenterName || '');
   const [wbs, setWbs] = useState(editingItem?.wbs || '');
   const [notes, setNotes] = useState(editingItem?.notes || '');
+  const [merchantName, setMerchantName] = useState(editingItem?.merchantName || '');
   
   // State for receipt
   const [receiptUrl, setReceiptUrl] = useState(editingItem?.receiptUrl || '');
@@ -78,14 +51,21 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   const [glAccount, setGlAccount] = useState(editingItem?.glAccount || '');
   const [zipCode, setZipCode] = useState(editingItem?.zipCode || '');
   const [city, setCity] = useState(editingItem?.city || '');
-  const [mealsRate, setMealsRate] = useState(editingItem?.mealsRate || 80);
-  const [hotelRate, setHotelRate] = useState(editingItem?.hotelRate || 159);
+  const [mealsRate, setMealsRate] = useState(editingItem?.mealsRate || STANDARD_RATES.MEALS_RATE);
+  const [hotelRate, setHotelRate] = useState(editingItem?.hotelRate || STANDARD_RATES.HOTEL_RATE);
   const [throughDate, setThroughDate] = useState(editingItem?.throughDate || '');
   const [perDiemExplanation, setPerDiemExplanation] = useState(editingItem?.perDiemExplanation || '');
   const [departureTime, setDepartureTime] = useState(editingItem?.departureTime || '');
   const [returnTime, setReturnTime] = useState(editingItem?.returnTime || '');
   const [miles, setMiles] = useState(editingItem?.miles || 0);
-  const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || 0.7);
+  const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || STANDARD_RATES.MILEAGE_RATE);
+
+  // All form values in a single object for passing to components
+  const formValues = {
+    type, amount, date, description, account, accountName, costCenter, costCenterName,
+    wbs, notes, merchantName, glAccount, zipCode, city, mealsRate, hotelRate, throughDate,
+    perDiemExplanation, departureTime, returnTime, miles, mileageRate
+  };
 
   // Effect to auto-calculate mileage amount
   useEffect(() => {
@@ -104,10 +84,6 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
     }
   }, [zipCode]);
 
-  // Check if per diem explanation is needed
-  const needsPerDiemExplanation = (type === 'hotel' && amount !== hotelRate) || 
-                               (type === 'meals' && amount !== mealsRate);
-
   // Determine which fields to show based on expense type
   const needsGlAccount = ['transport', 'auditing', 'baggage', 'business_meals', 
                          'subscriptions', 'gasoline', 'office_supplies', 'other', 
@@ -117,19 +93,31 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   const isMeals = type === 'meals';
   const isMileage = type === 'mileage';
 
-  const handleAccountChange = (value: string) => {
-    const selected = glAccounts.find(acc => acc.code === value);
-    if (selected) {
-      setAccount(selected.code);
-      setAccountName(selected.name);
-    }
-  };
-
-  const handleCostCenterChange = (value: string) => {
-    const selected = costCenters.find(cc => cc.code === value);
-    if (selected) {
-      setCostCenter(selected.code);
-      setCostCenterName(selected.name);
+  const handleFieldChange = (id: string, value: any) => {
+    switch (id) {
+      case 'type': setType(value); break;
+      case 'amount': setAmount(value); break;
+      case 'date': setDate(value); break;
+      case 'description': setDescription(value); break;
+      case 'account': setAccount(value); break;
+      case 'accountName': setAccountName(value); break;
+      case 'costCenter': setCostCenter(value); break;
+      case 'costCenterName': setCostCenterName(value); break;
+      case 'wbs': setWbs(value); break;
+      case 'notes': setNotes(value); break;
+      case 'merchantName': setMerchantName(value); break;
+      case 'glAccount': setGlAccount(value); break;
+      case 'zipCode': setZipCode(value); break;
+      case 'city': setCity(value); break;
+      case 'mealsRate': setMealsRate(value); break;
+      case 'hotelRate': setHotelRate(value); break;
+      case 'throughDate': setThroughDate(value); break;
+      case 'perDiemExplanation': setPerDiemExplanation(value); break;
+      case 'departureTime': setDepartureTime(value); break;
+      case 'returnTime': setReturnTime(value); break;
+      case 'miles': setMiles(value); break;
+      case 'mileageRate': setMileageRate(value); break;
+      default: break;
     }
   };
 
@@ -161,7 +149,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   };
 
   const validateForm = (): boolean => {
-    if (!type || !costCenter || !date || !wbs || amount <= 0) {
+    if (!type || !costCenter || !date || !wbs || amount <= 0 || !merchantName) {
       toast.error("Please fill in all required fields");
       return false;
     }
@@ -191,6 +179,9 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
       return false;
     }
 
+    const needsPerDiemExplanation = (isHotelOrLodging && amount !== hotelRate) || 
+                                  (isMeals && amount !== mealsRate);
+                                  
     if (needsPerDiemExplanation && !perDiemExplanation) {
       toast.error("Please provide an explanation for the non-standard rate");
       return false;
@@ -216,13 +207,14 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
       costCenterName,
       wbs,
       notes,
+      merchantName,
       glAccount: needsGlAccount ? glAccount : undefined,
       zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
       city: (isHotelOrLodging || isMeals) ? city : undefined,
       mealsRate: (isHotelOrLodging || isMeals) ? mealsRate : undefined,
       hotelRate: isHotelOrLodging ? hotelRate : undefined,
       throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
-      perDiemExplanation: needsPerDiemExplanation ? perDiemExplanation : undefined,
+      perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
       departureTime: isMeals ? departureTime : undefined,
       returnTime: isMeals ? returnTime : undefined,
       miles: isMileage ? miles : undefined,
@@ -242,360 +234,27 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
               onTypeChange={setType} 
             />
 
-            {/* Common fields - always shown */}
-            <div className="grid grid-cols-2 gap-x-3 gap-y-2 mb-4">
-              <div>
-                <Label htmlFor="costCenter" className="text-xs font-medium text-gray-700 flex items-center">
-                  Cost Center <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Input
-                  id="costCenter"
-                  value={costCenter}
-                  onChange={(e) => handleCostCenterChange(e.target.value)}
-                  placeholder="Enter cost center"
-                  className="h-8 px-2 py-1 text-sm"
-                  required
-                />
-              </div>
+            {/* Common Fields */}
+            <CommonFields
+              type={type}
+              costCenter={costCenter}
+              date={date}
+              wbs={wbs}
+              amount={amount}
+              description={description}
+              values={formValues}
+              onChange={handleFieldChange}
+              isAmountDisabled={type === 'mileage'}
+            />
 
-              <div>
-                <Label htmlFor="date" className="text-xs font-medium text-gray-700 flex items-center">
-                  Date <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="date"
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="h-8 px-2 py-1 text-sm"
-                    required
-                  />
-                  <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                </div>
-              </div>
+            {/* Type-specific Fields */}
+            {needsGlAccount && <GlAccountField values={formValues} onChange={handleFieldChange} />}
+            {isHotelOrLodging && <HotelFields values={formValues} onChange={handleFieldChange} />}
+            {isMeals && <MealsFields values={formValues} onChange={handleFieldChange} />}
+            {isMileage && <MileageFields values={formValues} onChange={handleFieldChange} />}
 
-              <div>
-                <Label htmlFor="wbs" className="text-xs font-medium text-gray-700 flex items-center">
-                  WBS <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Input
-                  id="wbs"
-                  value={wbs}
-                  onChange={(e) => setWbs(e.target.value)}
-                  placeholder="Enter WBS code"
-                  className="h-8 px-2 py-1 text-sm"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="amount" className="text-xs font-medium text-gray-700 flex items-center">
-                  Expense Amount <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="amount"
-                    type="number"
-                    value={amount}
-                    onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
-                    placeholder="0.00"
-                    className="h-8 pl-6 pr-2 py-1 text-sm"
-                    disabled={type === 'mileage'}
-                    required
-                  />
-                  <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
-                </div>
-              </div>
-
-              <div className="col-span-2">
-                <Label htmlFor="description" className="text-xs font-medium text-gray-700 flex items-center">
-                  Description <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Input
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Enter expense description"
-                  className="h-8 px-2 py-1 text-sm"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Conditional fields based on expense type */}
-            {needsGlAccount && (
-              <div className="mb-4">
-                <Label htmlFor="glAccount" className="text-xs font-medium text-gray-700 flex items-center">
-                  GL Account <span className="text-red-500 ml-1">*</span>
-                </Label>
-                <Input
-                  id="glAccount"
-                  value={glAccount}
-                  onChange={(e) => setGlAccount(e.target.value)}
-                  placeholder="E.g., 50600140"
-                  className="h-8 px-2 py-1 text-sm"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Hotel/Lodging specific fields */}
-            {isHotelOrLodging && (
-              <div className="mb-4 space-y-2">
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-                  <div>
-                    <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700 flex items-center">
-                      Zip Code <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="zipCode"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                        placeholder="Enter zip code"
-                        className="h-8 px-2 py-1 text-sm"
-                        required
-                      />
-                      <MapPin className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="city" className="text-xs font-medium text-gray-700">
-                      City (Auto-filled)
-                    </Label>
-                    <Input
-                      id="city"
-                      value={city}
-                      readOnly
-                      className="h-8 px-2 py-1 text-sm bg-gray-50"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="hotelRate" className="text-xs font-medium text-gray-700">
-                      Hotel Rate (Default)
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="hotelRate"
-                        type="number"
-                        value={hotelRate}
-                        onChange={(e) => setHotelRate(parseFloat(e.target.value) || 0)}
-                        className="h-8 pl-6 pr-2 py-1 text-sm bg-gray-50"
-                      />
-                      <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700 flex items-center">
-                      Through Date <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="throughDate"
-                        type="date"
-                        value={throughDate}
-                        onChange={(e) => setThroughDate(e.target.value)}
-                        className="h-8 px-2 py-1 text-sm"
-                        required
-                      />
-                      <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-                </div>
-                
-                {needsPerDiemExplanation && (
-                  <div>
-                    <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
-                      Per Diem Explanation <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <Textarea
-                      id="perDiemExplanation"
-                      value={perDiemExplanation}
-                      onChange={(e) => setPerDiemExplanation(e.target.value)}
-                      placeholder="Explain why the amount differs from the standard rate"
-                      className="resize-none h-20 text-sm"
-                      required
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Meals specific fields */}
-            {isMeals && (
-              <div className="mb-4 space-y-2">
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-                  <div>
-                    <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700 flex items-center">
-                      Zip Code <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="zipCode"
-                        value={zipCode}
-                        onChange={(e) => setZipCode(e.target.value)}
-                        placeholder="Enter zip code"
-                        className="h-8 px-2 py-1 text-sm"
-                        required
-                      />
-                      <MapPin className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="city" className="text-xs font-medium text-gray-700">
-                      City (Auto-filled)
-                    </Label>
-                    <Input
-                      id="city"
-                      value={city}
-                      readOnly
-                      className="h-8 px-2 py-1 text-sm bg-gray-50"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="mealsRate" className="text-xs font-medium text-gray-700">
-                      Meals Rate (Default)
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="mealsRate"
-                        type="number"
-                        value={mealsRate}
-                        onChange={(e) => setMealsRate(parseFloat(e.target.value) || 0)}
-                        className="h-8 pl-6 pr-2 py-1 text-sm bg-gray-50"
-                      />
-                      <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700 flex items-center">
-                      Departure Time <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="departureTime"
-                        type="time"
-                        value={departureTime}
-                        onChange={(e) => setDepartureTime(e.target.value)}
-                        className="h-8 px-2 py-1 text-sm"
-                        required
-                      />
-                      <Clock className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
-                      Return Time
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="returnTime"
-                        type="time"
-                        value={returnTime}
-                        onChange={(e) => setReturnTime(e.target.value)}
-                        className="h-8 px-2 py-1 text-sm"
-                      />
-                      <Clock className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-                </div>
-                
-                {needsPerDiemExplanation && (
-                  <div>
-                    <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
-                      Per Diem Explanation <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <Textarea
-                      id="perDiemExplanation"
-                      value={perDiemExplanation}
-                      onChange={(e) => setPerDiemExplanation(e.target.value)}
-                      placeholder="Explain why the amount differs from the standard rate"
-                      className="resize-none h-20 text-sm"
-                      required
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Mileage specific fields */}
-            {isMileage && (
-              <div className="mb-4 space-y-2">
-                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
-                  <div>
-                    <Label htmlFor="miles" className="text-xs font-medium text-gray-700 flex items-center">
-                      Miles <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <Input
-                      id="miles"
-                      type="number"
-                      value={miles}
-                      onChange={(e) => setMiles(parseInt(e.target.value) || 0)}
-                      placeholder="Enter miles"
-                      className="h-8 px-2 py-1 text-sm"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="mileageRate" className="text-xs font-medium text-gray-700 flex items-center">
-                      Mileage Rate <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="mileageRate"
-                        type="number"
-                        step="0.01"
-                        value={mileageRate}
-                        onChange={(e) => setMileageRate(parseFloat(e.target.value) || 0)}
-                        className="h-8 pl-6 pr-2 py-1 text-sm"
-                        required
-                      />
-                      <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700 flex items-center">
-                      Through Date <span className="text-red-500 ml-1">*</span>
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="throughDate"
-                        type="date"
-                        value={throughDate}
-                        onChange={(e) => setThroughDate(e.target.value)}
-                        className="h-8 px-2 py-1 text-sm"
-                        required
-                      />
-                      <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Notes - optional for all expense types */}
-            <div className="mb-4">
-              <Label htmlFor="notes" className="text-xs font-medium text-gray-700">
-                Notes
-              </Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any additional notes"
-                className="resize-none h-20 text-sm"
-              />
-            </div>
+            {/* Notes Field */}
+            <NotesField values={formValues} onChange={handleFieldChange} />
 
             {/* Receipt Upload */}
             <ReceiptUpload 
@@ -611,23 +270,7 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
             </div>
 
             {/* Action buttons */}
-            <div className="flex items-center gap-3 mt-auto pt-1">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="flex-1 px-4 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="flex-1 px-4 py-1.5 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
-              >
-                <span>Save</span>
-                <ArrowRight className="ml-1 h-4 w-4" />
-              </button>
-            </div>
+            <FormActions onCancel={onCancel} onSave={handleSave} />
           </div>
         </ScrollArea>
       </div>
