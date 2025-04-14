@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, AlertCircle, Zap, Check, ArrowRight, FileBarChart, ArrowUpDown, X, Loader2 } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Zap, Check, ArrowRight, FileBarChart, ArrowUpDown, X, Loader2, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -33,19 +33,34 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
 }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
   
   // Get unique categories
   const categories = Array.from(new Set(violations.map(v => v.category)));
 
   useEffect(() => {
     if (open) {
-      // Simulate AI analysis
+      // Simulate AI analysis with progress
       setIsAnalyzing(true);
+      setAnalysisProgress(0);
+      
+      const interval = setInterval(() => {
+        setAnalysisProgress(prev => {
+          const newProgress = prev + Math.random() * 15;
+          return newProgress >= 100 ? 100 : newProgress;
+        });
+      }, 200);
+      
       const timer = setTimeout(() => {
-        setIsAnalyzing(false);
+        clearInterval(interval);
+        setAnalysisProgress(100);
+        setTimeout(() => setIsAnalyzing(false), 300);
       }, 1800);
       
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        clearInterval(interval);
+      };
     }
   }, [open]);
   
@@ -65,7 +80,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[85vh] flex flex-col">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
+            <Brain className="h-6 w-6 text-blue-600" />
             Policy Compliance Check
           </DialogTitle>
         </DialogHeader>
@@ -73,14 +88,44 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
         <div className="flex-1 overflow-auto">
           {isAnalyzing ? (
             <div className="flex flex-col items-center justify-center p-12 space-y-4">
-              <div className="relative">
-                <Loader2 className="h-12 w-12 text-blue-500 animate-spin" />
-                <FileBarChart className="h-6 w-6 text-blue-700 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+              <div className="relative w-32 h-32 flex items-center justify-center">
+                <svg className="w-32 h-32 -rotate-90">
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="56"
+                    fill="none"
+                    stroke="#f3f4f6"
+                    strokeWidth="8"
+                  />
+                  <circle
+                    cx="64"
+                    cy="64"
+                    r="56"
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    strokeDasharray={56 * 2 * Math.PI}
+                    strokeDashoffset={56 * 2 * Math.PI * (1 - analysisProgress / 100)}
+                    className="transition-all duration-300 ease-out"
+                  />
+                </svg>
+                <Brain className="absolute w-14 h-14 text-blue-600 animate-pulse" />
               </div>
               <p className="text-gray-600 font-medium mt-4">Analyzing expense report...</p>
-              <p className="text-gray-500 text-sm text-center max-w-xs">
-                Checking company policies, compliance requirements, and expense guidelines
-              </p>
+              <div className="text-gray-500 text-sm text-center max-w-sm">
+                <p className="mb-1">Applying AI analysis to your expense data</p>
+                <p className="font-mono text-xs">
+                  {Array(3).fill(0).map((_, i) => (
+                    <span key={i} className="opacity-70">{">"} </span>
+                  ))}
+                  {analysisProgress < 33 ? "Scanning line items..." : 
+                   analysisProgress < 66 ? "Comparing against policy rules..." : 
+                   analysisProgress < 99 ? "Generating recommendations..." : 
+                   "Analysis complete"}
+                </span>
+              </div>
             </div>
           ) : (
             <>
@@ -105,6 +150,23 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                       {category} ({violations.filter(v => v.category === category).length})
                     </Button>
                   ))}
+                </div>
+                
+                <div className="flex items-center justify-between mb-3 text-sm text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <FileBarChart className="h-4 w-4" />
+                    <span>{violations.length} items analyzed</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3 text-red-500" />
+                      {violations.filter(v => v.violationType === 'error').length} Errors
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3 text-amber-500" />
+                      {violations.filter(v => v.violationType === 'warning').length} Warnings
+                    </span>
+                  </div>
                 </div>
               </div>
               

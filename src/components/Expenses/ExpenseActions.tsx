@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Zap, ChevronLeft, SendHorizonal, XCircle, BarChart, Brain } from 'lucide-react';
+import { Zap, ChevronLeft, SendHorizonal, XCircle, BarChart } from 'lucide-react';
 
 interface ExpenseActionsProps {
   totalAmount: string | number;
@@ -73,7 +73,6 @@ export const ExpenseActions: React.FC<ExpenseActionsProps> = ({
             </div>
           ) : (
             <div className="flex items-center relative z-10">
-              <Brain className="h-4 w-4 mr-2 text-blue-200" />
               <SendHorizonal className="h-4 w-4 mr-2" />
               Submit for Approval
             </div>
