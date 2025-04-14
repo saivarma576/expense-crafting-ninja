@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, SendHorizonal, XCircle, MessageSquareQuestion } from 'lucide-react';
+import { ChevronLeft, SendHorizonal, XCircle, MessageSquare } from 'lucide-react';
 
 interface ExpenseActionsProps {
   totalAmount: string | number;
@@ -47,7 +48,7 @@ export const ExpenseActions: React.FC<ExpenseActionsProps> = ({
             className="flex items-center bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
             onClick={onAskAI}
           >
-            <MessageSquareQuestion className="h-4 w-4 mr-1" />
+            <MessageSquare className="h-4 w-4 mr-1" />
             Ask Policy AI
           </Button>
         )}

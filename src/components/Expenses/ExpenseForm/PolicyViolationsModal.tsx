@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShieldAlert, ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, BookOpenCheck } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, CircleAlert, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -115,7 +115,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                     className="transition-all duration-300 ease-out"
                   />
                 </svg>
-                <Brain className="absolute w-14 h-14 text-blue-600 animate-pulse" />
+                <ShieldCheck className="absolute w-14 h-14 text-blue-600 animate-pulse" />
               </div>
               <p className="text-gray-600 font-medium mt-4">Analyzing expense report...</p>
               <div className="text-gray-500 text-sm text-center max-w-sm">
@@ -163,7 +163,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1">
-                      <AlertCircle className="h-3 w-3 text-red-500" />
+                      <CircleAlert className="h-3 w-3 text-red-500" />
                       {violations.filter(v => v.violationType === 'error').length} Errors
                     </span>
                     <span className="flex items-center gap-1">
@@ -191,7 +191,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                       <div className="flex justify-between">
                         <div className="flex items-start gap-2">
                           {violation.violationType === 'error' ? (
-                            <AlertCircle className="h-4 w-4 text-red-500 mt-0.5" />
+                            <CircleAlert className="h-4 w-4 text-red-500 mt-0.5" />
                           ) : (
                             <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5" />
                           )}
