@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   PlusCircle, 
@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import CreateExpenseDialog from '@/components/Expenses/CreateExpenseDialog';
 
 interface ExpenseActionsCardProps {
   draftCount: number;
@@ -26,6 +27,16 @@ const ExpenseActionsCard: React.FC<ExpenseActionsCardProps> = ({
   draftCount,
   draftTrend
 }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
   return (
     <div className="glass-card p-6 rounded-xl flex flex-col space-y-2 border-b-4 border-primary/10 shadow-lg hover:shadow-xl transition-all duration-300">
       <div className="flex justify-between items-start">
@@ -38,24 +49,23 @@ const ExpenseActionsCard: React.FC<ExpenseActionsCardProps> = ({
       <div className="flex flex-col space-y-3">
         <DropdownMenu>
           <div className="flex w-full">
-            <Button asChild className="bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-r-none flex-grow text-sm">
-              <Link to="/expenses/new" className="flex items-center justify-center">
-                <PlusCircle className="mr-1.5 h-4 w-4" />
-                Create Expense
-              </Link>
+            <Button 
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-r-none flex-grow text-sm"
+              onClick={handleOpenDialog}
+            >
+              <PlusCircle className="mr-1.5 h-4 w-4" />
+              Create Expense
             </Button>
             <DropdownMenuTrigger asChild>
-              <Button className="rounded-l-none px-2 bg-blue-100 hover:bg-blue-200 text-blue-700 border-l border-blue-200">
+              <Button className="rounded-l-none px-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border-l border-blue-200">
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
           </div>
           <DropdownMenuContent className="w-56 bg-white border shadow-lg">
-            <DropdownMenuItem asChild>
-              <Link to="/expenses/new" className="flex items-center cursor-pointer text-sm">
-                <FilePlus className="mr-2 h-4 w-4" />
-                <span>Create Expense</span>
-              </Link>
+            <DropdownMenuItem onClick={handleOpenDialog} className="cursor-pointer text-sm">
+              <FilePlus className="mr-2 h-4 w-4" />
+              <span>Create Expense</span>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/receipts/upload" className="flex items-center cursor-pointer text-sm">
@@ -77,6 +87,11 @@ const ExpenseActionsCard: React.FC<ExpenseActionsCardProps> = ({
           </div>
         </div>
       </div>
+
+      <CreateExpenseDialog 
+        isOpen={isDialogOpen} 
+        onClose={handleCloseDialog} 
+      />
     </div>
   );
 };
