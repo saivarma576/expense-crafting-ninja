@@ -33,6 +33,8 @@ export interface FieldGroupProps {
   values: ExpenseLineItemFormData;
   onChange: (id: string, value: any) => void;
   llmSuggestions?: Record<string, string | null>;
+  programmaticErrors?: Record<string, string | null>;
+  activeField?: string | null;
 }
 
 export interface MileageFieldsProps extends FieldGroupProps {
@@ -43,4 +45,12 @@ export interface FormProps {
   onSave: (item: ExpenseLineItemFormData) => void;
   onCancel: () => void;
   editingItem?: Partial<ExpenseLineItemFormData>;
+  activeField?: string | null;
+}
+
+export interface ValidationResult {
+  programmaticErrors: {field: string, error: string}[];
+  llmWarnings: string[];
+  hasErrors: boolean;
+  hasWarnings: boolean;
 }

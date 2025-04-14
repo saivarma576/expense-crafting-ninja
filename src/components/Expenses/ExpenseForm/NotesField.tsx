@@ -4,12 +4,20 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
+import { cn } from '@/lib/utils';
 
-const NotesField: React.FC<FieldGroupProps> = ({ 
+interface NotesFieldProps extends FieldGroupProps {
+  activeField?: string | null;
+}
+
+const NotesField: React.FC<NotesFieldProps> = ({ 
   values, 
   onChange,
-  llmSuggestions = {}
+  llmSuggestions = {},
+  activeField
 }) => {
+  const isHighlighted = activeField === 'notes';
+  
   return (
     <div className="mb-6">
       <Label htmlFor="notes" className="text-xs font-medium text-gray-700">
@@ -21,7 +29,11 @@ const NotesField: React.FC<FieldGroupProps> = ({
           value={values.notes || ''}
           onChange={(e) => onChange('notes', e.target.value)}
           placeholder="Additional information or context for this expense..."
-          className={`min-h-[100px] text-sm ${llmSuggestions.notes ? 'border-amber-300' : ''}`}
+          className={cn(
+            "min-h-[100px] text-sm",
+            llmSuggestions.notes ? 'border-amber-300' : '',
+            isHighlighted ? 'ring-2 ring-amber-400 animate-pulse' : ''
+          )}
         />
         <FieldValidationIndicator
           llmSuggestion={llmSuggestions.notes}

@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
-import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, MessageSquare } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, MessageSquare, ArrowRight } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
 import { Button } from "@/components/ui/button";
+import { toast } from 'sonner';
 
 type ValidationItem = {
   field: string;
@@ -18,6 +19,8 @@ type ValidationPanelProps = {
   toggleVisibility: () => void;
   onRevalidate?: () => void;
   onAskAI?: () => void;
+  activeField?: string;
+  setActiveField?: (field: string | null) => void;
 };
 
 const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
@@ -26,16 +29,46 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
   isVisible,
   toggleVisibility,
   onRevalidate,
-  onAskAI
+  onAskAI,
+  activeField,
+  setActiveField
 }) => {
   const [activeTab, setActiveTab] = useState<string>("programmatic");
+  const [isAnimating, setIsAnimating] = useState(false);
   
   const validationCount = programmaticErrors.length + llmWarnings.length;
+  
+  useEffect(() => {
+    // Automatically show panel if there are issues
+    if (validationCount > 0 && !isVisible) {
+      setIsAnimating(true);
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 1000);
+    }
+  }, [validationCount, isVisible]);
+
+  const handleHighlightField = (field: string) => {
+    if (setActiveField) {
+      setActiveField(field);
+      
+      // Automatically clear the highlight after 3 seconds
+      setTimeout(() => {
+        setActiveField(null);
+      }, 3000);
+      
+      toast.info(`Highlighting "${field}" field`, {
+        duration: 2000,
+        position: 'bottom-right'
+      });
+    }
+  };
   
   return (
     <div className={cn(
       "fixed right-0 top-1/4 bg-white shadow-lg border border-gray-200 rounded-l-lg transition-all duration-300 z-50 flex",
-      isVisible ? "translate-x-0" : "translate-x-[calc(100%-28px)]"
+      isVisible ? "translate-x-0" : "translate-x-[calc(100%-28px)]",
+      isAnimating && "animate-pulse"
     )}>
       {/* Toggle Button */}
       <button 
@@ -101,7 +134,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
               className="flex items-center py-1.5 text-xs gap-1"
             >
               <AlertCircle className="h-3.5 w-3.5 text-red-500" />
-              Programmatic Issues
+              Issues
               {programmaticErrors.length > 0 && (
                 <Badge variant="destructive" className="ml-1 text-[10px] h-4 min-w-4 px-1">
                   {programmaticErrors.length}
@@ -113,7 +146,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
               className="flex items-center py-1.5 text-xs gap-1"
             >
               <Zap className="h-3.5 w-3.5 text-amber-500" />
-              AI Suggestions
+              Suggestions
               {llmWarnings.length > 0 && (
                 <Badge variant="outline" className="ml-1 text-[10px] h-4 min-w-4 px-1 border-amber-400 text-amber-600 bg-amber-50">
                   {llmWarnings.length}
@@ -130,11 +163,20 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
               {programmaticErrors.length > 0 ? (
                 <ul className="space-y-1.5">
                   {programmaticErrors.map((error, index) => (
-                    <li key={index} className="bg-red-50 p-2 rounded-md text-xs flex items-start">
-                      <AlertCircle className="h-3.5 w-3.5 text-red-500 mt-0.5 mr-1.5 flex-shrink-0" />
-                      <div>
-                        <p className="font-medium text-red-700">{error.field}</p>
-                        <p className="text-red-600">{error.error}</p>
+                    <li key={index} className="bg-red-50 p-2 rounded-md text-xs">
+                      <div className="flex items-start">
+                        <AlertCircle className="h-3.5 w-3.5 text-red-500 mt-0.5 mr-1.5 flex-shrink-0" />
+                        <div className="flex-1">
+                          <p className="font-medium text-red-700">{error.field}</p>
+                          <p className="text-red-600">{error.error}</p>
+                        </div>
+                        <button 
+                          onClick={() => handleHighlightField(error.field)}
+                          className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5 ml-1"
+                        >
+                          <ArrowRight className="h-3 w-3" />
+                          Show
+                        </button>
                       </div>
                     </li>
                   ))}
@@ -160,7 +202,25 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
                     <li key={index} className="bg-amber-50 p-2 rounded-md text-xs">
                       <div className="flex items-start">
                         <AlertTriangle className="h-3.5 w-3.5 text-amber-500 mt-0.5 mr-1.5 flex-shrink-0" />
-                        <p className="text-amber-800">{warning}</p>
+                        <p className="text-amber-800 flex-1">{warning}</p>
+                        {warning.toLowerCase().includes("receipt") && (
+                          <button 
+                            onClick={() => handleHighlightField("Receipt")}
+                            className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5 ml-1"
+                          >
+                            <ArrowRight className="h-3 w-3" />
+                            Show
+                          </button>
+                        )}
+                        {warning.toLowerCase().includes("amount") && (
+                          <button 
+                            onClick={() => handleHighlightField("Amount")}
+                            className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5 ml-1"
+                          >
+                            <ArrowRight className="h-3 w-3" />
+                            Show
+                          </button>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -178,7 +238,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
         <div className="p-3 border-t flex justify-between items-center bg-gray-50">
           <p className="flex items-center text-xs text-gray-500">
             <Zap className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
-            AI-powered validation in testing mode
+            AI-powered validation active
           </p>
           <Button 
             size="sm" 

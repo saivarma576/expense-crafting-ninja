@@ -21,6 +21,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
 import DateRangeSelection from './CreateExpense/DateRangeSelection';
 import MealSelection from './CreateExpense/MealSelection';
+import ValidationSummaryPanel from './ExpenseForm/ValidationSummaryPanel';
+import ValidationWarnings from './ExpenseForm/ValidationWarnings';
+import AIChatDrawer from './AIChatDrawer';
+import { getAllValidations } from '@/utils/validationUtils';
 
 const initialLineItems = [
   {
@@ -221,6 +225,60 @@ const NewExpense: React.FC = () => {
     return dateRange;
   };
 
+  const handleRevalidate = () => {
+    toast.info("Validating expense report...");
+    
+    setTimeout(() => {
+      const randomErrors = [
+        {field: 'Amount', error: 'Amount exceeds the $500 limit for meals without approval'},
+        {field: 'Merchant Name', error: 'Merchant name is required'},
+        {field: 'Date', error: 'Date is more than 60 days in the past'},
+        {field: 'Receipt', error: 'Receipt is missing or invalid'},
+        {field: 'GL Account', error: 'Invalid GL account number'}
+      ];
+      
+      const randomWarnings = [
+        'Receipt image appears to be for a personal expense, not a business expense',
+        'This meal expense occurs on a weekend - please confirm it was for business purposes',
+        'Consider using a corporate card for this expense type',
+        'The hotel rate exceeds company policy for this location',
+        'Multiple meal expenses on the same day may require additional approval'
+      ];
+      
+      setProgrammaticErrors(randomErrors.slice(0, Math.floor(Math.random() * 3) + 1));
+      setLlmWarnings(randomWarnings.slice(0, Math.floor(Math.random() * 4) + 1));
+      
+      toast.success("Validation complete");
+    }, 1500);
+  };
+  
+  const handleSubmit = () => {
+    if (programmaticErrors.length > 0 || llmWarnings.length > 0) {
+      setShowValidationWarnings(true);
+    } else {
+      toast.success("Expense report submitted successfully!");
+      navigate('/expenses');
+    }
+  };
+  
+  const handleAskAI = () => {
+    setShowAIChat(true);
+  };
+
+  const [isValidationPanelVisible, setIsValidationPanelVisible] = useState<boolean>(true);
+  const [programmaticErrors, setProgrammaticErrors] = useState<{field: string, error: string}[]>([
+    {field: 'Amount', error: 'Amount exceeds the $500 limit for meals without approval'},
+    {field: 'Merchant Name', error: 'Merchant name is required'}
+  ]);
+  const [llmWarnings, setLlmWarnings] = useState<string[]>([
+    'Receipt image appears to be for a personal expense, not a business expense',
+    'This meal expense occurs on a weekend - please confirm it was for business purposes',
+    'Consider using a corporate card for this expense type'
+  ]);
+  const [showValidationWarnings, setShowValidationWarnings] = useState<boolean>(false);
+  const [showAIChat, setShowAIChat] = useState<boolean>(false);
+  const [activeField, setActiveField] = useState<string | null>(null);
+
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-sm">
       <div className="bg-white border-b sticky top-0 z-10 px-6 py-4 flex items-center">
@@ -270,12 +328,16 @@ const NewExpense: React.FC = () => {
           setUploadedDocuments={setUploadedDocuments}
           notes={notes}
           setNotes={setNotes}
+          activeField={activeField === 'Receipt' ? 'receipt' : undefined}
         />
         
         <ExpenseApproval />
       </div>
       
-      <ExpenseActions totalAmount={totalAmount} />
+      <ExpenseActions 
+        totalAmount={totalAmount} 
+        onSubmit={handleSubmit}
+      />
 
       <LineItemSlider
         isOpen={isAddingItem}
@@ -286,6 +348,7 @@ const NewExpense: React.FC = () => {
           onSave={handleLineItemSave}
           onCancel={() => setIsAddingItem(false)}
           editingItem={editingItem}
+          activeField={activeField}
         />
       </LineItemSlider>
       
@@ -325,6 +388,36 @@ const NewExpense: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {showValidationWarnings && (
+        <ValidationWarnings
+          programmaticErrors={programmaticErrors}
+          llmWarnings={llmWarnings}
+          onClose={() => setShowValidationWarnings(false)}
+          onProceed={() => {
+            setShowValidationWarnings(false);
+            toast.success("Expense report submitted with warnings");
+            navigate('/expenses');
+          }}
+        />
+      )}
+      
+      <ValidationSummaryPanel
+        programmaticErrors={programmaticErrors}
+        llmWarnings={llmWarnings}
+        isVisible={isValidationPanelVisible}
+        toggleVisibility={() => setIsValidationPanelVisible(!isValidationPanelVisible)}
+        onRevalidate={handleRevalidate}
+        onAskAI={handleAskAI}
+        activeField={activeField}
+        setActiveField={setActiveField}
+      />
+      
+      <AIChatDrawer
+        isOpen={showAIChat}
+        onClose={() => setShowAIChat(false)}
+        context="Expense report for business travel with meal expenses and hotel stays."
+      />
     </div>
   );
 };
