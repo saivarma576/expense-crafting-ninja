@@ -61,11 +61,14 @@ const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
+  // Format title based on travel purpose if available
   const [title, setTitle] = useState(expenseData?.travelPurpose ? 
     `${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip` : 
     'Trip to Europe');
+    
+  // Format date range for display
+  const [dateRange, setDateRange] = useState(formatDateInfo(expenseData));
   const [expenseNo] = useState('Ref-154264');
-  const [expenseDate] = useState('Dec 14, 2021');
   const [notes, setNotes] = useState('');
   const [userEmail] = useState('oliviarhye@example.com');
   const [userName] = useState('Olivia Rhye');
@@ -86,28 +89,30 @@ const NewExpense: React.FC = () => {
   } = useExpenseLineItems(initialLineItems);
 
   // Format dates for display if available
-  const formatDateInfo = () => {
-    if (expenseData?.fromDate && expenseData?.toDate) {
-      const fromDateStr = format(expenseData.fromDate, 'MMM dd, yyyy');
-      const toDateStr = format(expenseData.toDate, 'MMM dd, yyyy');
+  function formatDateInfo(data?: FormValues): string {
+    if (data?.fromDate && data?.toDate) {
+      const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
+      const toDateStr = format(data.toDate, 'MMM dd, yyyy');
       return `${fromDateStr} - ${toDateStr}`;
     }
-    return '';
-  };
+    return 'Dec 14, 2021';
+  }
   
   // Generate info about business travel if available
   useEffect(() => {
     if (expenseData) {
-      let expenseInfo = '';
+      let expenseNotes = '';
       
-      // Include date range if available
-      if (expenseData.fromDate && expenseData.toDate) {
-        expenseInfo += formatDateInfo();
-      }
-      
-      // Include purpose if available
+      // Include purpose of travel if available
       if (expenseData.travelPurpose) {
         setTitle(`${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip`);
+        expenseNotes += `Purpose: ${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)}\n`;
+      }
+      
+      // Set date range
+      if (expenseData.fromDate && expenseData.toDate) {
+        setDateRange(formatDateInfo(expenseData));
+        expenseNotes += `Date range: ${formatDateInfo(expenseData)}\n`;
       }
       
       // Set notes based on provided meal information
@@ -115,8 +120,10 @@ const NewExpense: React.FC = () => {
         const mealsProvided = expenseData.meals.map(meal => 
           meal.charAt(0).toUpperCase() + meal.slice(1)
         ).join(', ');
-        setNotes(`Business travel with ${mealsProvided} provided.`);
+        expenseNotes += `Business travel with ${mealsProvided} provided.`;
       }
+      
+      setNotes(expenseNotes);
     }
   }, [expenseData]);
 
@@ -141,10 +148,11 @@ const NewExpense: React.FC = () => {
           title={title}
           setTitle={setTitle}
           expenseNo={expenseNo}
-          expenseDate={expenseDate}
+          expenseDate={dateRange}
           totalAmount={totalAmount}
           userName={userName}
           userEmail={userEmail}
+          travelPurpose={expenseData?.travelPurpose}
         />
 
         {/* Line items section */}

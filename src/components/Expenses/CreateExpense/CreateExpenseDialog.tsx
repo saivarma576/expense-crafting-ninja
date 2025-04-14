@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -32,7 +33,8 @@ interface CreateExpenseDialogProps {
 const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const uiStyle = 'dialog';
+  // Define as a constant to avoid re-rendering issues
+  const uiStyle: 'dialog' | 'sheet' = 'dialog';
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -69,6 +71,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   const onSubmit = (data: FormValues) => {
     console.log('Form data:', data);
+    // Navigate to expenses/new with the collected data in state
     navigate('/expenses/new', { state: { expenseData: data } });
     onClose();
   };
