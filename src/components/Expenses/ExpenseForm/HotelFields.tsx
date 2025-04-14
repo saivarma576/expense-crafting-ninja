@@ -3,14 +3,13 @@ import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, DollarSign, MapPin } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import { FieldGroupProps } from './types';
+import { STANDARD_RATES } from '../ExpenseFieldUtils';
 
 const HotelFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
-  const needsPerDiemExplanation = values.amount !== values.hotelRate;
-
   return (
-    <div className="mb-4 space-y-2">
+    <div className="mb-4 space-y-3">
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700 flex items-center">
@@ -22,41 +21,27 @@ const HotelFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               value={values.zipCode || ''}
               onChange={(e) => onChange('zipCode', e.target.value)}
               placeholder="Enter zip code"
-              className="h-8 px-2 py-1 text-sm"
+              className="h-8 px-2 py-1 text-sm pl-7"
               required
             />
-            <MapPin className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+            <MapPin className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
           </div>
         </div>
         
         <div>
           <Label htmlFor="city" className="text-xs font-medium text-gray-700">
-            City (Auto-filled)
+            City
           </Label>
           <Input
             id="city"
             value={values.city || ''}
+            onChange={(e) => onChange('city', e.target.value)}
+            placeholder="City will appear here"
+            className="h-8 px-2 py-1 text-sm"
             readOnly
-            className="h-8 px-2 py-1 text-sm bg-gray-50"
           />
         </div>
-
-        <div>
-          <Label htmlFor="hotelRate" className="text-xs font-medium text-gray-700">
-            Hotel Rate (Default)
-          </Label>
-          <div className="relative">
-            <Input
-              id="hotelRate"
-              type="number"
-              value={values.hotelRate || 0}
-              onChange={(e) => onChange('hotelRate', parseFloat(e.target.value) || 0)}
-              className="h-8 pl-6 pr-2 py-1 text-sm bg-gray-50"
-            />
-            <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
-          </div>
-        </div>
-
+        
         <div>
           <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700 flex items-center">
             Through Date <span className="text-red-500 ml-1">*</span>
@@ -70,22 +55,37 @@ const HotelFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               className="h-8 px-2 py-1 text-sm"
               required
             />
-            <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+            <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400 pointer-events-none" />
           </div>
+        </div>
+        
+        <div>
+          <Label htmlFor="hotelRate" className="text-xs font-medium text-gray-700">
+            Standard Rate
+          </Label>
+          <Input
+            id="hotelRate"
+            type="number"
+            value={values.hotelRate || STANDARD_RATES.HOTEL_RATE}
+            onChange={(e) => onChange('hotelRate', parseFloat(e.target.value) || STANDARD_RATES.HOTEL_RATE)}
+            className="h-8 px-2 py-1 text-sm"
+            readOnly
+          />
+          <div className="text-xs text-gray-500 mt-0.5">Standard rate: ${STANDARD_RATES.HOTEL_RATE}/night</div>
         </div>
       </div>
       
-      {needsPerDiemExplanation && (
+      {values.amount !== values.hotelRate && (
         <div>
           <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
-            Per Diem Explanation <span className="text-red-500 ml-1">*</span>
+            Explanation <span className="text-red-500 ml-1">*</span>
           </Label>
           <Textarea
             id="perDiemExplanation"
             value={values.perDiemExplanation || ''}
             onChange={(e) => onChange('perDiemExplanation', e.target.value)}
-            placeholder="Explain why the amount differs from the standard rate"
-            className="resize-none h-20 text-sm"
+            placeholder="Please explain why you're not using the standard rate"
+            className="resize-none h-16 text-sm"
             required
           />
         </div>

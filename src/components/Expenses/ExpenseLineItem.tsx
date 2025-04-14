@@ -1,15 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { SquareAsterisk } from 'lucide-react';
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseType } from '@/types/expense';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
-import ReceiptUpload from './ReceiptUpload';
 import ReceiptPreview from './ReceiptPreview';
 import { ExpenseLineItemFormData, FormProps } from './ExpenseForm/types';
 import CommonFields from './ExpenseForm/CommonFields';
@@ -124,6 +122,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const handleReceiptChange = (name: string, url: string) => {
     setReceiptName(name);
     setReceiptUrl(url);
+    toast.success(`Receipt ${name} uploaded successfully`);
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -145,6 +144,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       const file = e.dataTransfer.files[0];
       setReceiptName(file.name);
       setReceiptUrl(`receipt-${Date.now()}`);
+      toast.success(`Receipt ${file.name} uploaded successfully`);
     }
   };
 
@@ -237,11 +237,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
             {/* Common Fields */}
             <CommonFields
               type={type}
-              costCenter={costCenter}
-              date={date}
-              wbs={wbs}
-              amount={amount}
-              description={description}
               values={formValues}
               onChange={handleFieldChange}
               isAmountDisabled={type === 'mileage'}
@@ -255,19 +250,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
 
             {/* Notes Field */}
             <NotesField values={formValues} onChange={handleFieldChange} />
-
-            {/* Receipt Upload */}
-            <ReceiptUpload 
-              receiptName={receiptName}
-              receiptUrl={receiptUrl}
-              onReceiptChange={handleReceiptChange}
-            />
-
-            {/* Required fields legend */}
-            <div className="text-xs text-gray-500 flex items-center mb-4">
-              <SquareAsterisk className="h-3 w-3 text-red-500 mr-1" />
-              <span>Required field</span>
-            </div>
 
             {/* Action buttons */}
             <FormActions onCancel={onCancel} onSave={handleSave} />
@@ -285,6 +267,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
           onDragOver={handleDrag}
           onDrop={handleDrop}
           dragActive={dragActive}
+          onReceiptChange={handleReceiptChange}
         />
       </div>
 

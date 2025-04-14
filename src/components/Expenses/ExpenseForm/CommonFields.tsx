@@ -46,7 +46,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
             className="h-8 px-2 py-1 text-sm"
             required
           />
-          <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+          <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400 pointer-events-none" />
         </div>
       </div>
 
@@ -79,7 +79,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
             disabled={isAmountDisabled}
             required
           />
-          <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
+          <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
         </div>
       </div>
 

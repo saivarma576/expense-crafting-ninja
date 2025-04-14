@@ -3,14 +3,14 @@ import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Clock, DollarSign, MapPin } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Clock, MapPin } from 'lucide-react';
 import { FieldGroupProps } from './types';
+import { STANDARD_RATES } from '../ExpenseFieldUtils';
 
 const MealsFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
-  const needsPerDiemExplanation = values.amount !== values.mealsRate;
-
   return (
-    <div className="mb-4 space-y-2">
+    <div className="mb-4 space-y-3">
       <div className="grid grid-cols-2 gap-x-3 gap-y-2">
         <div>
           <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700 flex items-center">
@@ -22,41 +22,27 @@ const MealsFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               value={values.zipCode || ''}
               onChange={(e) => onChange('zipCode', e.target.value)}
               placeholder="Enter zip code"
-              className="h-8 px-2 py-1 text-sm"
+              className="h-8 px-2 py-1 text-sm pl-7"
               required
             />
-            <MapPin className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+            <MapPin className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
           </div>
         </div>
         
         <div>
           <Label htmlFor="city" className="text-xs font-medium text-gray-700">
-            City (Auto-filled)
+            City
           </Label>
           <Input
             id="city"
             value={values.city || ''}
+            onChange={(e) => onChange('city', e.target.value)}
+            placeholder="City will appear here"
+            className="h-8 px-2 py-1 text-sm"
             readOnly
-            className="h-8 px-2 py-1 text-sm bg-gray-50"
           />
         </div>
-
-        <div>
-          <Label htmlFor="mealsRate" className="text-xs font-medium text-gray-700">
-            Meals Rate (Default)
-          </Label>
-          <div className="relative">
-            <Input
-              id="mealsRate"
-              type="number"
-              value={values.mealsRate || 0}
-              onChange={(e) => onChange('mealsRate', parseFloat(e.target.value) || 0)}
-              className="h-8 pl-6 pr-2 py-1 text-sm bg-gray-50"
-            />
-            <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
-          </div>
-        </div>
-
+        
         <div>
           <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700 flex items-center">
             Departure Time <span className="text-red-500 ml-1">*</span>
@@ -67,16 +53,16 @@ const MealsFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               type="time"
               value={values.departureTime || ''}
               onChange={(e) => onChange('departureTime', e.target.value)}
-              className="h-8 px-2 py-1 text-sm"
+              className="h-8 px-2 py-1 text-sm pl-7"
               required
             />
-            <Clock className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+            <Clock className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
           </div>
         </div>
-
+        
         <div>
-          <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
-            Return Time
+          <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700 flex items-center">
+            Return Time <span className="text-red-500 ml-1">*</span>
           </Label>
           <div className="relative">
             <Input
@@ -84,24 +70,47 @@ const MealsFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               type="time"
               value={values.returnTime || ''}
               onChange={(e) => onChange('returnTime', e.target.value)}
-              className="h-8 px-2 py-1 text-sm"
+              className="h-8 px-2 py-1 text-sm pl-7"
+              required
             />
-            <Clock className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+            <Clock className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
           </div>
         </div>
       </div>
       
-      {needsPerDiemExplanation && (
+      <div>
+        <div className="flex justify-between items-center mb-1">
+          <Label htmlFor="mealsRate" className="text-xs font-medium text-gray-700">
+            Standard Rate
+          </Label>
+          <span className="text-xs text-gray-500">${STANDARD_RATES.MEALS_RATE.toFixed(2)}/day</span>
+        </div>
+        <Select
+          value={values.mealsRate?.toString() || STANDARD_RATES.MEALS_RATE.toString()}
+          onValueChange={(value) => onChange('mealsRate', parseFloat(value))}
+        >
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder="Select rate" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={STANDARD_RATES.MEALS_RATE.toString()}>Standard Rate (${STANDARD_RATES.MEALS_RATE.toFixed(2)})</SelectItem>
+            <SelectItem value={(STANDARD_RATES.MEALS_RATE * 1.5).toString()}>High Cost Area (${(STANDARD_RATES.MEALS_RATE * 1.5).toFixed(2)})</SelectItem>
+            <SelectItem value={(STANDARD_RATES.MEALS_RATE * 0.75).toString()}>Reduced Rate (${(STANDARD_RATES.MEALS_RATE * 0.75).toFixed(2)})</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {values.amount !== values.mealsRate && (
         <div>
           <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
-            Per Diem Explanation <span className="text-red-500 ml-1">*</span>
+            Explanation <span className="text-red-500 ml-1">*</span>
           </Label>
           <Textarea
             id="perDiemExplanation"
             value={values.perDiemExplanation || ''}
             onChange={(e) => onChange('perDiemExplanation', e.target.value)}
-            placeholder="Explain why the amount differs from the standard rate"
-            className="resize-none h-20 text-sm"
+            placeholder="Please explain why you're not using the standard rate"
+            className="resize-none h-16 text-sm"
             required
           />
         </div>
