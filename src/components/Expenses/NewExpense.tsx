@@ -21,7 +21,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
 import DateRangeSelection from './CreateExpense/DateRangeSelection';
 import MealSelection from './CreateExpense/MealSelection';
-import ValidationSummaryPanel from './ExpenseForm/ValidationSummaryPanel';
 import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import AIChatDrawer from './AIChatDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
@@ -137,6 +136,8 @@ const NewExpense: React.FC = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showValidationWarnings, setShowValidationWarnings] = useState<boolean>(false);
+  const [showAIChat, setShowAIChat] = useState<boolean>(false);
+  const [activeField, setActiveField] = useState<string | null>(null);
 
   function formatDateInfo(data?: FormValues): string {
     if (data?.fromDate && data?.toDate) {
@@ -297,18 +298,16 @@ const NewExpense: React.FC = () => {
     }
   };
 
-  const [isValidationPanelVisible, setIsValidationPanelVisible] = useState<boolean>(true);
   const [programmaticErrors, setProgrammaticErrors] = useState<{field: string, error: string}[]>([
     {field: 'Amount', error: 'Amount exceeds the $500 limit for meals without approval'},
     {field: 'Merchant Name', error: 'Merchant name is required'}
   ]);
+  
   const [llmWarnings, setLlmWarnings] = useState<string[]>([
     'Receipt image appears to be for a personal expense, not a business expense',
     'This meal expense occurs on a weekend - please confirm it was for business purposes',
     'Consider using a corporate card for this expense type'
   ]);
-  const [showAIChat, setShowAIChat] = useState<boolean>(false);
-  const [activeField, setActiveField] = useState<string | null>(null);
 
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-sm">
@@ -430,17 +429,6 @@ const NewExpense: React.FC = () => {
         onClose={() => setShowValidationWarnings(false)}
         onProceed={handleContinueAnyway}
         open={showValidationWarnings}
-      />
-      
-      <ValidationSummaryPanel
-        programmaticErrors={programmaticErrors}
-        llmWarnings={llmWarnings}
-        isVisible={isValidationPanelVisible}
-        toggleVisibility={() => setIsValidationPanelVisible(!isValidationPanelVisible)}
-        onRevalidate={handleRevalidate}
-        onAskAI={handleAskAI}
-        activeField={activeField}
-        setActiveField={setActiveField}
       />
       
       <AIChatDrawer

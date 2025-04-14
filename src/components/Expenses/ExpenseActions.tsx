@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Zap, ChevronLeft, SendHorizonal, XCircle, BarChart } from 'lucide-react';
+import { Zap, ChevronLeft, SendHorizonal, XCircle, BarChart, Brain } from 'lucide-react';
 
 interface ExpenseActionsProps {
   totalAmount: string | number;
@@ -61,19 +61,22 @@ export const ExpenseActions: React.FC<ExpenseActionsProps> = ({
         </div>
         <Button 
           size="sm" 
-          className="bg-blue-600 hover:bg-blue-700"
+          className="bg-blue-600 hover:bg-blue-700 relative overflow-hidden group"
           onClick={onSubmit}
           disabled={submitting}
         >
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           {submitting ? (
-            <>
-              <span className="mr-2">Analyzing...</span>
-            </>
+            <div className="flex items-center relative z-10">
+              <div className="mr-2 h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+              <span>Analyzing...</span>
+            </div>
           ) : (
-            <>
+            <div className="flex items-center relative z-10">
+              <Brain className="h-4 w-4 mr-2 text-blue-200" />
               <SendHorizonal className="h-4 w-4 mr-2" />
               Submit for Approval
-            </>
+            </div>
           )}
         </Button>
       </div>
