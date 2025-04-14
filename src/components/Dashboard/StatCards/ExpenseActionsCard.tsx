@@ -7,7 +7,8 @@ import {
   Receipt, 
   ArrowUp, 
   FilePlus,
-  Upload 
+  Upload,
+  FileEdit
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +43,7 @@ const ExpenseActionsCard: React.FC<ExpenseActionsCardProps> = ({
       <div className="flex justify-between items-start">
         <h3 className="text-sm font-medium text-muted-foreground uppercase">Expense Actions</h3>
         <div className="flex items-center justify-center w-8 h-8 rounded-md bg-primary/10 text-primary">
-          <FilePlus className="h-5 w-5" />
+          <FileEdit className="h-5 w-5" />
         </div>
       </div>
       
@@ -50,10 +51,10 @@ const ExpenseActionsCard: React.FC<ExpenseActionsCardProps> = ({
         <DropdownMenu>
           <div className="flex w-full">
             <Button 
-              className="bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-r-none flex-grow text-sm"
+              className="bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-r-none flex-grow text-sm group"
               onClick={handleOpenDialog}
             >
-              <PlusCircle className="mr-1.5 h-4 w-4" />
+              <PlusCircle className="mr-1.5 h-4 w-4 group-hover:scale-110 transition-transform" />
               Create Expense
             </Button>
             <DropdownMenuTrigger asChild>
