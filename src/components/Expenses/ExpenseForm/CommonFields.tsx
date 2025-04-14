@@ -2,28 +2,18 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Calendar, DollarSign, SquareAsterisk } from 'lucide-react';
+import { Calendar, DollarSign } from 'lucide-react';
 import { ExpenseType } from '@/types/expense';
 import { FieldGroupProps } from './types';
 
 interface CommonFieldsProps extends FieldGroupProps {
   type: ExpenseType;
-  costCenter: string;
-  date: string;
-  wbs: string;
-  amount: number;
-  description: string;
-  onTypeChange?: (type: ExpenseType) => void;
   isAmountDisabled?: boolean;
 }
 
 const CommonFields: React.FC<CommonFieldsProps> = ({
   type,
-  costCenter,
-  date,
-  wbs,
-  amount,
-  description,
+  values,
   onChange,
   isAmountDisabled
 }) => {
@@ -35,7 +25,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
         </Label>
         <Input
           id="costCenter"
-          value={costCenter}
+          value={values.costCenter || ''}
           onChange={(e) => onChange('costCenter', e.target.value)}
           placeholder="Enter cost center"
           className="h-8 px-2 py-1 text-sm"
@@ -51,7 +41,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           <Input
             id="date"
             type="date"
-            value={date}
+            value={values.date || ''}
             onChange={(e) => onChange('date', e.target.value)}
             className="h-8 px-2 py-1 text-sm"
             required
@@ -66,7 +56,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
         </Label>
         <Input
           id="wbs"
-          value={wbs}
+          value={values.wbs || ''}
           onChange={(e) => onChange('wbs', e.target.value)}
           placeholder="Enter WBS code"
           className="h-8 px-2 py-1 text-sm"
@@ -82,7 +72,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           <Input
             id="amount"
             type="number"
-            value={amount}
+            value={values.amount || 0}
             onChange={(e) => onChange('amount', parseFloat(e.target.value) || 0)}
             placeholder="0.00"
             className="h-8 pl-6 pr-2 py-1 text-sm"
@@ -99,7 +89,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
         </Label>
         <Input
           id="description"
-          value={description}
+          value={values.description || ''}
           onChange={(e) => onChange('description', e.target.value)}
           placeholder="Enter expense description"
           className="h-8 px-2 py-1 text-sm"
