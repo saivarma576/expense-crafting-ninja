@@ -135,6 +135,9 @@ const NewExpense: React.FC = () => {
     setIsAddingItem
   } = useExpenseLineItems(initialLineItems);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showValidationWarnings, setShowValidationWarnings] = useState<boolean>(false);
+
   function formatDateInfo(data?: FormValues): string {
     if (data?.fromDate && data?.toDate) {
       const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
@@ -253,16 +256,45 @@ const NewExpense: React.FC = () => {
   };
   
   const handleSubmit = () => {
-    if (programmaticErrors.length > 0 || llmWarnings.length > 0) {
-      setShowValidationWarnings(true);
-    } else {
-      toast.success("Expense report submitted successfully!");
-      navigate('/expenses');
-    }
+    setIsSubmitting(true);
+    
+    setTimeout(() => {
+      setIsSubmitting(false);
+      
+      if (programmaticErrors.length > 0 || llmWarnings.length > 0) {
+        setShowValidationWarnings(true);
+      } else {
+        toast.success("Expense report submitted successfully!");
+        navigate('/expenses');
+      }
+    }, 2000);
   };
   
+  const handleContinueAnyway = () => {
+    setShowValidationWarnings(false);
+    toast.success("Expense report submitted with warnings");
+    navigate('/expenses');
+  };
+
   const handleAskAI = () => {
     setShowAIChat(true);
+  };
+
+  const handleReviewItem = (violationId: string) => {
+    const errorMatch = violationId.match(/error-(\d+)/);
+    const warningMatch = violationId.match(/warning-(\d+)/);
+    
+    if (errorMatch && programmaticErrors[parseInt(errorMatch[1])]) {
+      const error = programmaticErrors[parseInt(errorMatch[1])];
+      setActiveField(error.field);
+    } else if (warningMatch && llmWarnings[parseInt(warningMatch[1])]) {
+      const warning = llmWarnings[parseInt(warningMatch[1])];
+      if (warning.toLowerCase().includes('receipt')) {
+        setActiveField('Receipt');
+      } else if (warning.toLowerCase().includes('meal')) {
+        setActiveField('Amount');
+      }
+    }
   };
 
   const [isValidationPanelVisible, setIsValidationPanelVisible] = useState<boolean>(true);
@@ -275,7 +307,6 @@ const NewExpense: React.FC = () => {
     'This meal expense occurs on a weekend - please confirm it was for business purposes',
     'Consider using a corporate card for this expense type'
   ]);
-  const [showValidationWarnings, setShowValidationWarnings] = useState<boolean>(false);
   const [showAIChat, setShowAIChat] = useState<boolean>(false);
   const [activeField, setActiveField] = useState<string | null>(null);
 
@@ -338,6 +369,9 @@ const NewExpense: React.FC = () => {
         totalAmount={totalAmount} 
         onSubmit={handleSubmit}
         onAskAI={handleAskAI}
+        onSaveAsDraft={() => toast.info("Expense saved as draft")}
+        onDiscard={() => navigate('/expenses')}
+        submitting={isSubmitting}
       />
 
       <LineItemSlider
@@ -390,18 +424,13 @@ const NewExpense: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      {showValidationWarnings && (
-        <ValidationWarnings
-          programmaticErrors={programmaticErrors}
-          llmWarnings={llmWarnings}
-          onClose={() => setShowValidationWarnings(false)}
-          onProceed={() => {
-            setShowValidationWarnings(false);
-            toast.success("Expense report submitted with warnings");
-            navigate('/expenses');
-          }}
-        />
-      )}
+      <ValidationWarnings
+        programmaticErrors={programmaticErrors}
+        llmWarnings={llmWarnings}
+        onClose={() => setShowValidationWarnings(false)}
+        onProceed={handleContinueAnyway}
+        open={showValidationWarnings}
+      />
       
       <ValidationSummaryPanel
         programmaticErrors={programmaticErrors}

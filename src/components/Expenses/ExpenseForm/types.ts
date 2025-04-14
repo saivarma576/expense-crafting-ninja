@@ -29,6 +29,16 @@ export interface ExpenseLineItemFormData {
   mileageRate?: number;
 }
 
+export interface PolicyViolation {
+  id: string;
+  lineNumber: number;
+  lineTitle: string;
+  expenseType: string;
+  violationType: 'error' | 'warning';
+  message: string;
+  category: string;
+}
+
 export interface FieldGroupProps {
   values: ExpenseLineItemFormData;
   onChange: (id: string, value: any) => void;

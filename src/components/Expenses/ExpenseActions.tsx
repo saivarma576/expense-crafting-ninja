@@ -7,21 +7,37 @@ interface ExpenseActionsProps {
   totalAmount: string | number;
   onSubmit?: () => void;
   onAskAI?: () => void;
+  onSaveAsDraft?: () => void;
+  onDiscard?: () => void;
+  submitting?: boolean;
 }
 
 export const ExpenseActions: React.FC<ExpenseActionsProps> = ({ 
   totalAmount, 
   onSubmit,
-  onAskAI 
+  onAskAI,
+  onSaveAsDraft,
+  onDiscard,
+  submitting = false
 }) => {
   return (
     <div className="sticky bottom-0 px-6 py-3 bg-white border-t flex items-center justify-between">
       <div className="flex items-center space-x-3">
-        <Button variant="outline" size="sm" className="flex items-center">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center"
+          onClick={onSaveAsDraft}
+        >
           <ChevronLeft className="h-4 w-4 mr-1" />
           Save as Draft
         </Button>
-        <Button variant="outline" size="sm" className="flex items-center">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="flex items-center"
+          onClick={onDiscard}
+        >
           <XCircle className="h-4 w-4 mr-1" />
           Discard
         </Button>
@@ -47,9 +63,18 @@ export const ExpenseActions: React.FC<ExpenseActionsProps> = ({
           size="sm" 
           className="bg-blue-600 hover:bg-blue-700"
           onClick={onSubmit}
+          disabled={submitting}
         >
-          <SendHorizonal className="h-4 w-4 mr-2" />
-          Submit for Approval
+          {submitting ? (
+            <>
+              <span className="mr-2">Analyzing...</span>
+            </>
+          ) : (
+            <>
+              <SendHorizonal className="h-4 w-4 mr-2" />
+              Submit for Approval
+            </>
+          )}
         </Button>
       </div>
     </div>
