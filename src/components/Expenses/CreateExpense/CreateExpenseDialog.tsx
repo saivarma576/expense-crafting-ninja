@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -91,19 +90,19 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-[#F1F0FB] border-none shadow-lg rounded-xl">
-        <DialogHeader className="p-6 pb-2 bg-[#9b87f5] bg-opacity-10">
-          <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl text-[#1A1F2C]">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl">
             Create New Expense
           </DialogTitle>
-          <DialogDescription className="animate-fade-in text-[#8E9196]">
+          <DialogDescription className="animate-fade-in">
             Let's gather some basic information about your expense.
           </DialogDescription>
         </DialogHeader>
         
-        <Progress value={progressValue} className="mx-6 bg-[#E6E6E6]" />
+        <Progress value={progressValue} className="mx-6" />
         
-        <div className="p-6 bg-[#F1F0FB]">
+        <div className="p-6">
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {renderStep()}
