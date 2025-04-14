@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plane } from 'lucide-react';
@@ -17,6 +16,7 @@ import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import TravelExpenseDetails from './TravelExpenseDetails';
 
 const initialLineItems = [
   {
@@ -65,10 +65,8 @@ const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
-  // New state for the travel expense toggle
   const [isTravelExpense, setIsTravelExpense] = useState<boolean>(expenseData?.isBusinessTravel === 'yes');
   
-  // State for travel information
   const [fromDate, setFromDate] = useState<Date | undefined>(expenseData?.fromDate);
   const [toDate, setToDate] = useState<Date | undefined>(expenseData?.toDate);
   const [mealsProvided, setMealsProvided] = useState<string>(expenseData?.mealsProvided || 'no');
@@ -86,12 +84,10 @@ const NewExpense: React.FC = () => {
     }
   }, [expenseData]);
   
-  // Format title based on travel purpose if available
   const [title, setTitle] = useState(expenseData?.travelPurpose ? 
     `${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip` : 
     'Trip to Europe');
     
-  // Format date range for display
   const [dateRange, setDateRange] = useState(formatDateInfo(expenseData));
   const [expenseNo] = useState('Ref-154264');
   const [notes, setNotes] = useState('');
@@ -113,7 +109,6 @@ const NewExpense: React.FC = () => {
     setIsAddingItem
   } = useExpenseLineItems(initialLineItems);
 
-  // Format dates for display if available
   function formatDateInfo(data?: FormValues): string {
     if (data?.fromDate && data?.toDate) {
       const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
@@ -123,24 +118,20 @@ const NewExpense: React.FC = () => {
     return 'Dec 14, 2021';
   }
   
-  // Generate info about business travel if available
   useEffect(() => {
     if (expenseData) {
       let expenseNotes = '';
       
-      // Include purpose of travel if available
       if (expenseData.travelPurpose) {
         setTitle(`${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip`);
         expenseNotes += `Purpose: ${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)}\n`;
       }
       
-      // Set date range
       if (expenseData.fromDate && expenseData.toDate) {
         setDateRange(formatDateInfo(expenseData));
         expenseNotes += `Date range: ${formatDateInfo(expenseData)}\n`;
       }
       
-      // Set notes based on provided meal information
       if (expenseData.mealsProvided === 'yes' && expenseData.meals?.length > 0) {
         const mealsProvided = expenseData.meals.map(meal => 
           meal.charAt(0).toUpperCase() + meal.slice(1)
@@ -152,12 +143,10 @@ const NewExpense: React.FC = () => {
     }
   }, [expenseData]);
 
-  // Handle toggle change for travel expense
   const handleTravelToggleChange = (checked: boolean) => {
     setIsTravelExpense(checked);
   };
 
-  // Format date range for display in the travel header
   const formattedDateRange = () => {
     if (fromDate && toDate) {
       const fromDateStr = format(fromDate, 'MMM dd, yyyy');
@@ -167,7 +156,6 @@ const NewExpense: React.FC = () => {
     return dateRange;
   };
 
-  // Render travel information summary if this is a business travel expense
   const renderTravelExpenseHeader = () => {
     if (!isTravelExpense) return null;
     
@@ -205,7 +193,6 @@ const NewExpense: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-sm">
-      {/* Header */}
       <div className="bg-white border-b sticky top-0 z-10 px-6 py-4 flex items-center">
         <button 
           onClick={() => navigate('/expenses')}
@@ -217,9 +204,7 @@ const NewExpense: React.FC = () => {
         <h1 className="text-lg font-medium text-gray-800">New Expense Report</h1>
       </div>
 
-      {/* Main content */}
       <div className="px-6 py-5">
-        {/* Travel expense toggle - temporary */}
         <div className="mb-4 flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
           <div className="flex items-center gap-2">
             <Plane className="h-5 w-5 text-blue-500" />
@@ -232,10 +217,15 @@ const NewExpense: React.FC = () => {
           />
         </div>
         
-        {/* Travel Expense Header (conditional) */}
-        {renderTravelExpenseHeader()}
+        <TravelExpenseDetails 
+          isTravelExpense={isTravelExpense}
+          travelPurpose={expenseData?.travelPurpose}
+          fromDate={fromDate}
+          toDate={toDate}
+          mealsProvided={mealsProvided}
+          meals={meals}
+        />
         
-        {/* Title section with inline editing */}
         <ExpenseHeader 
           title={title}
           setTitle={setTitle}
@@ -247,7 +237,6 @@ const NewExpense: React.FC = () => {
           travelPurpose={expenseData?.travelPurpose}
         />
 
-        {/* Line items section */}
         <LineItemsSection 
           lineItems={lineItems}
           handleAddLineItem={handleAddLineItem}
@@ -256,7 +245,6 @@ const NewExpense: React.FC = () => {
           totalAmount={totalAmount}
         />
           
-        {/* Documents & Notes Section */}
         <DocumentsNotesSection 
           uploadedDocuments={uploadedDocuments}
           setUploadedDocuments={setUploadedDocuments}
@@ -264,11 +252,9 @@ const NewExpense: React.FC = () => {
           setNotes={setNotes}
         />
         
-        {/* Approval flow section */}
         <ExpenseApproval />
       </div>
       
-      {/* Footer with action buttons */}
       <ExpenseActions totalAmount={totalAmount} />
 
       <LineItemSlider
