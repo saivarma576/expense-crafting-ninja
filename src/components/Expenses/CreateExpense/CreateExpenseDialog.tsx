@@ -121,7 +121,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
     );
   }
 
-  // Here's the fix: Use strict equality operator to compare string literals
+  // Fix: Use strict comparison operator with type assertion
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden">

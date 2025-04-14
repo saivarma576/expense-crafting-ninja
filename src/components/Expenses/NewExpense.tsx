@@ -11,14 +11,13 @@ import DocumentsNotesSection from '@/components/Expenses/DocumentsNotesSection';
 import { ExpenseActions } from '@/components/Expenses/ExpenseActions';
 import { useExpenseLineItems } from '@/hooks/useExpenseLineItems';
 import { ExpenseDocument } from '@/types/expense';
-import { FormValues } from './CreateExpense/types';
+import { FormValues, TravelPurpose, Meal } from './CreateExpense/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import TravelExpenseDetails from './TravelExpenseDetails';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Form, FormProvider } from '@/components/ui/form';
 import { useForm } from 'react-hook-form';
 import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
 import DateRangeSelection from './CreateExpense/DateRangeSelection';
@@ -77,8 +76,8 @@ const NewExpense: React.FC = () => {
   const [fromDate, setFromDate] = useState<Date | undefined>(expenseData?.fromDate);
   const [toDate, setToDate] = useState<Date | undefined>(expenseData?.toDate);
   const [mealsProvided, setMealsProvided] = useState<string>(expenseData?.mealsProvided || 'no');
-  const [meals, setMeals] = useState<string[]>(expenseData?.meals || []);
-  const [travelPurpose, setTravelPurpose] = useState<string | undefined>(expenseData?.travelPurpose);
+  const [meals, setMeals] = useState<Meal[]>(expenseData?.meals || []);
+  const [travelPurpose, setTravelPurpose] = useState<TravelPurpose | undefined>(expenseData?.travelPurpose);
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -267,7 +266,7 @@ const NewExpense: React.FC = () => {
         
         <TravelExpenseDetails 
           isTravelExpense={isTravelExpense}
-          travelPurpose={travelPurpose as any}
+          travelPurpose={travelPurpose}
           fromDate={fromDate}
           toDate={toDate}
           mealsProvided={mealsProvided}
@@ -282,7 +281,7 @@ const NewExpense: React.FC = () => {
           totalAmount={totalAmount}
           userName={userName}
           userEmail={userEmail}
-          travelPurpose={travelPurpose as any}
+          travelPurpose={travelPurpose}
         />
 
         <LineItemsSection 
@@ -331,26 +330,24 @@ const NewExpense: React.FC = () => {
           </DialogHeader>
           
           <div className="p-6">
-            <FormProvider {...form}>
-              <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
-                <TravelPurposeSelector />
-                <DateRangeSelection />
-                <MealSelection />
-                
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setShowTravelDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    Save Details
-                  </Button>
-                </div>
-              </form>
-            </FormProvider>
+            <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
+              <TravelPurposeSelector />
+              <DateRangeSelection />
+              <MealSelection />
+              
+              <div className="flex justify-end gap-2 pt-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setShowTravelDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  Save Details
+                </Button>
+              </div>
+            </form>
           </div>
         </DialogContent>
       </Dialog>

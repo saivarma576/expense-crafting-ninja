@@ -4,7 +4,7 @@ import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2 } fr
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { TravelPurpose } from './CreateExpense/types';
+import { TravelPurpose, Meal } from './CreateExpense/types';
 
 interface TravelExpenseDetailsProps {
   isTravelExpense: boolean;
@@ -12,7 +12,7 @@ interface TravelExpenseDetailsProps {
   fromDate?: Date;
   toDate?: Date;
   mealsProvided: string;
-  meals: string[];
+  meals: Meal[];
 }
 
 const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
