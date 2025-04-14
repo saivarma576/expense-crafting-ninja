@@ -6,7 +6,6 @@ import {
   ChevronDown, 
   Receipt, 
   ArrowUp, 
-  FilePlus,
   Upload,
   FileEdit
 } from 'lucide-react';
@@ -17,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CreateExpenseDialog from '@/components/Expenses/CreateExpenseDialog';
+import CreateExpenseDialog from '@/components/Expenses/CreateExpense/CreateExpenseDialog';
 
 interface ExpenseActionsCardProps {
   draftCount: number;
