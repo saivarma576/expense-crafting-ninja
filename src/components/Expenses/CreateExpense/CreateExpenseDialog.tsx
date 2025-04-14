@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -37,7 +36,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   const [step, setStep] = useState(1);
   
   // Use a constant value instead of state to avoid re-renders
-  const uiStyle = 'dialog' as const;
+  const uiStyle: UiStyle = 'dialog';
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -96,7 +95,6 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   const progressValue = (step / 2) * 100;
 
-  // For proper type checking, use explicit equality check with the literal type
   if (uiStyle === 'sheet') {
     return (
       <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>

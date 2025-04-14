@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Plane } from 'lucide-react';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem from '@/components/Expenses/ExpenseLineItem';
 import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
@@ -14,6 +14,7 @@ import { ExpenseDocument } from '@/types/expense';
 import { FormValues } from './CreateExpense/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 
 const initialLineItems = [
   {
@@ -135,6 +136,42 @@ const NewExpense: React.FC = () => {
     }
   }, [expenseData]);
 
+  // Render travel information summary if this is a business travel expense
+  const renderTravelExpenseHeader = () => {
+    if (expenseData?.isBusinessTravel !== 'yes') return null;
+    
+    return (
+      <div className="mb-4 bg-blue-50 rounded-lg p-4 border border-blue-100">
+        <div className="flex items-center gap-2 text-blue-800 font-medium mb-2">
+          <Plane className="h-4 w-4" />
+          <span>Travel Expense Information</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+          <div>
+            <p className="text-gray-500">Travel Expense</p>
+            <p className="font-medium">Yes</p>
+          </div>
+          <div>
+            <p className="text-gray-500">Duration</p>
+            <p className="font-medium">{dateRange}</p>
+          </div>
+          {expenseData.mealsProvided === 'yes' && expenseData.meals && expenseData.meals.length > 0 && (
+            <div>
+              <p className="text-gray-500">Meals Provided</p>
+              <div className="flex gap-1 flex-wrap mt-1">
+                {expenseData.meals.map((meal) => (
+                  <Badge key={meal} variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
+                    {meal.charAt(0).toUpperCase() + meal.slice(1)}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-sm">
       {/* Header */}
@@ -151,6 +188,9 @@ const NewExpense: React.FC = () => {
 
       {/* Main content */}
       <div className="px-6 py-5">
+        {/* Travel Expense Header (conditional) */}
+        {renderTravelExpenseHeader()}
+        
         {/* Title section with inline editing */}
         <ExpenseHeader 
           title={title}

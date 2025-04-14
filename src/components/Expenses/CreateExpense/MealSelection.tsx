@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UtensilsCrossed } from 'lucide-react';
+import { UtensilsCrossed, Coffee, Soup, EggFried } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues, Meal } from './types';
 
@@ -61,7 +61,7 @@ const MealSelection: React.FC = () => {
         )}
       />
 
-      {/* Meal selection checkboxes */}
+      {/* Meal selection checkboxes with modern icons */}
       {watchMealsProvided === 'yes' && (
         <div className="space-y-3 pt-2 animate-fade-in">
           <FormLabel>Select which meals were provided:</FormLabel>
@@ -74,7 +74,10 @@ const MealSelection: React.FC = () => {
                 checked={watchMeals?.includes('breakfast')} 
                 onCheckedChange={() => handleMealChange('breakfast')}
               />
-              <span className="text-sm">🥐 Breakfast</span>
+              <div className="flex items-center">
+                <EggFried className="h-4 w-4 mr-1.5 text-amber-500" />
+                <span className="text-sm">Breakfast</span>
+              </div>
             </div>
             <div 
               className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('lunch') ? 'bg-primary/10 border-primary' : ''}`}
@@ -84,7 +87,10 @@ const MealSelection: React.FC = () => {
                 checked={watchMeals?.includes('lunch')} 
                 onCheckedChange={() => handleMealChange('lunch')}
               />
-              <span className="text-sm">🍱 Lunch</span>
+              <div className="flex items-center">
+                <Soup className="h-4 w-4 mr-1.5 text-green-500" />
+                <span className="text-sm">Lunch</span>
+              </div>
             </div>
             <div 
               className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${watchMeals?.includes('dinner') ? 'bg-primary/10 border-primary' : ''}`}
@@ -94,7 +100,10 @@ const MealSelection: React.FC = () => {
                 checked={watchMeals?.includes('dinner')} 
                 onCheckedChange={() => handleMealChange('dinner')}
               />
-              <span className="text-sm">🍽️ Dinner</span>
+              <div className="flex items-center">
+                <UtensilsCrossed className="h-4 w-4 mr-1.5 text-blue-500" />
+                <span className="text-sm">Dinner</span>
+              </div>
             </div>
           </div>
         </div>
