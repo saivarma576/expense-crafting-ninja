@@ -1,9 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock, DollarSign, MapPin, Calendar, SquareAsterisk } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ExpenseType } from '@/types/expense';
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 // Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
@@ -31,14 +36,19 @@ export interface ExpenseLineItemType {
   accountName?: string;
   costCenter?: string;
   costCenterName?: string;
-  // Dynamic fields based on expense type
-  merchantName?: string;
-  location?: string;
-  checkInDate?: string;
-  checkOutDate?: string;
-  numberOfNights?: number;
-  cityName?: string;
+  wbs?: string;
+  notes?: string;
+  glAccount?: string;
   zipCode?: string;
+  city?: string;
+  mealsRate?: number;
+  hotelRate?: number;
+  throughDate?: string;
+  perDiemExplanation?: string;
+  departureTime?: string;
+  returnTime?: string;
+  miles?: number;
+  mileageRate?: number;
 }
 
 const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({ 
@@ -49,12 +59,14 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   // State for basic fields
   const [type, setType] = useState<ExpenseType>(editingItem?.type || 'other');
   const [amount, setAmount] = useState(editingItem?.amount || 0);
-  const [date, setDate] = useState(editingItem?.date || new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(editingItem?.date || format(new Date(), 'yyyy-MM-dd'));
   const [description, setDescription] = useState(editingItem?.description || '');
   const [account, setAccount] = useState(editingItem?.account || '');
   const [accountName, setAccountName] = useState(editingItem?.accountName || '');
   const [costCenter, setCostCenter] = useState(editingItem?.costCenter || '');
   const [costCenterName, setCostCenterName] = useState(editingItem?.costCenterName || '');
+  const [wbs, setWbs] = useState(editingItem?.wbs || '');
+  const [notes, setNotes] = useState(editingItem?.notes || '');
   
   // State for receipt
   const [receiptUrl, setReceiptUrl] = useState(editingItem?.receiptUrl || '');
@@ -62,36 +74,48 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
   const [showReceiptDialog, setShowReceiptDialog] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   
-  // State for dynamic fields
-  const [dynamicFields, setDynamicFields] = useState<Record<string, any>>({
-    merchantName: editingItem?.merchantName || '',
-    location: editingItem?.location || '',
-    checkInDate: editingItem?.checkInDate || '',
-    checkOutDate: editingItem?.checkOutDate || '',
-    numberOfNights: editingItem?.numberOfNights || 1,
-    cityName: editingItem?.cityName || '',
-    zipCode: editingItem?.zipCode || '',
-  });
-
   // State for type-specific fields
-  const [typeSpecificFields, setTypeSpecificFields] = useState(generateTypeSpecificFields(type));
+  const [glAccount, setGlAccount] = useState(editingItem?.glAccount || '');
+  const [zipCode, setZipCode] = useState(editingItem?.zipCode || '');
+  const [city, setCity] = useState(editingItem?.city || '');
+  const [mealsRate, setMealsRate] = useState(editingItem?.mealsRate || 80);
+  const [hotelRate, setHotelRate] = useState(editingItem?.hotelRate || 159);
+  const [throughDate, setThroughDate] = useState(editingItem?.throughDate || '');
+  const [perDiemExplanation, setPerDiemExplanation] = useState(editingItem?.perDiemExplanation || '');
+  const [departureTime, setDepartureTime] = useState(editingItem?.departureTime || '');
+  const [returnTime, setReturnTime] = useState(editingItem?.returnTime || '');
+  const [miles, setMiles] = useState(editingItem?.miles || 0);
+  const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || 0.7);
 
-  // Update type-specific fields when type changes
+  // Effect to auto-calculate mileage amount
   useEffect(() => {
-    setTypeSpecificFields(generateTypeSpecificFields(type));
-  }, [type]);
+    if (type === 'mileage' && miles > 0) {
+      setAmount(parseFloat((miles * mileageRate).toFixed(2)));
+    }
+  }, [miles, mileageRate, type]);
 
-  // Handlers
-  const handleTypeChange = (newType: ExpenseType) => {
-    setType(newType);
-  };
+  // Effect to handle zip code lookup
+  useEffect(() => {
+    if (zipCode && zipCode.length === 5) {
+      // This would normally be an API call to lookup the city
+      // For now we'll just set a dummy city
+      setCity('New York');
+      toast.success(`City updated based on zip code: ${zipCode}`);
+    }
+  }, [zipCode]);
 
-  const handleDynamicFieldChange = (id: string, value: any) => {
-    setDynamicFields(prev => ({
-      ...prev,
-      [id]: value
-    }));
-  };
+  // Check if per diem explanation is needed
+  const needsPerDiemExplanation = (type === 'hotel' && amount !== hotelRate) || 
+                               (type === 'meals' && amount !== mealsRate);
+
+  // Determine which fields to show based on expense type
+  const needsGlAccount = ['transport', 'auditing', 'baggage', 'business_meals', 
+                         'subscriptions', 'gasoline', 'office_supplies', 'other', 
+                         'parking', 'postage', 'professional_fees', 'registration', 'rental'].includes(type);
+  
+  const isHotelOrLodging = type === 'hotel';
+  const isMeals = type === 'meals';
+  const isMileage = type === 'mileage';
 
   const handleAccountChange = (value: string) => {
     const selected = glAccounts.find(acc => acc.code === value);
@@ -136,7 +160,48 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
     }
   };
 
+  const validateForm = (): boolean => {
+    if (!type || !costCenter || !date || !wbs || amount <= 0) {
+      toast.error("Please fill in all required fields");
+      return false;
+    }
+
+    if (needsGlAccount && !glAccount) {
+      toast.error("GL Account is required for this expense type");
+      return false;
+    }
+
+    if ((isHotelOrLodging || isMeals) && !zipCode) {
+      toast.error("Zip Code is required for this expense type");
+      return false;
+    }
+
+    if ((isHotelOrLodging || isMileage) && !throughDate) {
+      toast.error("Through Date is required for this expense type");
+      return false;
+    }
+
+    if (isMileage && (!miles || miles <= 0)) {
+      toast.error("Miles must be greater than zero");
+      return false;
+    }
+
+    if (isMeals && !departureTime) {
+      toast.error("Departure Time is required for meals expenses");
+      return false;
+    }
+
+    if (needsPerDiemExplanation && !perDiemExplanation) {
+      toast.error("Please provide an explanation for the non-standard rate");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = () => {
+    if (!validateForm()) return;
+    
     onSave({
       id: editingItem?.id || `item-${Date.now()}`,
       type,
@@ -149,7 +214,19 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
       accountName,
       costCenter,
       costCenterName,
-      ...dynamicFields
+      wbs,
+      notes,
+      glAccount: needsGlAccount ? glAccount : undefined,
+      zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
+      city: (isHotelOrLodging || isMeals) ? city : undefined,
+      mealsRate: (isHotelOrLodging || isMeals) ? mealsRate : undefined,
+      hotelRate: isHotelOrLodging ? hotelRate : undefined,
+      throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
+      perDiemExplanation: needsPerDiemExplanation ? perDiemExplanation : undefined,
+      departureTime: isMeals ? departureTime : undefined,
+      returnTime: isMeals ? returnTime : undefined,
+      miles: isMileage ? miles : undefined,
+      mileageRate: isMileage ? mileageRate : undefined,
     });
   };
 
@@ -162,31 +239,363 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
             {/* Expense Type Selector */}
             <ExpenseTypeSelector 
               selectedType={type} 
-              onTypeChange={handleTypeChange} 
+              onTypeChange={setType} 
             />
 
-            {/* Basic Fields (Amount, Date, GL Account, Cost Center, Description) */}
-            <BasicInfoFields 
-              amount={amount}
-              date={date}
-              description={description}
-              account={account}
-              costCenter={costCenter}
-              onAmountChange={setAmount}
-              onDateChange={setDate}
-              onDescriptionChange={setDescription}
-              onAccountChange={handleAccountChange}
-              onCostCenterChange={handleCostCenterChange}
-              glAccounts={glAccounts}
-              costCenters={costCenters}
-            />
-            
-            {/* Dynamic Fields based on expense type */}
-            <DynamicFields 
-              fields={typeSpecificFields}
-              values={dynamicFields}
-              onChange={handleDynamicFieldChange}
-            />
+            {/* Common fields - always shown */}
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2 mb-4">
+              <div>
+                <Label htmlFor="costCenter" className="text-xs font-medium text-gray-700 flex items-center">
+                  Cost Center <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Input
+                  id="costCenter"
+                  value={costCenter}
+                  onChange={(e) => handleCostCenterChange(e.target.value)}
+                  placeholder="Enter cost center"
+                  className="h-8 px-2 py-1 text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="date" className="text-xs font-medium text-gray-700 flex items-center">
+                  Date <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="date"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="h-8 px-2 py-1 text-sm"
+                    required
+                  />
+                  <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="wbs" className="text-xs font-medium text-gray-700 flex items-center">
+                  WBS <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Input
+                  id="wbs"
+                  value={wbs}
+                  onChange={(e) => setWbs(e.target.value)}
+                  placeholder="Enter WBS code"
+                  className="h-8 px-2 py-1 text-sm"
+                  required
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="amount" className="text-xs font-medium text-gray-700 flex items-center">
+                  Expense Amount <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="amount"
+                    type="number"
+                    value={amount}
+                    onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+                    placeholder="0.00"
+                    className="h-8 pl-6 pr-2 py-1 text-sm"
+                    disabled={type === 'mileage'}
+                    required
+                  />
+                  <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="col-span-2">
+                <Label htmlFor="description" className="text-xs font-medium text-gray-700 flex items-center">
+                  Description <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Input
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter expense description"
+                  className="h-8 px-2 py-1 text-sm"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Conditional fields based on expense type */}
+            {needsGlAccount && (
+              <div className="mb-4">
+                <Label htmlFor="glAccount" className="text-xs font-medium text-gray-700 flex items-center">
+                  GL Account <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <Input
+                  id="glAccount"
+                  value={glAccount}
+                  onChange={(e) => setGlAccount(e.target.value)}
+                  placeholder="E.g., 50600140"
+                  className="h-8 px-2 py-1 text-sm"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Hotel/Lodging specific fields */}
+            {isHotelOrLodging && (
+              <div className="mb-4 space-y-2">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                  <div>
+                    <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700 flex items-center">
+                      Zip Code <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="zipCode"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        placeholder="Enter zip code"
+                        className="h-8 px-2 py-1 text-sm"
+                        required
+                      />
+                      <MapPin className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="city" className="text-xs font-medium text-gray-700">
+                      City (Auto-filled)
+                    </Label>
+                    <Input
+                      id="city"
+                      value={city}
+                      readOnly
+                      className="h-8 px-2 py-1 text-sm bg-gray-50"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="hotelRate" className="text-xs font-medium text-gray-700">
+                      Hotel Rate (Default)
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="hotelRate"
+                        type="number"
+                        value={hotelRate}
+                        onChange={(e) => setHotelRate(parseFloat(e.target.value) || 0)}
+                        className="h-8 pl-6 pr-2 py-1 text-sm bg-gray-50"
+                      />
+                      <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700 flex items-center">
+                      Through Date <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="throughDate"
+                        type="date"
+                        value={throughDate}
+                        onChange={(e) => setThroughDate(e.target.value)}
+                        className="h-8 px-2 py-1 text-sm"
+                        required
+                      />
+                      <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+                
+                {needsPerDiemExplanation && (
+                  <div>
+                    <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
+                      Per Diem Explanation <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <Textarea
+                      id="perDiemExplanation"
+                      value={perDiemExplanation}
+                      onChange={(e) => setPerDiemExplanation(e.target.value)}
+                      placeholder="Explain why the amount differs from the standard rate"
+                      className="resize-none h-20 text-sm"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Meals specific fields */}
+            {isMeals && (
+              <div className="mb-4 space-y-2">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                  <div>
+                    <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700 flex items-center">
+                      Zip Code <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="zipCode"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        placeholder="Enter zip code"
+                        className="h-8 px-2 py-1 text-sm"
+                        required
+                      />
+                      <MapPin className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="city" className="text-xs font-medium text-gray-700">
+                      City (Auto-filled)
+                    </Label>
+                    <Input
+                      id="city"
+                      value={city}
+                      readOnly
+                      className="h-8 px-2 py-1 text-sm bg-gray-50"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="mealsRate" className="text-xs font-medium text-gray-700">
+                      Meals Rate (Default)
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="mealsRate"
+                        type="number"
+                        value={mealsRate}
+                        onChange={(e) => setMealsRate(parseFloat(e.target.value) || 0)}
+                        className="h-8 pl-6 pr-2 py-1 text-sm bg-gray-50"
+                      />
+                      <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700 flex items-center">
+                      Departure Time <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="departureTime"
+                        type="time"
+                        value={departureTime}
+                        onChange={(e) => setDepartureTime(e.target.value)}
+                        className="h-8 px-2 py-1 text-sm"
+                        required
+                      />
+                      <Clock className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
+                      Return Time
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="returnTime"
+                        type="time"
+                        value={returnTime}
+                        onChange={(e) => setReturnTime(e.target.value)}
+                        className="h-8 px-2 py-1 text-sm"
+                      />
+                      <Clock className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+                
+                {needsPerDiemExplanation && (
+                  <div>
+                    <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
+                      Per Diem Explanation <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <Textarea
+                      id="perDiemExplanation"
+                      value={perDiemExplanation}
+                      onChange={(e) => setPerDiemExplanation(e.target.value)}
+                      placeholder="Explain why the amount differs from the standard rate"
+                      className="resize-none h-20 text-sm"
+                      required
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mileage specific fields */}
+            {isMileage && (
+              <div className="mb-4 space-y-2">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-2">
+                  <div>
+                    <Label htmlFor="miles" className="text-xs font-medium text-gray-700 flex items-center">
+                      Miles <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <Input
+                      id="miles"
+                      type="number"
+                      value={miles}
+                      onChange={(e) => setMiles(parseInt(e.target.value) || 0)}
+                      placeholder="Enter miles"
+                      className="h-8 px-2 py-1 text-sm"
+                      required
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="mileageRate" className="text-xs font-medium text-gray-700 flex items-center">
+                      Mileage Rate <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="mileageRate"
+                        type="number"
+                        step="0.01"
+                        value={mileageRate}
+                        onChange={(e) => setMileageRate(parseFloat(e.target.value) || 0)}
+                        className="h-8 pl-6 pr-2 py-1 text-sm"
+                        required
+                      />
+                      <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700 flex items-center">
+                      Through Date <span className="text-red-500 ml-1">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="throughDate"
+                        type="date"
+                        value={throughDate}
+                        onChange={(e) => setThroughDate(e.target.value)}
+                        className="h-8 px-2 py-1 text-sm"
+                        required
+                      />
+                      <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Notes - optional for all expense types */}
+            <div className="mb-4">
+              <Label htmlFor="notes" className="text-xs font-medium text-gray-700">
+                Notes
+              </Label>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Add any additional notes"
+                className="resize-none h-20 text-sm"
+              />
+            </div>
 
             {/* Receipt Upload */}
             <ReceiptUpload 
@@ -194,6 +603,12 @@ const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({
               receiptUrl={receiptUrl}
               onReceiptChange={handleReceiptChange}
             />
+
+            {/* Required fields legend */}
+            <div className="text-xs text-gray-500 flex items-center mb-4">
+              <SquareAsterisk className="h-3 w-3 text-red-500 mr-1" />
+              <span>Required field</span>
+            </div>
 
             {/* Action buttons */}
             <div className="flex items-center gap-3 mt-auto pt-1">

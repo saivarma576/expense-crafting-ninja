@@ -12,6 +12,19 @@ export interface ExpenseLineItem {
   costCenterName: string;
   receiptName?: string;
   receiptUrl?: string;
+  wbs?: string;
+  notes?: string;
+  glAccount?: string;
+  zipCode?: string;
+  city?: string;
+  mealsRate?: number;
+  hotelRate?: number;
+  throughDate?: string;
+  perDiemExplanation?: string;
+  departureTime?: string;
+  returnTime?: string;
+  miles?: number;
+  mileageRate?: number;
 }
 
 export interface ExpenseDocument {
@@ -58,3 +71,4 @@ export type ExpenseType =
   | 'baggage'
   | 'business_meals'
   | 'subscriptions';
+
