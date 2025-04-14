@@ -34,7 +34,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   // Define as a constant to avoid re-rendering issues
-  const uiStyle: 'dialog' | 'sheet' = 'dialog';
+  const uiStyle = 'dialog';
 
   const form = useForm<FormValues>({
     defaultValues: {
