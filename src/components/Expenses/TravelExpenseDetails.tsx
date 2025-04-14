@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase } from 'lucide-react';
+import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -53,16 +53,20 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
   const getPurposeInfo = () => {
     if (!travelPurpose) return { icon: <Briefcase />, text: 'Not specified' };
     
-    return {
-      icon: <Briefcase />,
-      text: travelPurpose.charAt(0).toUpperCase() + travelPurpose.slice(1)
-    };
+    switch (travelPurpose) {
+      case 'conferences':
+        return { icon: <Map className="h-5 w-5" />, text: 'Conferences' };
+      case 'meeting':
+        return { icon: <Building2 className="h-5 w-5" />, text: 'Meetings' };
+      default:
+        return { icon: <Briefcase className="h-5 w-5" />, text: 'Others' };
+    }
   };
   
   const purposeInfo = getPurposeInfo();
 
   return (
-    <Card className="mb-6 overflow-hidden border-blue-100">
+    <Card className="mb-6 overflow-hidden border-blue-100 shadow-sm">
       <div className="bg-blue-500 px-4 py-2 flex items-center">
         <Plane className="h-5 w-5 text-white mr-2" />
         <h3 className="text-white font-medium">Travel Expense Details</h3>

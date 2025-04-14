@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Plane } from 'lucide-react';
+import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem from '@/components/Expenses/ExpenseLineItem';
 import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
@@ -14,9 +15,14 @@ import { FormValues } from './CreateExpense/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import TravelExpenseDetails from './TravelExpenseDetails';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Form, FormProvider } from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
+import DateRangeSelection from './CreateExpense/DateRangeSelection';
+import MealSelection from './CreateExpense/MealSelection';
 
 const initialLineItems = [
   {
@@ -66,11 +72,25 @@ const NewExpense: React.FC = () => {
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
   const [isTravelExpense, setIsTravelExpense] = useState<boolean>(expenseData?.isBusinessTravel === 'yes');
+  const [showTravelDialog, setShowTravelDialog] = useState<boolean>(false);
   
   const [fromDate, setFromDate] = useState<Date | undefined>(expenseData?.fromDate);
   const [toDate, setToDate] = useState<Date | undefined>(expenseData?.toDate);
   const [mealsProvided, setMealsProvided] = useState<string>(expenseData?.mealsProvided || 'no');
   const [meals, setMeals] = useState<string[]>(expenseData?.meals || []);
+  const [travelPurpose, setTravelPurpose] = useState<string | undefined>(expenseData?.travelPurpose);
+  
+  const form = useForm<FormValues>({
+    defaultValues: {
+      isBusinessTravel: isTravelExpense ? 'yes' : 'no',
+      travelPurpose: expenseData?.travelPurpose,
+      fromDate: expenseData?.fromDate,
+      toDate: expenseData?.toDate,
+      mealsProvided: expenseData?.mealsProvided || 'no',
+      meals: expenseData?.meals || [],
+      expenseTitle: ''
+    }
+  });
   
   useEffect(() => {
     console.log("Expense data received:", expenseData);
@@ -81,6 +101,7 @@ const NewExpense: React.FC = () => {
       setToDate(expenseData.toDate);
       setMealsProvided(expenseData.mealsProvided || 'no');
       setMeals(expenseData.meals || []);
+      setTravelPurpose(expenseData.travelPurpose);
     }
   }, [expenseData]);
   
@@ -143,8 +164,51 @@ const NewExpense: React.FC = () => {
     }
   }, [expenseData]);
 
-  const handleTravelToggleChange = (checked: boolean) => {
-    setIsTravelExpense(checked);
+  const handleOpenTravelDialog = () => {
+    form.reset({
+      isBusinessTravel: isTravelExpense ? 'yes' : 'no',
+      travelPurpose: travelPurpose,
+      fromDate: fromDate,
+      toDate: toDate,
+      mealsProvided: mealsProvided,
+      meals: meals,
+      expenseTitle: ''
+    });
+    setShowTravelDialog(true);
+  };
+
+  const handleTravelDialogSave = (data: FormValues) => {
+    setIsTravelExpense(true);
+    setTravelPurpose(data.travelPurpose);
+    setFromDate(data.fromDate);
+    setToDate(data.toDate);
+    setMealsProvided(data.mealsProvided);
+    setMeals(data.meals || []);
+    
+    // Update title based on travel purpose
+    if (data.travelPurpose) {
+      setTitle(`${data.travelPurpose.charAt(0).toUpperCase() + data.travelPurpose.slice(1)} Trip`);
+    }
+    
+    // Update date range
+    if (data.fromDate && data.toDate) {
+      const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
+      const toDateStr = format(data.toDate, 'MMM dd, yyyy');
+      setDateRange(`${fromDateStr} - ${toDateStr}`);
+    }
+    
+    setShowTravelDialog(false);
+    toast.success("Travel expense details updated");
+  };
+
+  const handleRemoveTravelExpense = () => {
+    setIsTravelExpense(false);
+    setTravelPurpose(undefined);
+    setFromDate(undefined);
+    setToDate(undefined);
+    setMealsProvided('no');
+    setMeals([]);
+    toast.success("Travel expense details removed");
   };
 
   const formattedDateRange = () => {
@@ -154,41 +218,6 @@ const NewExpense: React.FC = () => {
       return `${fromDateStr} - ${toDateStr}`;
     }
     return dateRange;
-  };
-
-  const renderTravelExpenseHeader = () => {
-    if (!isTravelExpense) return null;
-    
-    return (
-      <div className="mb-4 bg-blue-50 rounded-lg p-4 border border-blue-100">
-        <div className="flex items-center gap-2 text-blue-800 font-medium mb-2">
-          <Plane className="h-4 w-4" />
-          <span>Travel Expense Information</span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-          <div>
-            <p className="text-gray-500">Travel Expense</p>
-            <p className="font-medium">Yes</p>
-          </div>
-          <div>
-            <p className="text-gray-500">Duration</p>
-            <p className="font-medium">{formattedDateRange()}</p>
-          </div>
-          {mealsProvided === 'yes' && meals && meals.length > 0 && (
-            <div>
-              <p className="text-gray-500">Meals Provided</p>
-              <div className="flex gap-1 flex-wrap mt-1">
-                {meals.map((meal) => (
-                  <Badge key={meal} variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
-                    {meal.charAt(0).toUpperCase() + meal.slice(1)}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -205,21 +234,40 @@ const NewExpense: React.FC = () => {
       </div>
 
       <div className="px-6 py-5">
-        <div className="mb-4 flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-          <div className="flex items-center gap-2">
-            <Plane className="h-5 w-5 text-blue-500" />
-            <Label htmlFor="travel-toggle" className="font-medium">Travel Expense</Label>
-          </div>
-          <Switch
-            id="travel-toggle"
-            checked={isTravelExpense}
-            onCheckedChange={handleTravelToggleChange}
-          />
+        <div className="mb-4 text-sm flex justify-end">
+          {!isTravelExpense ? (
+            <button 
+              onClick={handleOpenTravelDialog}
+              className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
+            >
+              <HelpCircle className="h-4 w-4" />
+              Is this a business travel expense?
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                <Plane className="h-3 w-3 mr-1" /> 
+                Travel Expense
+              </Badge>
+              <button 
+                onClick={handleOpenTravelDialog} 
+                className="text-blue-600 hover:text-blue-800 text-sm"
+              >
+                Edit details
+              </button>
+              <button 
+                onClick={handleRemoveTravelExpense} 
+                className="text-red-600 hover:text-red-800 text-sm"
+              >
+                Remove
+              </button>
+            </div>
+          )}
         </div>
         
         <TravelExpenseDetails 
           isTravelExpense={isTravelExpense}
-          travelPurpose={expenseData?.travelPurpose}
+          travelPurpose={travelPurpose as any}
           fromDate={fromDate}
           toDate={toDate}
           mealsProvided={mealsProvided}
@@ -234,7 +282,7 @@ const NewExpense: React.FC = () => {
           totalAmount={totalAmount}
           userName={userName}
           userEmail={userEmail}
-          travelPurpose={expenseData?.travelPurpose}
+          travelPurpose={travelPurpose as any}
         />
 
         <LineItemsSection 
@@ -268,6 +316,44 @@ const NewExpense: React.FC = () => {
           editingItem={editingItem}
         />
       </LineItemSlider>
+      
+      {/* Travel Expense Dialog */}
+      <Dialog open={showTravelDialog} onOpenChange={setShowTravelDialog}>
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Plane className="h-5 w-5 text-blue-500" />
+              Business Travel Details
+            </DialogTitle>
+            <DialogDescription>
+              Please provide information about your business travel
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="p-6">
+            <FormProvider {...form}>
+              <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
+                <TravelPurposeSelector />
+                <DateRangeSelection />
+                <MealSelection />
+                
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setShowTravelDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    Save Details
+                  </Button>
+                </div>
+              </form>
+            </FormProvider>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
