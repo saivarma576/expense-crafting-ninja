@@ -35,7 +35,8 @@ interface CreateExpenseDialogProps {
 const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [uiStyle] = useState<UiStyle>('dialog');
+  // Use a ref to avoid re-renders that might cause the infinite loop
+  const uiStyle: UiStyle = 'dialog';
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -146,4 +147,3 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 };
 
 export default CreateExpenseDialog;
-
