@@ -35,8 +35,9 @@ interface CreateExpenseDialogProps {
 const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  // Use a ref to avoid re-renders that might cause the infinite loop
-  const uiStyle: UiStyle = 'dialog';
+  
+  // Use a constant value instead of state to avoid re-renders
+  const uiStyle = 'dialog' as const;
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -95,6 +96,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   const progressValue = (step / 2) * 100;
 
+  // For proper type checking, use explicit equality check with the literal type
   if (uiStyle === 'sheet') {
     return (
       <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
