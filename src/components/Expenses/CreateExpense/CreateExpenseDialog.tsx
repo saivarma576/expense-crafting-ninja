@@ -25,6 +25,8 @@ import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import { Progress } from '@/components/ui/progress';
 
+type UiStyle = 'dialog' | 'sheet';
+
 interface CreateExpenseDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -33,8 +35,7 @@ interface CreateExpenseDialogProps {
 const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  // Define as a constant to avoid re-rendering issues
-  const uiStyle = 'dialog' as const;
+  const [uiStyle] = useState<UiStyle>('dialog');
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -65,14 +66,12 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   };
 
   const handleProceedToExpense = () => {
-    // Pass any data needed to the expense creation page
     navigate('/expenses/new', { state: { expenseData: form.getValues() } });
     onClose();
   };
 
   const onSubmit = (data: FormValues) => {
     console.log('Form data:', data);
-    // Navigate to expenses/new with the collected data in state
     navigate('/expenses/new', { state: { expenseData: data } });
     onClose();
   };
@@ -147,3 +146,4 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 };
 
 export default CreateExpenseDialog;
+
