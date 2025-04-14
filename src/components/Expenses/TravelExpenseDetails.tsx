@@ -36,7 +36,7 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
       const toDateStr = format(toDate, 'MMM dd, yyyy');
       return `${fromDateStr} - ${toDateStr}`;
     }
-    return '';
+    return 'Date not specified';
   };
   
   // Get formatted purpose text
@@ -62,11 +62,6 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
         <div className="flex items-center gap-1">
           <span className="text-gray-500">Purpose:</span>
           <span className="font-medium">{getPurposeText()}</span>
-          {travelComments && (
-            <div className="flex items-center gap-1 ml-1 text-gray-500">
-              <MessageSquare className="h-3.5 w-3.5" />
-            </div>
-          )}
         </div>
         
         <div className="flex items-center gap-1">
@@ -82,8 +77,9 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
         )}
 
         {travelComments && (
-          <div className="w-full mt-1 text-gray-600 text-xs italic">
-            "{travelComments}"
+          <div className="flex items-center gap-1 text-gray-600">
+            <MessageSquare className="h-3.5 w-3.5 text-gray-400 mr-1" />
+            <span className="italic truncate max-w-[200px]">{travelComments}</span>
           </div>
         )}
       </div>

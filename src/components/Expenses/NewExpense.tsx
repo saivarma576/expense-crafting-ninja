@@ -69,7 +69,7 @@ const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
-  const [isTravelExpense, setIsTravelExpense] = useState<boolean>(expenseData?.isBusinessTravel === 'yes');
+  const [isTravelExpense, setIsTravelExpense] = useState<boolean>(true);
   const [showTravelDialog, setShowTravelDialog] = useState<boolean>(false);
   
   const [fromDate, setFromDate] = useState<Date | undefined>(expenseData?.fromDate);
@@ -77,6 +77,7 @@ const NewExpense: React.FC = () => {
   const [mealsProvided, setMealsProvided] = useState<string>(expenseData?.mealsProvided || 'no');
   const [meals, setMeals] = useState<Meal[]>(expenseData?.meals || []);
   const [travelPurpose, setTravelPurpose] = useState<TravelPurpose | undefined>(expenseData?.travelPurpose);
+  const [travelComments, setTravelComments] = useState<string>(expenseData?.travelComments || '');
   
   const form = useForm<FormValues>({
     defaultValues: {
@@ -86,6 +87,7 @@ const NewExpense: React.FC = () => {
       toDate: expenseData?.toDate,
       mealsProvided: expenseData?.mealsProvided || 'no',
       meals: expenseData?.meals || [],
+      travelComments: expenseData?.travelComments || '',
       expenseTitle: ''
     }
   });
@@ -100,6 +102,7 @@ const NewExpense: React.FC = () => {
       setMealsProvided(expenseData.mealsProvided || 'no');
       setMeals(expenseData.meals || []);
       setTravelPurpose(expenseData.travelPurpose);
+      setTravelComments(expenseData.travelComments || '');
     }
   }, [expenseData]);
   
@@ -170,6 +173,7 @@ const NewExpense: React.FC = () => {
       toDate: toDate,
       mealsProvided: mealsProvided,
       meals: meals,
+      travelComments: travelComments,
       expenseTitle: ''
     });
     setShowTravelDialog(true);
@@ -182,6 +186,7 @@ const NewExpense: React.FC = () => {
     setToDate(data.toDate);
     setMealsProvided(data.mealsProvided);
     setMeals(data.meals || []);
+    setTravelComments(data.travelComments || '');
     
     if (data.travelPurpose) {
       setTitle(`${data.travelPurpose.charAt(0).toUpperCase() + data.travelPurpose.slice(1)} Trip`);
@@ -230,28 +235,10 @@ const NewExpense: React.FC = () => {
       </div>
 
       <div className="px-6 py-5">
-        <div className="mb-4 text-sm flex justify-end">
-          {!isTravelExpense ? (
-            <button 
-              onClick={handleOpenTravelDialog}
-              className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
-            >
-              <HelpCircle className="h-4 w-4" />
-              Is this a business travel expense?
-            </button>
-          ) : (
-            <button 
-              onClick={handleRemoveTravelExpense} 
-              className="text-red-600 hover:text-red-800 text-sm"
-            >
-              Remove travel details
-            </button>
-          )}
-        </div>
-        
         <TravelExpenseDetails 
-          isTravelExpense={isTravelExpense}
+          isTravelExpense={true}
           travelPurpose={travelPurpose}
+          travelComments={travelComments}
           fromDate={fromDate}
           toDate={toDate}
           mealsProvided={mealsProvided}
