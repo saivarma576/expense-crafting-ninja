@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
+import { useForm, FormProvider } from 'react-hook-form';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem from '@/components/Expenses/ExpenseLineItem';
 import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
@@ -18,7 +19,6 @@ import { Badge } from '@/components/ui/badge';
 import TravelExpenseDetails from './TravelExpenseDetails';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { useForm } from 'react-hook-form';
 import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
 import DateRangeSelection from './CreateExpense/DateRangeSelection';
 import MealSelection from './CreateExpense/MealSelection';
@@ -330,24 +330,26 @@ const NewExpense: React.FC = () => {
           </DialogHeader>
           
           <div className="p-6">
-            <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
-              <TravelPurposeSelector />
-              <DateRangeSelection />
-              <MealSelection />
-              
-              <div className="flex justify-end gap-2 pt-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => setShowTravelDialog(false)}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  Save Details
-                </Button>
-              </div>
-            </form>
+            <FormProvider {...form}>
+              <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
+                <TravelPurposeSelector />
+                <DateRangeSelection />
+                <MealSelection />
+                
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setShowTravelDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">
+                    Save Details
+                  </Button>
+                </div>
+              </form>
+            </FormProvider>
           </div>
         </DialogContent>
       </Dialog>
