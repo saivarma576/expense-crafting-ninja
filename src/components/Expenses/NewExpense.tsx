@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
@@ -184,12 +183,10 @@ const NewExpense: React.FC = () => {
     setMealsProvided(data.mealsProvided);
     setMeals(data.meals || []);
     
-    // Update title based on travel purpose
     if (data.travelPurpose) {
       setTitle(`${data.travelPurpose.charAt(0).toUpperCase() + data.travelPurpose.slice(1)} Trip`);
     }
     
-    // Update date range
     if (data.fromDate && data.toDate) {
       const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
       const toDateStr = format(data.toDate, 'MMM dd, yyyy');
@@ -243,24 +240,12 @@ const NewExpense: React.FC = () => {
               Is this a business travel expense?
             </button>
           ) : (
-            <div className="flex items-center gap-2">
-              <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-200">
-                <Plane className="h-3 w-3 mr-1" /> 
-                Travel Expense
-              </Badge>
-              <button 
-                onClick={handleOpenTravelDialog} 
-                className="text-blue-600 hover:text-blue-800 text-sm"
-              >
-                Edit details
-              </button>
-              <button 
-                onClick={handleRemoveTravelExpense} 
-                className="text-red-600 hover:text-red-800 text-sm"
-              >
-                Remove
-              </button>
-            </div>
+            <button 
+              onClick={handleRemoveTravelExpense} 
+              className="text-red-600 hover:text-red-800 text-sm"
+            >
+              Remove travel details
+            </button>
           )}
         </div>
         
@@ -271,6 +256,7 @@ const NewExpense: React.FC = () => {
           toDate={toDate}
           mealsProvided={mealsProvided}
           meals={meals}
+          onEdit={handleOpenTravelDialog}
         />
         
         <ExpenseHeader 
@@ -316,7 +302,6 @@ const NewExpense: React.FC = () => {
         />
       </LineItemSlider>
       
-      {/* Travel Expense Dialog */}
       <Dialog open={showTravelDialog} onOpenChange={setShowTravelDialog}>
         <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
           <DialogHeader className="p-6 pb-2">

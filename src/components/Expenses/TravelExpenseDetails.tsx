@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2 } from 'lucide-react';
+import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { TravelPurpose, Meal } from './CreateExpense/types';
 
 interface TravelExpenseDetailsProps {
@@ -13,6 +13,7 @@ interface TravelExpenseDetailsProps {
   toDate?: Date;
   mealsProvided: string;
   meals: Meal[];
+  onEdit?: () => void;
 }
 
 const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
@@ -21,7 +22,8 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
   fromDate,
   toDate,
   mealsProvided,
-  meals
+  meals,
+  onEdit
 }) => {
   if (!isTravelExpense) return null;
   
@@ -35,93 +37,56 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
     return '';
   };
   
-  // Get icon based on meal type
-  const getMealIcon = (meal: string) => {
-    switch (meal) {
-      case 'breakfast':
-        return <Coffee className="h-3.5 w-3.5" />;
-      case 'lunch':
-        return <Utensils className="h-3.5 w-3.5" />;
-      case 'dinner':
-        return <Wine className="h-3.5 w-3.5" />;
-      default:
-        return <Utensils className="h-3.5 w-3.5" />;
-    }
+  // Get formatted purpose text
+  const getPurposeText = () => {
+    if (!travelPurpose) return 'Not specified';
+    return travelPurpose.charAt(0).toUpperCase() + travelPurpose.slice(1);
   };
   
-  // Purpose icon and formatted text
-  const getPurposeInfo = () => {
-    if (!travelPurpose) return { icon: <Briefcase />, text: 'Not specified' };
-    
-    switch (travelPurpose) {
-      case 'conferences':
-        return { icon: <Map className="h-5 w-5" />, text: 'Conferences' };
-      case 'meeting':
-        return { icon: <Building2 className="h-5 w-5" />, text: 'Meetings' };
-      default:
-        return { icon: <Briefcase className="h-5 w-5" />, text: 'Others' };
+  // Get meals text
+  const getMealsText = () => {
+    if (mealsProvided === 'yes' && meals && meals.length > 0) {
+      return meals.map(meal => 
+        meal.charAt(0).toUpperCase() + meal.slice(1)
+      ).join(', ');
     }
+    return 'None';
   };
-  
-  const purposeInfo = getPurposeInfo();
 
   return (
-    <Card className="mb-6 overflow-hidden border-blue-100 shadow-sm">
-      <div className="bg-blue-500 px-4 py-2 flex items-center">
-        <Plane className="h-5 w-5 text-white mr-2" />
-        <h3 className="text-white font-medium">Travel Expense Details</h3>
-      </div>
-      <CardContent className="p-0">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-blue-100">
-          {/* Purpose section */}
-          <div className="p-4 flex flex-col items-center justify-center text-center">
-            <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 mb-2">
-              {purposeInfo.icon}
-            </div>
-            <p className="text-gray-500 text-sm">Purpose of Travel</p>
-            <p className="font-medium">{purposeInfo.text}</p>
-          </div>
-          
-          {/* Duration section */}
-          <div className="p-4 flex flex-col items-center justify-center text-center">
-            <div className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500 mb-2">
-              <Calendar className="h-5 w-5" />
-            </div>
-            <p className="text-gray-500 text-sm">Duration</p>
-            <p className="font-medium">{formattedDateRange()}</p>
-          </div>
-          
-          {/* Meals section */}
-          <div className="p-4 flex flex-col items-center justify-center text-center">
-            <div className="flex gap-1 mb-2">
-              {mealsProvided === 'yes' && meals && meals.length > 0 ? (
-                meals.map((meal) => (
-                  <div key={meal} className="h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
-                    {getMealIcon(meal)}
-                  </div>
-                ))
-              ) : (
-                <div className="h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                  <Utensils className="h-5 w-5" />
-                </div>
-              )}
-            </div>
-            <p className="text-gray-500 text-sm">Meals Provided</p>
-            {mealsProvided === 'yes' && meals && meals.length > 0 ? (
-              <div className="flex gap-1 flex-wrap justify-center mt-1">
-                {meals.map((meal) => (
-                  <Badge key={meal} variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">
-                    {meal.charAt(0).toUpperCase() + meal.slice(1)}
-                  </Badge>
-                ))}
-              </div>
-            ) : (
-              <p className="font-medium text-gray-700">No</p>
-            )}
-          </div>
+    <div className="mb-6 flex items-center bg-blue-50 p-3 rounded-lg text-sm border border-blue-100">
+      <Plane className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 flex-grow">
+        <div className="flex items-center gap-1">
+          <span className="text-gray-500">Purpose:</span>
+          <span className="font-medium">{getPurposeText()}</span>
         </div>
-      </CardContent>
-    </Card>
+        
+        <div className="flex items-center gap-1">
+          <Calendar className="h-3.5 w-3.5 text-gray-400 mr-1" />
+          <span className="font-medium">{formattedDateRange()}</span>
+        </div>
+        
+        {mealsProvided === 'yes' && meals && meals.length > 0 && (
+          <div className="flex items-center gap-1">
+            <Utensils className="h-3.5 w-3.5 text-gray-400 mr-1" />
+            <span className="font-medium">Meals: {getMealsText()}</span>
+          </div>
+        )}
+      </div>
+      
+      {onEdit && (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onEdit}
+          className="ml-2 h-8 px-2 text-blue-500 hover:text-blue-700 hover:bg-blue-100"
+        >
+          <Edit className="h-3.5 w-3.5" />
+          <span className="sr-only">Edit travel details</span>
+        </Button>
+      )}
+    </div>
   );
 };
 
