@@ -22,7 +22,8 @@ import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
 import DateRangeSelection from './CreateExpense/DateRangeSelection';
 import MealSelection from './CreateExpense/MealSelection';
 import ValidationWarnings from './ExpenseForm/ValidationWarnings';
-import AIChatDrawer from './AIChatDrawer';
+import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
+import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 
 const initialLineItems = [
@@ -278,7 +279,7 @@ const NewExpense: React.FC = () => {
   };
 
   const handleAskAI = () => {
-    setShowAIChat(true);
+    setShowAIChat(!showAIChat);
   };
 
   const handleReviewItem = (violationId: string) => {
@@ -308,6 +309,27 @@ const NewExpense: React.FC = () => {
     'This meal expense occurs on a weekend - please confirm it was for business purposes',
     'Consider using a corporate card for this expense type'
   ]);
+
+  const policyViolations = [
+    ...programmaticErrors.map((error, index) => ({
+      id: `error-${index}`,
+      lineNumber: index + 1,
+      lineTitle: `Error in ${error.field}`,
+      expenseType: 'Business Meal',
+      violationType: 'error' as const,
+      message: error.error,
+      category: 'Validation'
+    })),
+    ...llmWarnings.map((warning, index) => ({
+      id: `warning-${index}`,
+      lineNumber: index + 2,
+      lineTitle: `Policy Warning`,
+      expenseType: 'Business Expense',
+      violationType: 'warning' as const,
+      message: warning,
+      category: 'Policy'
+    }))
+  ];
 
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-sm">
@@ -423,15 +445,15 @@ const NewExpense: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      <ValidationWarnings
-        programmaticErrors={programmaticErrors}
-        llmWarnings={llmWarnings}
-        onClose={() => setShowValidationWarnings(false)}
-        onProceed={handleContinueAnyway}
+      <PolicyViolationsModal
         open={showValidationWarnings}
+        onClose={() => setShowValidationWarnings(false)}
+        onReviewAndFix={handleReviewItem}
+        onContinueAnyway={handleContinueAnyway}
+        violations={policyViolations}
       />
       
-      <AIChatDrawer
+      <ExpenseAIDrawer
         isOpen={showAIChat}
         onClose={() => setShowAIChat(false)}
         context="Expense report for business travel with meal expenses and hotel stays."
