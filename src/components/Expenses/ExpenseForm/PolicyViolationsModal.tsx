@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, AlertCircle, Zap, Check, ArrowRight, FileBarChart, ArrowUpDown, X, Loader2, Brain } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, BookOpenCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -80,7 +80,11 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[85vh] flex flex-col">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
-            <Brain className="h-6 w-6 text-blue-600" />
+            {hasErrors ? (
+              <ShieldX className="h-6 w-6 text-red-500" />
+            ) : (
+              <ShieldCheck className="h-6 w-6 text-green-500" />
+            )}
             Policy Compliance Check
           </DialogTitle>
         </DialogHeader>

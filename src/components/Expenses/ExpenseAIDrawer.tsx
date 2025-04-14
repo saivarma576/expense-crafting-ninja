@@ -1,11 +1,9 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Brain, MessageSquare, User, X } from "lucide-react";
+import { Send, BookOpenText, UserCircle2, Zap, PieChart, BarChart, LineChart, ChevronLeft, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type Message = {
@@ -82,43 +80,26 @@ const ExpenseAIDrawer: React.FC<ExpenseAIDrawerProps> = ({
   };
 
   return (
-    <div className={cn(
-      "fixed bottom-20 right-6 w-80 sm:w-96 h-[500px] bg-white rounded-lg shadow-xl border border-gray-200 flex flex-col z-50 transition-all duration-300 ease-in-out",
-      isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8 pointer-events-none"
-    )}>
-      <div className="flex items-center justify-between p-3 border-b">
-        <div className="flex items-center gap-2">
-          <div className="bg-blue-500 rounded-full p-1.5 flex-shrink-0">
-            <Brain className="h-4 w-4 text-white" />
-          </div>
-          <h3 className="font-medium">Expense Policy AI</h3>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="h-8 w-8" 
-          onClick={onClose}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
-
-      <ScrollArea className="flex-1 p-3">
-        <div className="space-y-4">
-          <AnimatePresence>
+    <Drawer open={isOpen} onOpenChange={onClose}>
+      <DrawerContent className="h-[500px]">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center gap-2">
+            <BookOpenText className="h-5 w-5 text-blue-500" />
+            Expense Policy AI Assistant
+          </DrawerTitle>
+        </DrawerHeader>
+        
+        <ScrollArea className="flex-1 p-3">
+          <div className="space-y-4">
             {messages.map((message) => (
-              <motion.div 
+              <div 
                 key={message.id} 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
                 className={`flex ${message.isAI ? 'justify-start' : 'justify-end'}`}
               >
                 <div className={`flex max-w-[90%] ${message.isAI ? 'items-start' : 'items-end'}`}>
                   {message.isAI && (
                     <div className="bg-blue-500 rounded-full p-1.5 mr-2 flex-shrink-0">
-                      <Brain className="h-3 w-3 text-white" />
+                      <Zap className="h-3 w-3 text-white" />
                     </div>
                   )}
                   <div 
@@ -136,22 +117,18 @@ const ExpenseAIDrawer: React.FC<ExpenseAIDrawerProps> = ({
                   </div>
                   {!message.isAI && (
                     <div className="bg-gray-300 rounded-full p-1.5 ml-2 flex-shrink-0">
-                      <User className="h-3 w-3 text-gray-600" />
+                      <UserCircle2 className="h-3 w-3 text-gray-600" />
                     </div>
                   )}
                 </div>
-              </motion.div>
+              </div>
             ))}
             
             {isLoading && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex justify-start"
-              >
+              <div className="flex justify-start">
                 <div className="flex items-start">
                   <div className="bg-blue-500 rounded-full p-1.5 mr-2 flex-shrink-0">
-                    <Brain className="h-3 w-3 text-white" />
+                    <Zap className="h-3 w-3 text-white" />
                   </div>
                   <div className="bg-blue-50 rounded-lg p-3 max-w-[85%] rounded-tl-none">
                     <div className="flex space-x-1.5">
@@ -161,38 +138,38 @@ const ExpenseAIDrawer: React.FC<ExpenseAIDrawerProps> = ({
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
-          <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
+        
+        <div className="p-3 border-t mt-auto">
+          <div className="flex gap-2">
+            <Textarea
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              placeholder="Ask about expense policies..."
+              className="resize-none text-sm min-h-[45px] py-2"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
+            />
+            <Button 
+              size="icon" 
+              className="h-auto aspect-square"
+              onClick={handleSendMessage}
+              disabled={!inputValue.trim() || isLoading}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </ScrollArea>
-      
-      <div className="p-3 border-t mt-auto">
-        <div className="flex gap-2">
-          <Textarea
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Ask about expense policies..."
-            className="resize-none text-sm min-h-[45px] py-2"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendMessage();
-              }
-            }}
-          />
-          <Button 
-            size="icon" 
-            className="h-auto aspect-square"
-            onClick={handleSendMessage}
-            disabled={!inputValue.trim() || isLoading}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
