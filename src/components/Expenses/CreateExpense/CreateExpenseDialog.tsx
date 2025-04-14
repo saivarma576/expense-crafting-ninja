@@ -18,6 +18,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
@@ -80,21 +82,34 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
     }
   };
 
+  const progressPercentage = (step / 2) * 100;
+
   if (uiStyle === 'sheet') {
     return (
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent className="sm:max-w-md">
-          <SheetHeader>
-            <SheetTitle>Create New Expense</SheetTitle>
-            <SheetDescription>
-              {step === 1 ? "Let's gather some basic information about your expense." : "Just a few more details to set up your expense."}
+        <SheetContent className="sm:max-w-md flex flex-col overflow-y-auto">
+          <SheetHeader className="space-y-2">
+            <SheetTitle className="flex items-center gap-2 animate-fade-in">
+              Create New Expense
+            </SheetTitle>
+            <SheetDescription className="animate-fade-in">
+              {step === 1 ? 
+                "Let's gather some basic information about your expense." : 
+                "Just a few more details to set up your expense."}
             </SheetDescription>
+            <Progress value={progressPercentage} className="h-1 animate-fade-in" />
           </SheetHeader>
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-6">
-              {renderContent()}
-            </form>
-          </FormProvider>
+          <div className="py-4 flex-1">
+            <Card className="border-0 shadow-none">
+              <CardContent className="p-0">
+                <FormProvider {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    {renderContent()}
+                  </form>
+                </FormProvider>
+              </CardContent>
+            </Card>
+          </div>
         </SheetContent>
       </Sheet>
     );
@@ -102,18 +117,29 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create New Expense</DialogTitle>
-          <DialogDescription>
-            {step === 1 ? "Let's gather some basic information about your expense." : "Just a few more details to set up your expense."}
+      <DialogContent className="sm:max-w-md flex flex-col max-h-[90vh]">
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="flex items-center gap-2 animate-fade-in">
+            Create New Expense
+          </DialogTitle>
+          <DialogDescription className="animate-fade-in">
+            {step === 1 ? 
+              "Let's gather some basic information about your expense." : 
+              "Just a few more details to set up your expense."}
           </DialogDescription>
+          <Progress value={progressPercentage} className="h-1 animate-fade-in" />
         </DialogHeader>
-        <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            {renderContent()}
-          </form>
-        </FormProvider>
+        <div className="py-4 overflow-y-auto">
+          <Card className="border-0 shadow-none">
+            <CardContent className="p-0">
+              <FormProvider {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  {renderContent()}
+                </form>
+              </FormProvider>
+            </CardContent>
+          </Card>
+        </div>
       </DialogContent>
     </Dialog>
   );
