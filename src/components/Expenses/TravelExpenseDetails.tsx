@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2, Edit, MessageSquare } from 'lucide-react';
+import { Plane, Calendar, Utensils, Edit, MessageSquare, CalendarClock } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,14 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
   // Get formatted purpose text
   const getPurposeText = () => {
     if (!travelPurpose) return 'Not specified';
-    return travelPurpose.charAt(0).toUpperCase() + travelPurpose.slice(1);
+    
+    const purposeMap: Record<TravelPurpose, string> = {
+      conferences: 'Conference',
+      meeting: 'Meeting',
+      others: 'Other'
+    };
+    
+    return purposeMap[travelPurpose] || travelPurpose.charAt(0).toUpperCase() + travelPurpose.slice(1);
   };
   
   // Get meals text
@@ -60,21 +67,28 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
       <Plane className="h-4 w-4 text-blue-500 mr-2 flex-shrink-0" />
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 flex-grow">
         <div className="flex items-center gap-1">
-          <span className="text-gray-500">Purpose:</span>
+          <span className="font-medium text-gray-600">Travel Purpose:</span>
           <span className="font-medium">{getPurposeText()}</span>
         </div>
         
         <div className="flex items-center gap-1">
-          <Calendar className="h-3.5 w-3.5 text-gray-400 mr-1" />
+          <span className="font-medium text-gray-600">Duration:</span>
+          <CalendarClock className="h-3.5 w-3.5 text-gray-400 mx-1" />
           <span className="font-medium">{formattedDateRange()}</span>
         </div>
         
-        {mealsProvided === 'yes' && meals && meals.length > 0 && (
-          <div className="flex items-center gap-1">
-            <Utensils className="h-3.5 w-3.5 text-gray-400 mr-1" />
-            <span className="font-medium">Meals: {getMealsText()}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-1">
+          <span className="font-medium text-gray-600">Meals Provided:</span>
+          <span className="font-medium">
+            {mealsProvided === 'yes' ? (
+              <span className="flex items-center gap-1">
+                Yes <Badge variant="outline" className="ml-1 bg-green-50 text-green-600 border-green-200">{getMealsText()}</Badge>
+              </span>
+            ) : (
+              <span>No</span>
+            )}
+          </span>
+        </div>
 
         {travelComments && (
           <div className="flex items-center gap-1 text-gray-600">
