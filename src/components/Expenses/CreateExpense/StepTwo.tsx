@@ -29,10 +29,10 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="space-y-5">
-        {/* Travel Purpose Selector Component - moved up */}
+        {/* Travel Purpose Selector Component */}
         <TravelPurposeSelector />
 
-        {/* Date Range Selection Component - moved down */}
+        {/* Date Range Selection Component */}
         <DateRangeSelection />
 
         {/* Meal Selection Component */}
