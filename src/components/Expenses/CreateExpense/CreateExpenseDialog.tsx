@@ -48,6 +48,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
       fromDate: undefined,
       toDate: undefined,
       travelPurpose: undefined,
+      travelComments: "",
     }
   });
 
@@ -121,7 +122,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
     );
   }
 
-  // Fixed comparison with the string literal type
+  // Fixed comparison with string literal type
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden">

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2, Edit } from 'lucide-react';
+import { Plane, Calendar, Coffee, Utensils, Wine, Briefcase, Map, Building2, Edit, MessageSquare } from 'lucide-react';
 import { format } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import { TravelPurpose, Meal } from './CreateExpense/types';
 interface TravelExpenseDetailsProps {
   isTravelExpense: boolean;
   travelPurpose?: TravelPurpose;
+  travelComments?: string;
   fromDate?: Date;
   toDate?: Date;
   mealsProvided: string;
@@ -19,6 +20,7 @@ interface TravelExpenseDetailsProps {
 const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
   isTravelExpense,
   travelPurpose,
+  travelComments,
   fromDate,
   toDate,
   mealsProvided,
@@ -60,6 +62,11 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
         <div className="flex items-center gap-1">
           <span className="text-gray-500">Purpose:</span>
           <span className="font-medium">{getPurposeText()}</span>
+          {travelComments && (
+            <div className="flex items-center gap-1 ml-1 text-gray-500">
+              <MessageSquare className="h-3.5 w-3.5" />
+            </div>
+          )}
         </div>
         
         <div className="flex items-center gap-1">
@@ -71,6 +78,12 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
           <div className="flex items-center gap-1">
             <Utensils className="h-3.5 w-3.5 text-gray-400 mr-1" />
             <span className="font-medium">Meals: {getMealsText()}</span>
+          </div>
+        )}
+
+        {travelComments && (
+          <div className="w-full mt-1 text-gray-600 text-xs italic">
+            "{travelComments}"
           </div>
         )}
       </div>
