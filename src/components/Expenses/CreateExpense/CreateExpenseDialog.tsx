@@ -13,19 +13,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+import { Progress } from '@/components/ui/progress';
 
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
-import { Progress } from '@/components/ui/progress';
 
-type UiStyle = 'dialog' | 'sheet';
+type UiStyle = 'dialog';
 
 interface CreateExpenseDialogProps {
   isOpen: boolean;
@@ -36,7 +29,6 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   
-  // Use a constant value for uiStyle to avoid re-renders
   const uiStyle: UiStyle = 'dialog';
 
   const form = useForm<FormValues>({
@@ -97,47 +89,21 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   const progressValue = (step / 2) * 100;
 
-  if (uiStyle === 'sheet') {
-    return (
-      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent className="sm:max-w-md">
-          <SheetHeader className="space-y-2 mb-6">
-            <SheetTitle className="flex items-center gap-2 animate-fade-in">
-              Create New Expense
-            </SheetTitle>
-            <SheetDescription className="animate-fade-in">
-              Let's gather some basic information about your expense.
-            </SheetDescription>
-          </SheetHeader>
-          
-          <Progress value={progressValue} className="mb-6" />
-          
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              {renderStep()}
-            </form>
-          </FormProvider>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  // Fixed comparison with string literal type
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden bg-[#F1F0FB] border-none shadow-lg rounded-xl">
+        <DialogHeader className="p-6 pb-2 bg-[#9b87f5] bg-opacity-10">
+          <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl text-[#1A1F2C]">
             Create New Expense
           </DialogTitle>
-          <DialogDescription className="animate-fade-in">
+          <DialogDescription className="animate-fade-in text-[#8E9196]">
             Let's gather some basic information about your expense.
           </DialogDescription>
         </DialogHeader>
         
-        <Progress value={progressValue} className="mx-6" />
+        <Progress value={progressValue} className="mx-6 bg-[#E6E6E6]" />
         
-        <div className="p-6">
+        <div className="p-6 bg-[#F1F0FB]">
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {renderStep()}
