@@ -21,6 +21,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
   const watchMealsProvided = watch('mealsProvided');
   const watchMeals = watch('meals');
 
+  const handleSubmit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onSubmit();
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="space-y-5">
@@ -46,7 +51,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
         </Button>
         <Button 
           type="submit" 
-          onClick={onSubmit}
+          onClick={handleSubmit}
           size="sm"
           disabled={
             !watchTravelPurpose || 

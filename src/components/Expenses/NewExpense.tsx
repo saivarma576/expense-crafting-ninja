@@ -13,6 +13,7 @@ import { useExpenseLineItems } from '@/hooks/useExpenseLineItems';
 import { ExpenseDocument } from '@/types/expense';
 import { FormValues } from './CreateExpense/types';
 import { format } from 'date-fns';
+import { toast } from 'sonner';
 
 const initialLineItems = [
   {
@@ -60,6 +61,13 @@ const NewExpense: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
+  
+  useEffect(() => {
+    console.log("Expense data received:", expenseData);
+    if (expenseData) {
+      toast.success("Form data successfully transferred to expense screen");
+    }
+  }, [expenseData]);
   
   // Format title based on travel purpose if available
   const [title, setTitle] = useState(expenseData?.travelPurpose ? 

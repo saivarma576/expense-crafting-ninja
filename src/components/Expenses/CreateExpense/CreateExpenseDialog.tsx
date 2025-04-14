@@ -34,7 +34,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   // Define as a constant to avoid re-rendering issues
-  const uiStyle = 'dialog';
+  const uiStyle = 'dialog' as const;
 
   const form = useForm<FormValues>({
     defaultValues: {
@@ -65,7 +65,8 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   };
 
   const handleProceedToExpense = () => {
-    navigate('/expenses/new');
+    // Pass any data needed to the expense creation page
+    navigate('/expenses/new', { state: { expenseData: form.getValues() } });
     onClose();
   };
 
