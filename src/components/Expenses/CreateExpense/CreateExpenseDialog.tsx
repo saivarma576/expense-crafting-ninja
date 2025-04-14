@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -33,9 +32,8 @@ interface CreateExpenseDialogProps {
 const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  // Use a ref to prevent re-renders that cause the infinite loop
-  const [uiStyle] = useState<'dialog' | 'sheet'>('dialog');
-  
+  const uiStyle = 'dialog';
+
   const form = useForm<FormValues>({
     defaultValues: {
       isBusinessTravel: "",
@@ -70,10 +68,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   };
 
   const onSubmit = (data: FormValues) => {
-    // Store the form data for the new expense
     console.log('Form data:', data);
-    
-    // Navigate to the new expense page
     navigate('/expenses/new', { state: { expenseData: data } });
     onClose();
   };
@@ -98,7 +93,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
 
   if (uiStyle === 'sheet') {
     return (
-      <Sheet open={isOpen} onOpenChange={onClose}>
+      <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <SheetContent className="sm:max-w-md">
           <SheetHeader className="space-y-2 mb-6">
             <SheetTitle className="flex items-center gap-2 animate-fade-in">
@@ -122,7 +117,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl">
