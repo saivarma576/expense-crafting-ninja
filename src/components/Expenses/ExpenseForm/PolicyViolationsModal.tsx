@@ -118,13 +118,13 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                 <p className="mb-1">Applying AI analysis to your expense data</p>
                 <p className="font-mono text-xs">
                   {Array(3).fill(0).map((_, i) => (
-                    <span key={i} className="opacity-70">{">"} </span>
+                    <span key={i} className="opacity-70">{">>"} </span>
                   ))}
                   {analysisProgress < 33 ? "Scanning line items..." : 
                    analysisProgress < 66 ? "Comparing against policy rules..." : 
                    analysisProgress < 99 ? "Generating recommendations..." : 
                    "Analysis complete"}
-                </span>
+                </p>
               </div>
             </div>
           ) : (
