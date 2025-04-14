@@ -5,7 +5,7 @@ import { ExpenseType } from '@/types/expense';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Zap, FileCheck, AlertCircle } from 'lucide-react';
+import { Zap, FileCheck, AlertCircle, MessageSquare } from 'lucide-react';
 
 // Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
@@ -84,14 +84,15 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   }>({ programmaticErrors: [], llmWarnings: [] });
   const [showValidationWarnings, setShowValidationWarnings] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
-  const [showValidationPanel, setShowValidationPanel] = useState(false);
+  const [showValidationPanel, setShowValidationPanel] = useState(true);
   const [llmSuggestions, setLlmSuggestions] = useState<Record<string, string | null>>({});
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
 
   // All form values in a single object for passing to components
   const formValues = {
     type, amount, date, description, account, accountName, costCenter, costCenterName,
     wbs, notes, merchantName, glAccount, zipCode, city, mealsRate, hotelRate, throughDate,
-    perDiemExplanation, departureTime, returnTime, miles, mileageRate
+    perDiemExplanation, departureTime, returnTime, miles, mileageRate, receiptUrl, receiptName
   };
 
   // Effect to auto-calculate mileage amount
@@ -160,8 +161,18 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       suggestions.glAccount = `For lodging, the preferred GL Account is 420200 (Lodging Expenses).`;
     }
     
+    // Description suggestions
+    if (description && description.length < 15) {
+      suggestions.description = `Please provide a more detailed description for better expense tracking.`;
+    }
+    
+    // Notes suggestions
+    if (type === 'meals' && amount > 100 && (!notes || notes.length < 20)) {
+      suggestions.notes = `For high-value meal expenses, please specify attendees and business purpose.`;
+    }
+    
     setLlmSuggestions(suggestions);
-  }, [type, amount, date, merchantName, glAccount]);
+  }, [type, amount, date, merchantName, glAccount, description, notes]);
 
   const handleFieldChange = (id: string, value: any) => {
     // Update field value
@@ -223,6 +234,9 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         setShowMismatchDialog(true);
       }
     }
+    
+    // Run validation after field updates
+    runValidation();
   };
 
   const handleReceiptChange = async (name: string, url: string) => {
@@ -260,6 +274,9 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       toast.error('Failed to extract data from receipt');
       console.error('OCR extraction error:', error);
     }
+    
+    // Run validation after receipt upload
+    runValidation();
   };
 
   const handleOcrDataExtracted = (data: any) => {
@@ -316,7 +333,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     }
   };
 
-  const validateForm = (): boolean => {
+  const runValidation = () => {
     // Create the expense object
     const expense: ExpenseLineItemFormData = {
       id: editingItem?.id || `item-${Date.now()}`,
@@ -354,12 +371,18 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       llmWarnings: validations.llmWarnings
     });
     
-    // Show validation warnings dialog
-    if (validations.programmaticErrors.length > 0 || validations.llmWarnings.length > 0) {
+    return !validations.hasErrors;
+  };
+
+  const validateForm = (): boolean => {
+    const isValid = runValidation();
+    
+    // Show validation warnings dialog if there are issues
+    if (validationWarnings.programmaticErrors.length > 0 || validationWarnings.llmWarnings.length > 0) {
       setShowValidationWarnings(true);
       
       // In testing mode, we allow submission even with warnings but not with errors
-      return !validations.hasErrors;
+      return isValid;
     }
     
     return true;
@@ -397,46 +420,10 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     });
   };
 
-  // For live validation status
+  // Run initial validation on load
   useEffect(() => {
-    const expense: ExpenseLineItemFormData = {
-      id: editingItem?.id || `item-${Date.now()}`,
-      type,
-      amount,
-      date,
-      description,
-      receiptUrl,
-      receiptName,
-      merchantName,
-      account,
-      accountName,
-      costCenter,
-      costCenterName,
-      wbs,
-      notes,
-      glAccount: needsGlAccount ? glAccount : undefined,
-      zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
-      city: (isHotelOrLodging || isMeals) ? city : undefined,
-      mealsRate: (isMeals) ? mealsRate : undefined,
-      hotelRate: isHotelOrLodging ? hotelRate : undefined,
-      throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
-      perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
-      departureTime: isMeals ? departureTime : undefined,
-      returnTime: isMeals ? returnTime : undefined,
-      miles: isMileage ? miles : undefined,
-      mileageRate: isMileage ? mileageRate : undefined,
-    };
-    
-    const validations = getAllValidations(expense);
-    
-    // Only update if there are errors or warnings
-    if (validations.programmaticErrors.length > 0 || validations.llmWarnings.length > 0) {
-      setValidationWarnings({
-        programmaticErrors: validations.programmaticErrors,
-        llmWarnings: validations.llmWarnings
-      });
-    }
-  }, [type, amount, date, description, merchantName, glAccount, miles]);
+    runValidation();
+  }, []);
 
   return (
     <div className="flex h-full">
@@ -462,7 +449,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               className="text-xs flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 py-1 px-2 rounded-full"
             >
               <FileCheck className="h-3.5 w-3.5" />
-              Validation panel
+              {showValidationPanel ? 'Hide' : 'Show'} validation panel
             </button>
           </div>
         </div>
@@ -498,7 +485,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
             {isHotelOrLodging && (
               <HotelFields 
                 values={formValues} 
-                onChange={handleFieldChange} 
+                onChange={handleFieldChange}
                 llmSuggestions={llmSuggestions}
               />
             )}
@@ -506,7 +493,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
             {isMeals && (
               <MealsFields 
                 values={formValues} 
-                onChange={handleFieldChange} 
+                onChange={handleFieldChange}
                 llmSuggestions={llmSuggestions}
               />
             )}
@@ -521,7 +508,11 @@ const ExpenseLineItem: React.FC<FormProps> = ({
             )}
 
             {/* Notes Field */}
-            <NotesField values={formValues} onChange={handleFieldChange} />
+            <NotesField 
+              values={formValues} 
+              onChange={handleFieldChange}
+              llmSuggestions={llmSuggestions}
+            />
 
             {/* Action buttons */}
             <FormActions onCancel={onCancel} onSave={handleSave} />
@@ -589,12 +580,66 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         />
       )}
       
+      {/* AI Assistant Dialog */}
+      <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-blue-500" />
+              AI Travel & Expense Assistant
+            </DialogTitle>
+            <DialogDescription>
+              Ask questions about policies or get suggestions for your expense
+            </DialogDescription>
+          </DialogHeader>
+          <div className="bg-gray-50 p-4 rounded-md mb-4">
+            <p className="text-sm text-gray-700">
+              I can help you understand expense policies and make suggestions to ensure compliance.
+              For example, you can ask:
+            </p>
+            <ul className="mt-2 space-y-1">
+              <li className="text-sm text-blue-600 cursor-pointer hover:underline">• What's the per diem rate for meals in New York?</li>
+              <li className="text-sm text-blue-600 cursor-pointer hover:underline">• Does this hotel expense need a receipt?</li>
+              <li className="text-sm text-blue-600 cursor-pointer hover:underline">• What GL account should I use for client meals?</li>
+            </ul>
+          </div>
+          <div className="bg-white p-4 rounded-md border h-60 overflow-auto">
+            <div className="flex items-start mb-4">
+              <div className="bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center mr-2 flex-shrink-0">
+                <Zap className="h-4 w-4 text-blue-700" />
+              </div>
+              <div className="bg-blue-50 rounded-lg p-3 max-w-[80%]">
+                <p className="text-sm text-gray-700">
+                  I noticed you're creating a {type} expense. Is there anything 
+                  specific you'd like to know about this type of expense?
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="relative mt-2">
+            <Input 
+              placeholder="Type your question here..." 
+              className="pr-12"
+              disabled
+            />
+            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600">
+              <Zap className="h-5 w-5" />
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            AI assistant in test mode - responses are examples only
+          </p>
+        </DialogContent>
+      </Dialog>
+      
       {/* Validation Summary Panel */}
       <ValidationSummaryPanel
         programmaticErrors={validationWarnings.programmaticErrors}
         llmWarnings={validationWarnings.llmWarnings}
         isVisible={showValidationPanel}
         toggleVisibility={() => setShowValidationPanel(prev => !prev)}
+        onRevalidate={runValidation}
+        onAskAI={() => setShowAIAssistant(true)}
       />
     </div>
   );

@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, MessageSquare } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
+import { Button } from "@/components/ui/button";
 
 type ValidationItem = {
   field: string;
@@ -15,19 +16,21 @@ type ValidationPanelProps = {
   llmWarnings: string[];
   isVisible: boolean;
   toggleVisibility: () => void;
+  onRevalidate?: () => void;
+  onAskAI?: () => void;
 };
 
 const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
   programmaticErrors,
   llmWarnings,
   isVisible,
-  toggleVisibility
+  toggleVisibility,
+  onRevalidate,
+  onAskAI
 }) => {
-  const [activeTab, setActiveTab] = useState<string>(programmaticErrors.length > 0 ? "programmatic" : "llm");
+  const [activeTab, setActiveTab] = useState<string>("programmatic");
   
-  if (programmaticErrors.length === 0 && llmWarnings.length === 0) {
-    return null;
-  }
+  const validationCount = programmaticErrors.length + llmWarnings.length;
   
   return (
     <div className={cn(
@@ -40,14 +43,30 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
         className="absolute -left-7 top-12 bg-white border border-gray-200 rounded-l-lg h-14 w-7 flex items-center justify-center shadow-md"
         aria-label={isVisible ? "Collapse validation panel" : "Expand validation panel"}
       >
-        {isVisible ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        {isVisible ? 
+          <ChevronRight className="h-4 w-4" /> : 
+          <div className="flex flex-col items-center">
+            <ChevronLeft className="h-4 w-4" />
+            {validationCount > 0 && (
+              <Badge 
+                variant={programmaticErrors.length > 0 ? "destructive" : "outline"} 
+                className={cn(
+                  "text-[10px] h-4 min-w-4 px-1 mt-1",
+                  programmaticErrors.length === 0 && "border-amber-400 text-amber-600 bg-amber-50"
+                )}
+              >
+                {validationCount}
+              </Badge>
+            )}
+          </div>
+        }
       </button>
       
-      <div className="w-80 max-h-[500px] overflow-auto">
+      <div className="w-80 max-h-[500px] overflow-auto flex flex-col">
         <div className="p-3 border-b flex justify-between items-center bg-gray-50">
           <h3 className="font-semibold text-sm flex items-center">
             <AlertCircle className="h-4 w-4 mr-1.5 text-amber-500" />
-            Validation Summary
+            Issues, Suggestions & Validation
             <div className="ml-2 flex gap-1">
               {programmaticErrors.length > 0 && (
                 <Badge variant="destructive" className="text-[10px] h-5">
@@ -61,23 +80,28 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
               )}
             </div>
           </h3>
-          <button onClick={toggleVisibility} className="text-gray-500 hover:text-gray-700">
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={onRevalidate} 
+              className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
+              title="Re-run validation"
+            >
+              <RotateCw className="h-4 w-4" />
+            </button>
+            <button onClick={toggleVisibility} className="text-gray-500 hover:text-gray-700 p-1">
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
         
-        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full flex-1">
           <TabsList className="w-full grid grid-cols-2 p-1 h-auto">
             <TabsTrigger 
               value="programmatic" 
-              className={cn(
-                "flex items-center py-1.5 text-xs gap-1",
-                programmaticErrors.length === 0 && "opacity-50"
-              )}
-              disabled={programmaticErrors.length === 0}
+              className="flex items-center py-1.5 text-xs gap-1"
             >
               <AlertCircle className="h-3.5 w-3.5 text-red-500" />
-              Required
+              Programmatic Issues
               {programmaticErrors.length > 0 && (
                 <Badge variant="destructive" className="ml-1 text-[10px] h-4 min-w-4 px-1">
                   {programmaticErrors.length}
@@ -86,14 +110,10 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
             </TabsTrigger>
             <TabsTrigger 
               value="llm" 
-              className={cn(
-                "flex items-center py-1.5 text-xs gap-1",
-                llmWarnings.length === 0 && "opacity-50"
-              )}
-              disabled={llmWarnings.length === 0}
+              className="flex items-center py-1.5 text-xs gap-1"
             >
               <Zap className="h-3.5 w-3.5 text-amber-500" />
-              AI Insights
+              AI Suggestions
               {llmWarnings.length > 0 && (
                 <Badge variant="outline" className="ml-1 text-[10px] h-4 min-w-4 px-1 border-amber-400 text-amber-600 bg-amber-50">
                   {llmWarnings.length}
@@ -102,12 +122,12 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="programmatic" className="pt-2">
-            {programmaticErrors.length > 0 ? (
-              <div className="space-y-2 p-3">
-                <p className="text-xs text-gray-500 mb-2">
-                  These issues must be resolved before submission:
-                </p>
+          <TabsContent value="programmatic" className="pt-2 flex-1">
+            <div className="space-y-2 p-3">
+              <p className="text-xs text-gray-500 mb-2">
+                These issues should be resolved before submission:
+              </p>
+              {programmaticErrors.length > 0 ? (
                 <ul className="space-y-1.5">
                   {programmaticErrors.map((error, index) => (
                     <li key={index} className="bg-red-50 p-2 rounded-md text-xs flex items-start">
@@ -119,22 +139,22 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
                     </li>
                   ))}
                 </ul>
-              </div>
-            ) : (
-              <div className="p-6 text-center text-gray-500 text-sm">
-                <AlertCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p>All required fields look good!</p>
-              </div>
-            )}
+              ) : (
+                <div className="p-6 text-center text-gray-500 text-sm">
+                  <AlertCircle className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                  <p>No programmatic issues found</p>
+                </div>
+              )}
+            </div>
           </TabsContent>
           
-          <TabsContent value="llm" className="pt-2">
-            {llmWarnings.length > 0 ? (
-              <div className="space-y-2 p-3">
-                <p className="text-xs text-amber-700 mb-2 flex items-center">
-                  <Zap className="h-3.5 w-3.5 mr-1" />
-                  AI policy suggestions:
-                </p>
+          <TabsContent value="llm" className="pt-2 flex-1">
+            <div className="space-y-2 p-3">
+              <p className="text-xs text-amber-700 mb-2 flex items-center">
+                <Zap className="h-3.5 w-3.5 mr-1" />
+                AI policy suggestions:
+              </p>
+              {llmWarnings.length > 0 ? (
                 <ul className="space-y-1.5">
                   {llmWarnings.map((warning, index) => (
                     <li key={index} className="bg-amber-50 p-2 rounded-md text-xs">
@@ -145,21 +165,30 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
                     </li>
                   ))}
                 </ul>
-              </div>
-            ) : (
-              <div className="p-6 text-center text-gray-500 text-sm">
-                <Zap className="h-8 w-8 text-green-500 mx-auto mb-2" />
-                <p>No policy suggestions!</p>
-              </div>
-            )}
+              ) : (
+                <div className="p-6 text-center text-gray-500 text-sm">
+                  <Zap className="h-8 w-8 text-green-500 mx-auto mb-2" />
+                  <p>No AI suggestions found</p>
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
         
-        <div className="p-3 border-t text-xs text-gray-500 bg-gray-50">
-          <p className="flex items-center">
+        <div className="p-3 border-t flex justify-between items-center bg-gray-50">
+          <p className="flex items-center text-xs text-gray-500">
             <Zap className="h-3.5 w-3.5 mr-1.5 text-blue-500" />
-            AI-powered validation is in testing mode. You can still submit with warnings.
+            AI-powered validation in testing mode
           </p>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="h-7 text-xs px-2 flex items-center gap-1"
+            onClick={onAskAI}
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            Ask AI
+          </Button>
         </div>
       </div>
     </div>

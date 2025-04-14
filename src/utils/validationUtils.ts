@@ -127,7 +127,7 @@ export const getAllValidations = (expense: ExpenseLineItemFormData) => {
     const value = expense[field];
     const error = validateField(field, value);
     if (error) {
-      programmaticErrors.push({field, error});
+      programmaticErrors.push({field: label, error});
     }
   });
   

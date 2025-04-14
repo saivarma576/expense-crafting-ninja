@@ -7,14 +7,15 @@ export interface ExpenseLineItemFormData {
   amount: number;
   date: string;
   description: string;
-  receiptUrl?: string;
-  receiptName?: string;
-  account?: string;
-  accountName?: string;
-  costCenter?: string;
-  costCenterName?: string;
-  wbs?: string;
-  notes?: string;
+  receiptUrl: string;
+  receiptName: string;
+  merchantName: string;
+  account: string;
+  accountName: string;
+  costCenter: string;
+  costCenterName: string;
+  wbs: string;
+  notes: string;
   glAccount?: string;
   zipCode?: string;
   city?: string;
@@ -26,16 +27,20 @@ export interface ExpenseLineItemFormData {
   returnTime?: string;
   miles?: number;
   mileageRate?: number;
-  merchantName?: string;
-}
-
-export interface FormProps {
-  onSave: (lineItem: ExpenseLineItemFormData) => void;
-  onCancel: () => void;
-  editingItem?: ExpenseLineItemFormData;
 }
 
 export interface FieldGroupProps {
-  values: Record<string, any>;
+  values: ExpenseLineItemFormData;
   onChange: (id: string, value: any) => void;
+  llmSuggestions?: Record<string, string | null>;
+}
+
+export interface MileageFieldsProps extends FieldGroupProps {
+  error?: string | null;
+}
+
+export interface FormProps {
+  onSave: (item: ExpenseLineItemFormData) => void;
+  onCancel: () => void;
+  editingItem?: Partial<ExpenseLineItemFormData>;
 }

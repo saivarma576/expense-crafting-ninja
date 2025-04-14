@@ -93,7 +93,7 @@ const ValidationWarnings: React.FC<ValidationWarningsProps> = ({
                 onClick={onProceed}
                 className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 text-sm font-medium flex items-center"
               >
-                Proceed Anyway
+                Submit Anyway
                 <ArrowRight className="ml-1.5 h-4 w-4" />
               </button>
             )}
