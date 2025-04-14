@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, MessageSquare, ArrowRight } from 'lucide-react';
+import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, MessageSquare, ArrowRight, BarChart } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
@@ -246,7 +246,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
             className="h-7 text-xs px-2 flex items-center gap-1"
             onClick={onAskAI}
           >
-            <MessageSquare className="h-3.5 w-3.5" />
+            <BarChart className="h-3.5 w-3.5" />
             Ask AI
           </Button>
         </div>

@@ -1,14 +1,19 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Zap, ChevronLeft, SendHorizonal, XCircle } from 'lucide-react';
+import { Zap, ChevronLeft, SendHorizonal, XCircle, BarChart } from 'lucide-react';
 
 interface ExpenseActionsProps {
   totalAmount: string | number;
   onSubmit?: () => void;
+  onAskAI?: () => void;
 }
 
-export const ExpenseActions: React.FC<ExpenseActionsProps> = ({ totalAmount, onSubmit }) => {
+export const ExpenseActions: React.FC<ExpenseActionsProps> = ({ 
+  totalAmount, 
+  onSubmit,
+  onAskAI 
+}) => {
   return (
     <div className="sticky bottom-0 px-6 py-3 bg-white border-t flex items-center justify-between">
       <div className="flex items-center space-x-3">
@@ -20,6 +25,17 @@ export const ExpenseActions: React.FC<ExpenseActionsProps> = ({ totalAmount, onS
           <XCircle className="h-4 w-4 mr-1" />
           Discard
         </Button>
+        {onAskAI && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+            onClick={onAskAI}
+          >
+            <BarChart className="h-4 w-4 mr-1" />
+            AI Insights
+          </Button>
+        )}
       </div>
       
       <div className="flex items-center">

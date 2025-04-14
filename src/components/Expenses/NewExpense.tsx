@@ -337,6 +337,7 @@ const NewExpense: React.FC = () => {
       <ExpenseActions 
         totalAmount={totalAmount} 
         onSubmit={handleSubmit}
+        onAskAI={handleAskAI}
       />
 
       <LineItemSlider
