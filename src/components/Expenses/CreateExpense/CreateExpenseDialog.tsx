@@ -73,7 +73,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
     console.log('Form data:', data);
     
     // Navigate to the new expense page
-    navigate('/expenses/new');
+    navigate('/expenses/new', { state: { expenseData: data } });
     onClose();
   };
 
@@ -104,7 +104,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
               Create New Expense
             </SheetTitle>
             <SheetDescription className="animate-fade-in">
-              Let's set up your expense step by step.
+              Let's gather some basic information about your expense.
             </SheetDescription>
           </SheetHeader>
           
@@ -128,7 +128,7 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
             Create New Expense
           </DialogTitle>
           <DialogDescription className="animate-fade-in">
-            Let's set up your expense step by step.
+            Let's gather some basic information about your expense.
           </DialogDescription>
         </DialogHeader>
         
