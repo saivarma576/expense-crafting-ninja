@@ -17,7 +17,9 @@ import MileageFields from './ExpenseForm/MileageFields';
 import GlAccountField from './ExpenseForm/GlAccountField';
 import NotesField from './ExpenseForm/NotesField';
 import FormActions from './ExpenseForm/FormActions';
+import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import { STANDARD_RATES } from './ExpenseFieldUtils';
+import { validateField, performLLMValidation, showFieldError } from '@/utils/validationUtils';
 
 export type { ExpenseLineItemFormData as ExpenseLineItemType };
 
@@ -58,6 +60,10 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const [miles, setMiles] = useState(editingItem?.miles || 0);
   const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || STANDARD_RATES.MILEAGE_RATE);
 
+  // State for validation
+  const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
+
   // All form values in a single object for passing to components
   const formValues = {
     type, amount, date, description, account, accountName, costCenter, costCenterName,
@@ -82,6 +88,14 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     }
   }, [zipCode]);
 
+  // Validate a field when its value changes
+  const validateAndSetFieldError = (field: string, value: any) => {
+    const error = validateField(field, value);
+    setFieldErrors(prev => ({ ...prev, [field]: error }));
+    if (error) showFieldError(error);
+    return error;
+  };
+
   // Determine which fields to show based on expense type
   const needsGlAccount = ['transport', 'auditing', 'baggage', 'business_meals', 
                          'subscriptions', 'gasoline', 'office_supplies', 'other', 
@@ -92,10 +106,17 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const isMileage = type === 'mileage';
 
   const handleFieldChange = (id: string, value: any) => {
+    // Update field value
     switch (id) {
       case 'type': setType(value); break;
-      case 'amount': setAmount(value); break;
-      case 'date': setDate(value); break;
+      case 'amount': 
+        setAmount(value); 
+        validateAndSetFieldError('amount', value);
+        break;
+      case 'date': 
+        setDate(value); 
+        validateAndSetFieldError('date', value);
+        break;
       case 'description': setDescription(value); break;
       case 'account': setAccount(value); break;
       case 'accountName': setAccountName(value); break;
@@ -103,8 +124,14 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       case 'costCenterName': setCostCenterName(value); break;
       case 'wbs': setWbs(value); break;
       case 'notes': setNotes(value); break;
-      case 'merchantName': setMerchantName(value); break;
-      case 'glAccount': setGlAccount(value); break;
+      case 'merchantName': 
+        setMerchantName(value); 
+        validateAndSetFieldError('merchantName', value);
+        break;
+      case 'glAccount': 
+        setGlAccount(value); 
+        validateAndSetFieldError('glAccount', value);
+        break;
       case 'zipCode': setZipCode(value); break;
       case 'city': setCity(value); break;
       case 'mealsRate': setMealsRate(value); break;
@@ -113,7 +140,10 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       case 'perDiemExplanation': setPerDiemExplanation(value); break;
       case 'departureTime': setDepartureTime(value); break;
       case 'returnTime': setReturnTime(value); break;
-      case 'miles': setMiles(value); break;
+      case 'miles': 
+        setMiles(value); 
+        validateAndSetFieldError('miles', value);
+        break;
       case 'mileageRate': setMileageRate(value); break;
       default: break;
     }
@@ -123,6 +153,25 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     setReceiptName(name);
     setReceiptUrl(url);
     toast.success(`Receipt ${name} uploaded successfully`);
+  };
+
+  const handleOcrDataExtracted = (data: any) => {
+    // Only update fields that are empty or have default values
+    if (data.merchantName && (!merchantName || merchantName === '')) {
+      setMerchantName(data.merchantName);
+    }
+    
+    if (data.amount && amount === 0) {
+      setAmount(data.amount);
+    }
+    
+    if (data.date && (!date || date === format(new Date(), 'yyyy-MM-dd'))) {
+      setDate(data.date);
+    }
+    
+    if (data.type && type === 'other') {
+      setType(data.type);
+    }
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -143,50 +192,96 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
       setReceiptName(file.name);
-      setReceiptUrl(`receipt-${Date.now()}`);
+      const newReceiptUrl = `receipt-${Date.now()}`;
+      setReceiptUrl(newReceiptUrl);
       toast.success(`Receipt ${file.name} uploaded successfully`);
+      
+      // Simulate OCR extraction
+      setTimeout(() => {
+        handleOcrDataExtracted({
+          merchantName: 'Sample Merchant',
+          amount: 142.50,
+          date: new Date().toISOString().split('T')[0],
+          type: 'meals'
+        });
+        toast.success('Receipt data extracted');
+      }, 1500);
     }
   };
 
   const validateForm = (): boolean => {
-    if (!type || !costCenter || !date || !wbs || amount <= 0 || !merchantName) {
-      toast.error("Please fill in all required fields");
-      return false;
+    // Validate required fields
+    let hasErrors = false;
+    
+    // Create a map of field validation functions
+    const fieldValidations: Record<string, () => string | null> = {
+      amount: () => validateAndSetFieldError('amount', amount),
+      date: () => validateAndSetFieldError('date', date),
+      merchantName: () => validateAndSetFieldError('merchantName', merchantName),
+      glAccount: () => needsGlAccount ? validateAndSetFieldError('glAccount', glAccount) : null,
+      miles: () => isMileage ? validateAndSetFieldError('miles', miles) : null,
+    };
+    
+    // Run all validations
+    Object.values(fieldValidations).forEach(validate => {
+      const error = validate();
+      if (error) hasErrors = true;
+    });
+    
+    // Additional required field checks
+    if (!costCenter) {
+      showFieldError("Cost center is required");
+      hasErrors = true;
+    }
+    
+    if (!wbs) {
+      showFieldError("WBS is required");
+      hasErrors = true;
+    }
+    
+    if (!description) {
+      showFieldError("Description is required");
+      hasErrors = true;
     }
 
-    if (needsGlAccount && !glAccount) {
-      toast.error("GL Account is required for this expense type");
+    // If there are programmatic errors, don't proceed
+    if (hasErrors) return false;
+    
+    // Perform LLM-based validations
+    const expense: ExpenseLineItemFormData = {
+      id: editingItem?.id || `item-${Date.now()}`,
+      type,
+      amount,
+      date,
+      description,
+      receiptUrl,
+      receiptName,
+      merchantName,
+      account,
+      accountName,
+      costCenter,
+      costCenterName,
+      wbs,
+      notes,
+      glAccount: needsGlAccount ? glAccount : undefined,
+      zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
+      city: (isHotelOrLodging || isMeals) ? city : undefined,
+      mealsRate: (isMeals) ? mealsRate : undefined,
+      hotelRate: isHotelOrLodging ? hotelRate : undefined,
+      throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
+      perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
+      departureTime: isMeals ? departureTime : undefined,
+      returnTime: isMeals ? returnTime : undefined,
+      miles: isMileage ? miles : undefined,
+      mileageRate: isMileage ? mileageRate : undefined,
+    };
+    
+    const warnings = performLLMValidation(expense);
+    if (warnings.length > 0) {
+      setValidationWarnings(warnings);
       return false;
     }
-
-    if ((isHotelOrLodging || isMeals) && !zipCode) {
-      toast.error("Zip Code is required for this expense type");
-      return false;
-    }
-
-    if ((isHotelOrLodging || isMileage) && !throughDate) {
-      toast.error("Through Date is required for this expense type");
-      return false;
-    }
-
-    if (isMileage && (!miles || miles <= 0)) {
-      toast.error("Miles must be greater than zero");
-      return false;
-    }
-
-    if (isMeals && !departureTime) {
-      toast.error("Departure Time is required for meals expenses");
-      return false;
-    }
-
-    const needsPerDiemExplanation = (isHotelOrLodging && amount !== hotelRate) || 
-                                  (isMeals && amount !== mealsRate);
-                                  
-    if (needsPerDiemExplanation && !perDiemExplanation) {
-      toast.error("Please provide an explanation for the non-standard rate");
-      return false;
-    }
-
+    
     return true;
   };
 
@@ -240,13 +335,39 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               values={formValues}
               onChange={handleFieldChange}
               isAmountDisabled={type === 'mileage'}
+              fieldErrors={fieldErrors}
             />
 
             {/* Type-specific Fields */}
-            {needsGlAccount && <GlAccountField values={formValues} onChange={handleFieldChange} />}
-            {isHotelOrLodging && <HotelFields values={formValues} onChange={handleFieldChange} />}
-            {isMeals && <MealsFields values={formValues} onChange={handleFieldChange} />}
-            {isMileage && <MileageFields values={formValues} onChange={handleFieldChange} />}
+            {needsGlAccount && (
+              <GlAccountField 
+                values={formValues} 
+                onChange={handleFieldChange} 
+                error={fieldErrors.glAccount}
+              />
+            )}
+            
+            {isHotelOrLodging && (
+              <HotelFields 
+                values={formValues} 
+                onChange={handleFieldChange} 
+              />
+            )}
+            
+            {isMeals && (
+              <MealsFields 
+                values={formValues} 
+                onChange={handleFieldChange} 
+              />
+            )}
+            
+            {isMileage && (
+              <MileageFields 
+                values={formValues} 
+                onChange={handleFieldChange} 
+                error={fieldErrors.miles}
+              />
+            )}
 
             {/* Notes Field */}
             <NotesField values={formValues} onChange={handleFieldChange} />
@@ -268,6 +389,8 @@ const ExpenseLineItem: React.FC<FormProps> = ({
           onDrop={handleDrop}
           dragActive={dragActive}
           onReceiptChange={handleReceiptChange}
+          onOcrDataExtracted={handleOcrDataExtracted}
+          currentValues={formValues}
         />
       </div>
 
@@ -293,6 +416,14 @@ const ExpenseLineItem: React.FC<FormProps> = ({
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Validation Warnings Dialog */}
+      {validationWarnings.length > 0 && (
+        <ValidationWarnings 
+          warnings={validationWarnings} 
+          onClose={() => setValidationWarnings([])} 
+        />
+      )}
     </div>
   );
 };

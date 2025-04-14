@@ -1,8 +1,9 @@
 
-import React, { useCallback } from 'react';
-import { Upload, FileImage, AlertCircle } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
+import { Upload, FileImage, AlertCircle, Loader, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { extractDataFromReceipt, detectDataMismatch } from '@/utils/ocrUtils';
 
 interface ReceiptPreviewProps {
   receiptUrl: string;
@@ -13,6 +14,8 @@ interface ReceiptPreviewProps {
   onDrop: (e: React.DragEvent) => void;
   dragActive: boolean;
   onReceiptChange: (name: string, url: string) => void;
+  onOcrDataExtracted?: (data: any) => void;
+  currentValues?: Record<string, any>;
 }
 
 const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
@@ -23,19 +26,54 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
   onDragOver,
   onDrop,
   dragActive,
-  onReceiptChange
+  onReceiptChange,
+  onOcrDataExtracted,
+  currentValues
 }) => {
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [ocrComplete, setOcrComplete] = useState(false);
+
+  const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       if (file.type.startsWith('image/') || file.type === 'application/pdf') {
-        onReceiptChange(file.name, `receipt-${Date.now()}`);
-        toast.success(`Receipt uploaded: ${file.name}`);
+        // Generate a placeholder receipt URL
+        const newReceiptUrl = `receipt-${Date.now()}`;
+        onReceiptChange(file.name, newReceiptUrl);
+        
+        // Process with OCR if callback provided
+        if (onOcrDataExtracted) {
+          setIsProcessing(true);
+          try {
+            const extractedData = await extractDataFromReceipt(newReceiptUrl);
+            
+            // Check for mismatches if we have current values
+            if (currentValues) {
+              const mismatches = detectDataMismatch(extractedData, currentValues);
+              if (mismatches) {
+                toast.warning(`Data mismatch detected in ${mismatches.join(', ')}. Please verify.`, {
+                  duration: 5000
+                });
+              }
+            }
+            
+            onOcrDataExtracted(extractedData);
+            setOcrComplete(true);
+            toast.success('Receipt data extracted successfully');
+          } catch (error) {
+            toast.error('Failed to extract data from receipt');
+            console.error(error);
+          } finally {
+            setIsProcessing(false);
+          }
+        } else {
+          toast.success(`Receipt uploaded: ${file.name}`);
+        }
       } else {
         toast.error('Please upload an image or PDF file');
       }
     }
-  }, [onReceiptChange]);
+  }, [onReceiptChange, onOcrDataExtracted, currentValues]);
 
   return (
     <div className="w-full bg-gray-50 flex flex-col border-l border-gray-200 h-full">
@@ -55,8 +93,22 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
               alt="Receipt" 
               className="max-w-full max-h-[90%] object-contain rounded-md shadow-sm" 
             />
-            <div className="mt-2 text-xs text-gray-600 font-medium">
-              {receiptName}
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-xs text-gray-600 font-medium">
+                {receiptName}
+              </span>
+              {isProcessing && (
+                <div className="flex items-center text-blue-500">
+                  <Loader className="w-3.5 h-3.5 animate-spin" />
+                  <span className="text-xs ml-1">Processing...</span>
+                </div>
+              )}
+              {ocrComplete && !isProcessing && (
+                <div className="flex items-center text-green-500">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span className="text-xs ml-1">Data extracted</span>
+                </div>
+              )}
             </div>
           </div>
         ) : (

@@ -6,7 +6,11 @@ import { Calendar, Car } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import { STANDARD_RATES } from '../ExpenseFieldUtils';
 
-const MileageFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
+interface MileageFieldsProps extends FieldGroupProps {
+  error?: string | null;
+}
+
+const MileageFields: React.FC<MileageFieldsProps> = ({ values, onChange, error }) => {
   // Auto-calculate amount when miles or rate changes
   useEffect(() => {
     if (values.miles && values.mileageRate) {
@@ -29,11 +33,14 @@ const MileageFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               value={values.miles || 0}
               onChange={(e) => onChange('miles', parseFloat(e.target.value) || 0)}
               placeholder="0"
-              className="h-8 pl-7 pr-2 py-1 text-sm"
+              className={`h-8 pl-7 pr-2 py-1 text-sm ${error ? 'border-red-500' : ''}`}
               required
             />
             <Car className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
           </div>
+          {error && (
+            <p className="mt-1 text-xs text-red-500">{error}</p>
+          )}
         </div>
         
         <div>
@@ -62,7 +69,7 @@ const MileageFields: React.FC<FieldGroupProps> = ({ values, onChange }) => {
               type="date"
               value={values.throughDate || ''}
               onChange={(e) => onChange('throughDate', e.target.value)}
-              className="h-8 px-2 py-1 text-sm"
+              className="h-8 px-2 py-1 text-sm pr-8"
               required
             />
             <Calendar className="w-4 h-4 absolute right-2 top-2 text-gray-400 pointer-events-none" />
