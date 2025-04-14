@@ -5,6 +5,7 @@ import { ExpenseType } from '@/types/expense';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Zap, FileCheck, AlertCircle } from 'lucide-react';
 
 // Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
@@ -18,8 +19,19 @@ import GlAccountField from './ExpenseForm/GlAccountField';
 import NotesField from './ExpenseForm/NotesField';
 import FormActions from './ExpenseForm/FormActions';
 import ValidationWarnings from './ExpenseForm/ValidationWarnings';
+import ValidationSummaryPanel from './ExpenseForm/ValidationSummaryPanel';
+import DataMismatchAlert from './ExpenseForm/DataMismatchAlert';
 import { STANDARD_RATES } from './ExpenseFieldUtils';
-import { validateField, performLLMValidation, showFieldError } from '@/utils/validationUtils';
+import { 
+  validateField, 
+  performLLMValidation, 
+  showFieldError,
+  getAllValidations
+} from '@/utils/validationUtils';
+import { 
+  extractDataFromReceipt, 
+  detectDataMismatch 
+} from '@/utils/ocrUtils';
 
 export type { ExpenseLineItemFormData as ExpenseLineItemType };
 
@@ -47,6 +59,11 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const [showReceiptDialog, setShowReceiptDialog] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   
+  // State for OCR data
+  const [ocrData, setOcrData] = useState<any>(null);
+  const [showMismatchDialog, setShowMismatchDialog] = useState(false);
+  const [dataMismatches, setDataMismatches] = useState<any[] | null>(null);
+  
   // State for type-specific fields
   const [glAccount, setGlAccount] = useState(editingItem?.glAccount || '');
   const [zipCode, setZipCode] = useState(editingItem?.zipCode || '');
@@ -61,8 +78,14 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || STANDARD_RATES.MILEAGE_RATE);
 
   // State for validation
-  const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
+  const [validationWarnings, setValidationWarnings] = useState<{
+    programmaticErrors: {field: string, error: string}[],
+    llmWarnings: string[]
+  }>({ programmaticErrors: [], llmWarnings: [] });
+  const [showValidationWarnings, setShowValidationWarnings] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
+  const [showValidationPanel, setShowValidationPanel] = useState(false);
+  const [llmSuggestions, setLlmSuggestions] = useState<Record<string, string | null>>({});
 
   // All form values in a single object for passing to components
   const formValues = {
@@ -92,7 +115,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const validateAndSetFieldError = (field: string, value: any) => {
     const error = validateField(field, value);
     setFieldErrors(prev => ({ ...prev, [field]: error }));
-    if (error) showFieldError(error);
     return error;
   };
 
@@ -104,6 +126,42 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const isHotelOrLodging = type === 'hotel';
   const isMeals = type === 'meals';
   const isMileage = type === 'mileage';
+
+  // Add LLM suggestions for specific fields based on context
+  useEffect(() => {
+    const suggestions: Record<string, string | null> = {};
+    
+    // Amount suggestions
+    if (type === 'hotel' && amount > STANDARD_RATES.HOTEL_RATE) {
+      suggestions.amount = `Hotel expense exceeds the standard rate of $${STANDARD_RATES.HOTEL_RATE}. Consider explaining the reason.`;
+    } else if (type === 'meals' && amount > STANDARD_RATES.MEALS_RATE) {
+      suggestions.amount = `Meal expense exceeds the standard rate of $${STANDARD_RATES.MEALS_RATE}. Note if alcohol was included.`;
+    }
+    
+    // Date suggestions
+    const expenseDate = new Date(date);
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    if (expenseDate < thirtyDaysAgo) {
+      suggestions.date = `This expense is over 30 days old. Submit promptly to comply with the 60-day rule.`;
+    }
+    
+    // Merchant suggestions
+    if (merchantName && merchantName.toLowerCase().includes('amazon')) {
+      suggestions.merchantName = `For Amazon purchases, please specify what was purchased in the description.`;
+    }
+    
+    // GL Account suggestions
+    if (type === 'meals' && glAccount && glAccount !== '420100') {
+      suggestions.glAccount = `For meals, the preferred GL Account is 420100 (Meals & Entertainment).`;
+    } else if (type === 'hotel' && glAccount && glAccount !== '420200') {
+      suggestions.glAccount = `For lodging, the preferred GL Account is 420200 (Lodging Expenses).`;
+    }
+    
+    setLlmSuggestions(suggestions);
+  }, [type, amount, date, merchantName, glAccount]);
 
   const handleFieldChange = (id: string, value: any) => {
     // Update field value
@@ -147,12 +205,61 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       case 'mileageRate': setMileageRate(value); break;
       default: break;
     }
+    
+    // Check for OCR data mismatches after user input
+    if (ocrData && ['merchantName', 'amount', 'date', 'type'].includes(id)) {
+      const userData = {
+        merchantName,
+        amount,
+        date,
+        type,
+        [id]: value // Include the just-updated field
+      };
+      
+      const mismatches = detectDataMismatch(ocrData, userData);
+      setDataMismatches(mismatches);
+      
+      if (mismatches && !showMismatchDialog) {
+        setShowMismatchDialog(true);
+      }
+    }
   };
 
-  const handleReceiptChange = (name: string, url: string) => {
+  const handleReceiptChange = async (name: string, url: string) => {
     setReceiptName(name);
     setReceiptUrl(url);
     toast.success(`Receipt ${name} uploaded successfully`);
+    
+    // Extract OCR data from receipt
+    try {
+      toast.loading('Extracting data from receipt...');
+      const extractedData = await extractDataFromReceipt(url);
+      setOcrData(extractedData);
+      toast.dismiss();
+      toast.success('Receipt data extracted');
+      
+      // Check for mismatches between OCR and user data
+      const userData = {
+        merchantName,
+        amount,
+        date,
+        type
+      };
+      
+      const mismatches = detectDataMismatch(extractedData, userData);
+      setDataMismatches(mismatches);
+      
+      if (mismatches) {
+        setShowMismatchDialog(true);
+      } else {
+        // If no mismatches and fields are empty, update with OCR data
+        handleOcrDataExtracted(extractedData);
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error('Failed to extract data from receipt');
+      console.error('OCR extraction error:', error);
+    }
   };
 
   const handleOcrDataExtracted = (data: any) => {
@@ -174,6 +281,20 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     }
   };
 
+  const handleAcceptOcrData = (field: string, value: any) => {
+    handleFieldChange(field, value);
+    
+    // Update the mismatches list to remove the resolved mismatch
+    if (dataMismatches) {
+      const updatedMismatches = dataMismatches.filter(mismatch => mismatch.field !== field);
+      setDataMismatches(updatedMismatches.length > 0 ? updatedMismatches : null);
+      
+      if (updatedMismatches.length === 0) {
+        setShowMismatchDialog(false);
+      }
+    }
+  };
+
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -191,63 +312,12 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      setReceiptName(file.name);
-      const newReceiptUrl = `receipt-${Date.now()}`;
-      setReceiptUrl(newReceiptUrl);
-      toast.success(`Receipt ${file.name} uploaded successfully`);
-      
-      // Simulate OCR extraction
-      setTimeout(() => {
-        handleOcrDataExtracted({
-          merchantName: 'Sample Merchant',
-          amount: 142.50,
-          date: new Date().toISOString().split('T')[0],
-          type: 'meals'
-        });
-        toast.success('Receipt data extracted');
-      }, 1500);
+      handleReceiptChange(file.name, `receipt-${Date.now()}`);
     }
   };
 
   const validateForm = (): boolean => {
-    // Validate required fields
-    let hasErrors = false;
-    
-    // Create a map of field validation functions
-    const fieldValidations: Record<string, () => string | null> = {
-      amount: () => validateAndSetFieldError('amount', amount),
-      date: () => validateAndSetFieldError('date', date),
-      merchantName: () => validateAndSetFieldError('merchantName', merchantName),
-      glAccount: () => needsGlAccount ? validateAndSetFieldError('glAccount', glAccount) : null,
-      miles: () => isMileage ? validateAndSetFieldError('miles', miles) : null,
-    };
-    
-    // Run all validations
-    Object.values(fieldValidations).forEach(validate => {
-      const error = validate();
-      if (error) hasErrors = true;
-    });
-    
-    // Additional required field checks
-    if (!costCenter) {
-      showFieldError("Cost center is required");
-      hasErrors = true;
-    }
-    
-    if (!wbs) {
-      showFieldError("WBS is required");
-      hasErrors = true;
-    }
-    
-    if (!description) {
-      showFieldError("Description is required");
-      hasErrors = true;
-    }
-
-    // If there are programmatic errors, don't proceed
-    if (hasErrors) return false;
-    
-    // Perform LLM-based validations
+    // Create the expense object
     const expense: ExpenseLineItemFormData = {
       id: editingItem?.id || `item-${Date.now()}`,
       type,
@@ -276,10 +346,20 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       mileageRate: isMileage ? mileageRate : undefined,
     };
     
-    const warnings = performLLMValidation(expense);
-    if (warnings.length > 0) {
-      setValidationWarnings(warnings);
-      return false;
+    // Get all validations
+    const validations = getAllValidations(expense);
+    
+    setValidationWarnings({
+      programmaticErrors: validations.programmaticErrors,
+      llmWarnings: validations.llmWarnings
+    });
+    
+    // Show validation warnings dialog
+    if (validations.programmaticErrors.length > 0 || validations.llmWarnings.length > 0) {
+      setShowValidationWarnings(true);
+      
+      // In testing mode, we allow submission even with warnings but not with errors
+      return !validations.hasErrors;
     }
     
     return true;
@@ -306,7 +386,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       glAccount: needsGlAccount ? glAccount : undefined,
       zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
       city: (isHotelOrLodging || isMeals) ? city : undefined,
-      mealsRate: (isHotelOrLodging || isMeals) ? mealsRate : undefined,
+      mealsRate: (isMeals) ? mealsRate : undefined,
       hotelRate: isHotelOrLodging ? hotelRate : undefined,
       throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
       perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
@@ -317,10 +397,76 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     });
   };
 
+  // For live validation status
+  useEffect(() => {
+    const expense: ExpenseLineItemFormData = {
+      id: editingItem?.id || `item-${Date.now()}`,
+      type,
+      amount,
+      date,
+      description,
+      receiptUrl,
+      receiptName,
+      merchantName,
+      account,
+      accountName,
+      costCenter,
+      costCenterName,
+      wbs,
+      notes,
+      glAccount: needsGlAccount ? glAccount : undefined,
+      zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
+      city: (isHotelOrLodging || isMeals) ? city : undefined,
+      mealsRate: (isMeals) ? mealsRate : undefined,
+      hotelRate: isHotelOrLodging ? hotelRate : undefined,
+      throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
+      perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
+      departureTime: isMeals ? departureTime : undefined,
+      returnTime: isMeals ? returnTime : undefined,
+      miles: isMileage ? miles : undefined,
+      mileageRate: isMileage ? mileageRate : undefined,
+    };
+    
+    const validations = getAllValidations(expense);
+    
+    // Only update if there are errors or warnings
+    if (validations.programmaticErrors.length > 0 || validations.llmWarnings.length > 0) {
+      setValidationWarnings({
+        programmaticErrors: validations.programmaticErrors,
+        llmWarnings: validations.llmWarnings
+      });
+    }
+  }, [type, amount, date, description, merchantName, glAccount, miles]);
+
   return (
     <div className="flex h-full">
       {/* Left side - Form */}
-      <div className="w-3/5 h-full px-4 py-3">
+      <div className="w-3/5 h-full px-4 py-3 relative">
+        <div className="mb-3 flex items-center">
+          <div className="flex-1" />
+          <div className="flex items-center gap-3">
+            {validationWarnings.programmaticErrors.length > 0 && (
+              <div className="flex items-center text-xs bg-red-50 text-red-600 py-1 px-2 rounded-full">
+                <AlertCircle className="h-3.5 w-3.5 mr-1" />
+                {validationWarnings.programmaticErrors.length} issue{validationWarnings.programmaticErrors.length !== 1 ? 's' : ''}
+              </div>
+            )}
+            {validationWarnings.llmWarnings.length > 0 && (
+              <div className="flex items-center text-xs bg-amber-50 text-amber-600 py-1 px-2 rounded-full">
+                <Zap className="h-3.5 w-3.5 mr-1" />
+                {validationWarnings.llmWarnings.length} suggestion{validationWarnings.llmWarnings.length !== 1 ? 's' : ''}
+              </div>
+            )}
+            <button 
+              onClick={() => setShowValidationPanel(prev => !prev)}
+              className="text-xs flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 py-1 px-2 rounded-full"
+            >
+              <FileCheck className="h-3.5 w-3.5" />
+              Validation panel
+            </button>
+          </div>
+        </div>
+        
         <ScrollArea className="h-[calc(100vh-140px)]">
           <div className="pr-4">
             {/* Expense Type Selector */}
@@ -336,6 +482,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               onChange={handleFieldChange}
               isAmountDisabled={type === 'mileage'}
               fieldErrors={fieldErrors}
+              llmSuggestions={llmSuggestions}
             />
 
             {/* Type-specific Fields */}
@@ -344,6 +491,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
                 values={formValues} 
                 onChange={handleFieldChange} 
                 error={fieldErrors.glAccount}
+                llmSuggestion={llmSuggestions.glAccount}
               />
             )}
             
@@ -351,6 +499,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               <HotelFields 
                 values={formValues} 
                 onChange={handleFieldChange} 
+                llmSuggestions={llmSuggestions}
               />
             )}
             
@@ -358,6 +507,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               <MealsFields 
                 values={formValues} 
                 onChange={handleFieldChange} 
+                llmSuggestions={llmSuggestions}
               />
             )}
             
@@ -366,6 +516,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
                 values={formValues} 
                 onChange={handleFieldChange} 
                 error={fieldErrors.miles}
+                llmSuggestions={llmSuggestions}
               />
             )}
 
@@ -417,13 +568,34 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         </DialogContent>
       </Dialog>
       
+      {/* Data Mismatch Dialog */}
+      <DataMismatchAlert
+        mismatches={dataMismatches}
+        isOpen={showMismatchDialog}
+        onClose={() => setShowMismatchDialog(false)}
+        onAcceptOcrData={handleAcceptOcrData}
+      />
+      
       {/* Validation Warnings Dialog */}
-      {validationWarnings.length > 0 && (
+      {showValidationWarnings && (
         <ValidationWarnings 
-          warnings={validationWarnings} 
-          onClose={() => setValidationWarnings([])} 
+          programmaticErrors={validationWarnings.programmaticErrors}
+          llmWarnings={validationWarnings.llmWarnings}
+          onClose={() => setShowValidationWarnings(false)}
+          onProceed={() => {
+            setShowValidationWarnings(false);
+            handleSave();
+          }}
         />
       )}
+      
+      {/* Validation Summary Panel */}
+      <ValidationSummaryPanel
+        programmaticErrors={validationWarnings.programmaticErrors}
+        llmWarnings={validationWarnings.llmWarnings}
+        isVisible={showValidationPanel}
+        toggleVisibility={() => setShowValidationPanel(prev => !prev)}
+      />
     </div>
   );
 };

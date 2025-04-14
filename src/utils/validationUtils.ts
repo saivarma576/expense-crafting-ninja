@@ -81,7 +81,65 @@ export const performLLMValidation = (expense: ExpenseLineItemFormData): string[]
     warnings.push('This expense is over 30 days old. Submit promptly to comply with the 60-day rule.');
   }
   
+  // Add more LLM-simulated validations
+  if (expense.type === 'hotel' && !expense.zipCode) {
+    warnings.push('Please provide the zip code for your lodging to verify per diem rates for the area.');
+  }
+  
+  if (expense.amount > 300 && expense.description && expense.description.length < 20) {
+    warnings.push('High-value expenses require more detailed descriptions. Please elaborate on the business purpose.');
+  }
+  
+  if (expense.type === 'meals' && expense.amount > 50 && (!expense.notes || expense.notes.length < 10)) {
+    warnings.push('Please indicate if any alcohol was included in this meal expense and who attended.');
+  }
+  
   return warnings;
+};
+
+// Get both programmatic and LLM validations for displaying in the summary panel
+export const getAllValidations = (expense: ExpenseLineItemFormData) => {
+  // Get programmatic errors
+  const programmaticErrors: {field: string, error: string}[] = [];
+  
+  // Check required fields
+  const requiredFields: {field: string, label: string}[] = [
+    {field: 'amount', label: 'Amount'},
+    {field: 'date', label: 'Date'},
+    {field: 'merchantName', label: 'Merchant name'},
+    {field: 'description', label: 'Description'},
+  ];
+  
+  // Add conditional required fields
+  if (['transport', 'auditing', 'baggage', 'business_meals', 
+       'subscriptions', 'gasoline', 'office_supplies', 'other', 
+       'parking', 'postage', 'professional_fees', 'registration', 'rental'].includes(expense.type)) {
+    requiredFields.push({field: 'glAccount', label: 'GL Account'});
+  }
+  
+  if (expense.type === 'mileage') {
+    requiredFields.push({field: 'miles', label: 'Miles'});
+  }
+  
+  // Validate all required fields
+  requiredFields.forEach(({field, label}) => {
+    // @ts-ignore
+    const value = expense[field];
+    const error = validateField(field, value);
+    if (error) {
+      programmaticErrors.push({field, error});
+    }
+  });
+  
+  // Get LLM warnings
+  const llmWarnings = performLLMValidation(expense);
+  
+  return {
+    programmaticErrors,
+    llmWarnings,
+    hasErrors: programmaticErrors.length > 0,
+    hasWarnings: llmWarnings.length > 0
+  };
 };
 
 // Display programmatic validation errors

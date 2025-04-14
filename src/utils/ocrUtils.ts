@@ -24,16 +24,40 @@ export const detectDataMismatch = (ocrData: any, userData: any) => {
   
   if (ocrData.merchantName && userData.merchantName && 
       ocrData.merchantName !== userData.merchantName) {
-    mismatches.push('merchant name');
+    mismatches.push({
+      field: 'merchantName', 
+      ocrValue: ocrData.merchantName, 
+      userValue: userData.merchantName,
+      message: `Receipt shows merchant "${ocrData.merchantName}" but you entered "${userData.merchantName}"`
+    });
   }
   
   if (ocrData.amount && userData.amount && 
       Math.abs(ocrData.amount - userData.amount) > 0.01) {
-    mismatches.push('amount');
+    mismatches.push({
+      field: 'amount', 
+      ocrValue: ocrData.amount, 
+      userValue: userData.amount,
+      message: `Receipt shows amount $${ocrData.amount.toFixed(2)} but you entered $${userData.amount.toFixed(2)}`
+    });
   }
   
   if (ocrData.date && userData.date && ocrData.date !== userData.date) {
-    mismatches.push('date');
+    mismatches.push({
+      field: 'date', 
+      ocrValue: ocrData.date, 
+      userValue: userData.date,
+      message: `Receipt shows date ${ocrData.date} but you entered ${userData.date}`
+    });
+  }
+  
+  if (ocrData.type && userData.type && ocrData.type !== userData.type) {
+    mismatches.push({
+      field: 'type', 
+      ocrValue: ocrData.type, 
+      userValue: userData.type,
+      message: `Receipt suggests expense type "${ocrData.type}" but you selected "${userData.type}"`
+    });
   }
   
   return mismatches.length > 0 ? mismatches : null;
