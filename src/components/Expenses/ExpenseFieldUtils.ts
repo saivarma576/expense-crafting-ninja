@@ -83,22 +83,22 @@ export const STANDARD_RATES = {
   MILEAGE_RATE: 0.7
 };
 
-// Expense type map for display
+// Expense type map for display - ordered according to priority
 export const EXPENSE_TYPE_DISPLAY = {
-  transport: 'Air/Taxi/Uber',
-  auditing: 'Auditing Serv Fees',
-  baggage: 'Baggage Fees',
-  business_meals: 'Business Meals',
-  subscriptions: 'Dues Subscriptions',
-  gasoline: 'Gasoline',
-  hotel: 'Hotel/Lodging',
-  meals: 'Meals',
   mileage: 'Mileage',
-  office_supplies: 'Office Supplies',
+  meals: 'Meals',
   other: 'Others',
-  parking: 'Parking/Tolls',
-  postage: 'Postage & Freight',
   professional_fees: 'Professional Fees',
+  hotel: 'Hotel/Lodging',
+  parking: 'Parking/Tolls',
+  transport: 'Air/Taxi/Uber',
+  business_meals: 'Business Meals',
   registration: 'Registration Fees',
+  baggage: 'Baggage Fees',
+  subscriptions: 'Dues Subscriptions',
+  postage: 'Postage & Freight',
+  gasoline: 'Gasoline',
+  office_supplies: 'Office Supplies',
   rental: 'Rental Car',
+  auditing: 'Auditing Serv Fees',
 };
