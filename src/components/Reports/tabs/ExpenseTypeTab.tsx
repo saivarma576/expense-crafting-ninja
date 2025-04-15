@@ -128,19 +128,19 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
                         {type.name}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">₹{type.value.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">${type.value.toLocaleString()}</TableCell>
                     <TableCell className="text-right">{type.percentage}%</TableCell>
-                    <TableCell className="text-right">₹{type.avgClaim.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">${type.avgClaim.toLocaleString()}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50">
                   <TableCell className="font-bold">Total</TableCell>
                   <TableCell className="text-right font-bold">
-                    ₹{totalAmount.toLocaleString()}
+                    ${totalAmount.toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right font-bold">100%</TableCell>
                   <TableCell className="text-right font-bold">
-                    ₹{overallAvgClaim.toLocaleString()}
+                    ${overallAvgClaim.toLocaleString()}
                   </TableCell>
                 </TableRow>
               </TableBody>

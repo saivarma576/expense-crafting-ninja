@@ -115,7 +115,7 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
               <TableHead>Employee</TableHead>
               <TableHead>Expense Number</TableHead>
               <TableHead>Creation Date</TableHead>
-              <TableHead className="text-right">Amount (₹)</TableHead>
+              <TableHead className="text-right">Amount ($)</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -128,7 +128,7 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
                   <TableCell>{expense.employee}</TableCell>
                   <TableCell>{expense.expenseNumber}</TableCell>
                   <TableCell>{expense.date}</TableCell>
-                  <TableCell className="text-right">{expense.amount.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
                   <TableCell>
                     <Badge variant={
                       expense.status === 'Approved' ? 'success' : 
