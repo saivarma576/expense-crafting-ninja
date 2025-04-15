@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -36,7 +35,7 @@ import {
   FileSpreadsheet, 
   FileText, 
   Filter, 
-  Gas, 
+  Fuel,
   Home, 
   MapPin, 
   Pizza, 
@@ -50,7 +49,7 @@ import {
 // Mock expense summary data
 const expenseSummaryData = [
   { type: 'Lodging', amount: 8702.00, claims: 10, avgAmount: 870.20, icon: <Home className="h-4 w-4" /> },
-  { type: 'Gasoline', amount: 2580.00, claims: 12, avgAmount: 215.00, icon: <Gas className="h-4 w-4" /> },
+  { type: 'Gasoline', amount: 2580.00, claims: 12, avgAmount: 215.00, icon: <Fuel className="h-4 w-4" /> },
   { type: 'Meals', amount: 1930.00, claims: 15, avgAmount: 128.67, icon: <Pizza className="h-4 w-4" /> },
   { type: 'Mileage', amount: 3100.00, claims: 20, avgAmount: 155.00, icon: <Route className="h-4 w-4" /> },
 ];
