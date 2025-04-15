@@ -94,21 +94,21 @@ export const departmentChartData = [
 
 // Mock data for all expenses
 export const allExpensesData = [
-  { id: 'EXP001', employee: 'John Smith', date: '2025-04-05', type: 'Travel', amount: 1200, status: 'Approved' },
-  { id: 'EXP002', employee: 'Sarah Johnson', date: '2025-04-08', type: 'Office Supplies', amount: 450, status: 'Approved' },
-  { id: 'EXP003', employee: 'Michael Brown', date: '2025-04-10', type: 'Meals', amount: 85, status: 'Pending' },
-  { id: 'EXP004', employee: 'Emily Davis', date: '2025-04-12', type: 'Accommodation', amount: 650, status: 'Approved' },
-  { id: 'EXP005', employee: 'Robert Wilson', date: '2025-04-15', type: 'Travel', amount: 980, status: 'Rejected' },
-  { id: 'EXP006', employee: 'Jennifer Lee', date: '2025-04-18', type: 'Meals', amount: 120, status: 'Pending' },
-  { id: 'EXP007', employee: 'David Miller', date: '2025-03-20', type: 'Office Supplies', amount: 320, status: 'Approved' },
-  { id: 'EXP008', employee: 'Lisa Anderson', date: '2025-03-22', type: 'Travel', amount: 1500, status: 'Approved' },
-  { id: 'EXP009', employee: 'James Taylor', date: '2025-03-25', type: 'Accommodation', amount: 750, status: 'Pending' },
-  { id: 'EXP010', employee: 'Patricia Moore', date: '2025-03-28', type: 'Meals', amount: 95, status: 'Rejected' },
-  { id: 'EXP011', employee: 'Thomas Jackson', date: '2025-02-02', type: 'Travel', amount: 1100, status: 'Approved' },
-  { id: 'EXP012', employee: 'Barbara White', date: '2025-02-05', type: 'Office Supplies', amount: 280, status: 'Approved' },
-  { id: 'EXP013', employee: 'Charles Harris', date: '2025-02-08', type: 'Meals', amount: 110, status: 'Pending' },
-  { id: 'EXP014', employee: 'Susan Martin', date: '2025-02-12', type: 'Accommodation', amount: 680, status: 'Approved' },
-  { id: 'EXP015', employee: 'Joseph Thompson', date: '2025-02-15', type: 'Travel', amount: 950, status: 'Rejected' },
+  { id: 'EXP001', expenseNumber: 'EXPN-2025-001', employee: 'John Smith', date: '2025-04-05', type: 'Travel', amount: 1200, status: 'Approved' },
+  { id: 'EXP002', expenseNumber: 'EXPN-2025-002', employee: 'Sarah Johnson', date: '2025-04-08', type: 'Office Supplies', amount: 450, status: 'Approved' },
+  { id: 'EXP003', expenseNumber: 'EXPN-2025-003', employee: 'Michael Brown', date: '2025-04-10', type: 'Meals', amount: 85, status: 'Pending' },
+  { id: 'EXP004', expenseNumber: 'EXPN-2025-004', employee: 'Emily Davis', date: '2025-04-12', type: 'Accommodation', amount: 650, status: 'Approved' },
+  { id: 'EXP005', expenseNumber: 'EXPN-2025-005', employee: 'Robert Wilson', date: '2025-04-15', type: 'Travel', amount: 980, status: 'Rejected' },
+  { id: 'EXP006', expenseNumber: 'EXPN-2025-006', employee: 'Jennifer Lee', date: '2025-04-18', type: 'Meals', amount: 120, status: 'Pending' },
+  { id: 'EXP007', expenseNumber: 'EXPN-2025-007', employee: 'David Miller', date: '2025-03-20', type: 'Office Supplies', amount: 320, status: 'Approved' },
+  { id: 'EXP008', expenseNumber: 'EXPN-2025-008', employee: 'Lisa Anderson', date: '2025-03-22', type: 'Travel', amount: 1500, status: 'Approved' },
+  { id: 'EXP009', expenseNumber: 'EXPN-2025-009', employee: 'James Taylor', date: '2025-03-25', type: 'Accommodation', amount: 750, status: 'Pending' },
+  { id: 'EXP010', expenseNumber: 'EXPN-2025-010', employee: 'Patricia Moore', date: '2025-03-28', type: 'Meals', amount: 95, status: 'Rejected' },
+  { id: 'EXP011', expenseNumber: 'EXPN-2025-011', employee: 'Thomas Jackson', date: '2025-02-02', type: 'Travel', amount: 1100, status: 'Approved' },
+  { id: 'EXP012', expenseNumber: 'EXPN-2025-012', employee: 'Barbara White', date: '2025-02-05', type: 'Office Supplies', amount: 280, status: 'Approved' },
+  { id: 'EXP013', expenseNumber: 'EXPN-2025-013', employee: 'Charles Harris', date: '2025-02-08', type: 'Meals', amount: 110, status: 'Pending' },
+  { id: 'EXP014', expenseNumber: 'EXPN-2025-014', employee: 'Susan Martin', date: '2025-02-12', type: 'Accommodation', amount: 680, status: 'Approved' },
+  { id: 'EXP015', expenseNumber: 'EXPN-2025-015', employee: 'Joseph Thompson', date: '2025-02-15', type: 'Travel', amount: 950, status: 'Rejected' },
 ];
 
 // Summary stats for the cards

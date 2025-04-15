@@ -48,11 +48,11 @@ const MonthlyExpenseChart = ({ data }: { data: MonthlyExpenseData[] }) => (
         axisLine={false}
         tickLine={false}
         tick={{ fontSize: 12 }}
-        tickFormatter={(value) => `₹${value/1000}k`}
+        tickFormatter={(value) => `$${value/1000}k`}
       />
       <RechartsTooltip 
-        formatter={(value: any) => [`₹${value.toLocaleString()}`, 'Total Expenses']}
-        labelFormatter={(label) => `Month: ${label}`}
+        formatter={(value: any) => [`$${value.toLocaleString()}`, 'Total Expenses']}
+        labelFormatter={(label) => `${label}`}
       />
       <Bar dataKey="totalExpenses" fill="#4f46e5" radius={[4, 4, 0, 0]} />
     </BarChart>
@@ -131,22 +131,22 @@ const MonthlySummaryTab: React.FC<MonthlySummaryTabProps> = ({
                 <TableBody>
                   {filteredMonthlyData.map((month) => (
                     <TableRow key={month.month}>
-                      <TableCell className="font-medium">{month.month}</TableCell>
-                      <TableCell className="text-right">₹{month.totalExpenses.toLocaleString()}</TableCell>
+                      <TableCell className="font-medium">{month.month} 2025</TableCell>
+                      <TableCell className="text-right">${month.totalExpenses.toLocaleString()}</TableCell>
                       <TableCell className="text-right">{month.reports}</TableCell>
-                      <TableCell className="text-right">₹{month.avgAmount.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">${month.avgAmount.toLocaleString()}</TableCell>
                     </TableRow>
                   ))}
                   <TableRow className="bg-muted/50">
                     <TableCell className="font-bold">Total</TableCell>
                     <TableCell className="text-right font-bold">
-                      ₹{totalExpenses.toLocaleString()}
+                      ${totalExpenses.toLocaleString()}
                     </TableCell>
                     <TableCell className="text-right font-bold">
                       {totalReports}
                     </TableCell>
                     <TableCell className="text-right font-bold">
-                      ₹{avgExpense.toLocaleString()}
+                      ${avgExpense.toLocaleString()}
                     </TableCell>
                   </TableRow>
                 </TableBody>

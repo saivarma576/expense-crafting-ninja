@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -77,7 +76,7 @@ const DepartmentStackedBarChart = ({ data }: { data: DepartmentChartData[] }) =>
       <YAxis 
         axisLine={false}
         tickLine={false}
-        tickFormatter={(value) => `₹${value/1000}k`}
+        tickFormatter={(value) => `$${value/1000}k`}
       />
       <RechartsTooltip />
       <Legend />
@@ -95,6 +94,20 @@ const DepartmentWiseTab: React.FC<DepartmentWiseTabProps> = ({
   departmentFilter, 
   setDepartmentFilter 
 }) => {
+  // Calculate avg expense per report for each department
+  const departmentsWithAvg = departmentData.map(dept => {
+    // Assuming each department has approximately the same number of reports
+    // In a real app, you'd have actual report counts per department
+    const reportsCount = Math.round(dept.totalExpense / 500); // Simplified calculation
+    const avgExpense = reportsCount > 0 ? Math.round(dept.totalExpense / reportsCount) : 0;
+    
+    return {
+      ...dept,
+      reportsCount,
+      avgExpense
+    };
+  });
+  
   return (
     <Card>
       <CardHeader>
@@ -117,7 +130,7 @@ const DepartmentWiseTab: React.FC<DepartmentWiseTabProps> = ({
           </Select>
         </div>
         <CardDescription>
-          Expense distribution across departments and expense types
+          Expense distribution across departments
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -129,37 +142,36 @@ const DepartmentWiseTab: React.FC<DepartmentWiseTabProps> = ({
           <TableHeader>
             <TableRow>
               <TableHead>Department</TableHead>
-              <TableHead className="text-right">Total Expense</TableHead>
-              <TableHead>Top Expense Type</TableHead>
-              <TableHead className="text-right">Policy Violations</TableHead>
+              <TableHead className="text-right">Total Expense ($)</TableHead>
+              <TableHead className="text-right">Reports</TableHead>
+              <TableHead className="text-right">Avg. Expense per Report ($)</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {departmentData
+            {departmentsWithAvg
               .filter(dept => departmentFilter === 'all' || departmentFilter === dept.department.toLowerCase())
               .map((dept) => (
               <TableRow key={dept.department}>
                 <TableCell className="font-medium">{dept.department}</TableCell>
-                <TableCell className="text-right">₹{dept.totalExpense.toLocaleString()}</TableCell>
-                <TableCell>{dept.topExpenseType}</TableCell>
-                <TableCell className="text-right">
-                  {dept.violations > 0 ? (
-                    <Badge variant="destructive">{dept.violations}</Badge>
-                  ) : (
-                    <Badge variant="success">0</Badge>
-                  )}
-                </TableCell>
+                <TableCell className="text-right">{dept.totalExpense.toLocaleString()}</TableCell>
+                <TableCell className="text-right">{dept.reportsCount}</TableCell>
+                <TableCell className="text-right">${dept.avgExpense.toLocaleString()}</TableCell>
               </TableRow>
             ))}
             {departmentFilter === 'all' && (
               <TableRow className="bg-muted/50">
                 <TableCell className="font-bold">Total</TableCell>
                 <TableCell className="text-right font-bold">
-                  ₹{departmentData.reduce((sum, item) => sum + item.totalExpense, 0).toLocaleString()}
+                  ${departmentsWithAvg.reduce((sum, item) => sum + item.totalExpense, 0).toLocaleString()}
                 </TableCell>
-                <TableCell className="font-bold">-</TableCell>
                 <TableCell className="text-right font-bold">
-                  {departmentData.reduce((sum, item) => sum + item.violations, 0)}
+                  {departmentsWithAvg.reduce((sum, item) => sum + item.reportsCount, 0)}
+                </TableCell>
+                <TableCell className="text-right font-bold">
+                  ${Math.round(
+                    departmentsWithAvg.reduce((sum, item) => sum + (item.totalExpense), 0) / 
+                    departmentsWithAvg.reduce((sum, item) => sum + item.reportsCount, 0)
+                  ).toLocaleString()}
                 </TableCell>
               </TableRow>
             )}
