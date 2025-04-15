@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Calendar,
   Filter,
@@ -12,7 +12,8 @@ import {
   LineChart,
   FileSpreadsheet,
   BarChart4,
-  BarChartHorizontal
+  BarChartHorizontal,
+  Sparkles
 } from 'lucide-react';
 import {
   Card,
@@ -203,7 +204,21 @@ const Reports: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Reports</h1>
+        <div>
+          <h1 className="text-2xl font-semibold">Reports</h1>
+          <div className="flex items-center gap-2 mt-1">
+            <Link to="/reports-v2">
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-1.5 border-dashed"
+              >
+                <Sparkles className="h-4 w-4 text-amber-500" />
+                Try Modern Reports V2
+                <Badge variant="secondary" className="ml-2 text-xs">New</Badge>
+              </Button>
+            </Link>
+          </div>
+        </div>
         <div className="flex items-center gap-2">
           <Select value={timePeriod} onValueChange={setTimePeriod}>
             <SelectTrigger className="w-[180px]">
@@ -227,7 +242,6 @@ const Reports: React.FC = () => {
       </div>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Expense Spend Reports */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -250,7 +264,6 @@ const Reports: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Compliance Reports */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -273,7 +286,6 @@ const Reports: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Operational Reports */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -296,7 +308,6 @@ const Reports: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Travel Reports */}
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -320,7 +331,6 @@ const Reports: React.FC = () => {
         </Card>
       </div>
       
-      {/* Scheduled Reports */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
