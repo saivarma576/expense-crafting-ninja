@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShieldAlert, ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, CircleAlert, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, CircleAlert, AlertTriangle, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -83,9 +83,12 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
             {hasErrors ? (
               <ShieldX className="h-6 w-6 text-red-500" />
             ) : (
-              <ShieldCheck className="h-6 w-6 text-green-500" />
+              <div className="relative">
+                <Brain className="h-6 w-6 text-blue-500" />
+                <Zap className="h-3 w-3 text-amber-400 absolute -top-1 -right-1" />
+              </div>
             )}
-            Policy Compliance Check
+            Scanning for Violations
           </DialogTitle>
         </DialogHeader>
         
@@ -115,7 +118,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                     className="transition-all duration-300 ease-out"
                   />
                 </svg>
-                <ShieldCheck className="absolute w-14 h-14 text-blue-600 animate-pulse" />
+                <Brain className="absolute w-14 h-14 text-blue-600 animate-pulse" />
               </div>
               <p className="text-gray-600 font-medium mt-4">Analyzing expense report...</p>
               <div className="text-gray-500 text-sm text-center max-w-sm">
@@ -249,15 +252,13 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
             Review & Fix
           </Button>
           
-          {!hasErrors && (
-            <Button
-              onClick={onContinueAnyway}
-              disabled={isAnalyzing}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Continue Anyway
-            </Button>
-          )}
+          <Button
+            onClick={onContinueAnyway}
+            disabled={isAnalyzing}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Continue Anyway
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

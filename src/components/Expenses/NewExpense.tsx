@@ -23,7 +23,7 @@ import DateRangeSelection from './CreateExpense/DateRangeSelection';
 import MealSelection from './CreateExpense/MealSelection';
 import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
-import ExpenseAIDrawer from './ExpenseAIDrawer';
+import AIChatDrawer from './AIChatDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 
 const initialLineItems = [
@@ -453,7 +453,7 @@ const NewExpense: React.FC = () => {
         violations={policyViolations}
       />
       
-      <ExpenseAIDrawer
+      <AIChatDrawer
         isOpen={showAIChat}
         onClose={() => setShowAIChat(false)}
         context="Expense report for business travel with meal expenses and hotel stays."
