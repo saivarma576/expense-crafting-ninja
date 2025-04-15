@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PieChart } from 'lucide-react';
+import { PieChart, FileText, DollarSign, FileBarChart, Percent } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -87,10 +87,21 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
   const totalAmount = hasData ? 
     expenseTypeData.reduce((sum, item) => sum + item.value, 0) : 0;
   
-  const totalClaims = hasData ?
-    expenseTypeData.reduce((sum, item) => sum + (item.value / item.avgClaim), 0) : 0;
+  // Calculate total reports count (using avgClaim to estimate)
+  const totalReports = hasData ?
+    expenseTypeData.reduce((sum, item) => sum + Math.round(item.value / item.avgClaim), 0) : 0;
   
-  const overallAvgClaim = totalClaims > 0 ? Math.round(totalAmount / totalClaims) : 0;
+  // Update data to include report counts and percentages
+  const enhancedData = hasData ? 
+    expenseTypeData.map(item => {
+      const reportCount = Math.round(item.value / item.avgClaim);
+      return {
+        ...item,
+        reportCount,
+        amountPercentage: ((item.value / totalAmount) * 100).toFixed(1),
+        countPercentage: ((reportCount / totalReports) * 100).toFixed(1)
+      };
+    }) : [];
   
   return (
     <Card>
@@ -113,14 +124,40 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Expense Type</TableHead>
-                  <TableHead className="text-right">Total Amount</TableHead>
-                  <TableHead className="text-right">% of Total</TableHead>
-                  <TableHead className="text-right">Avg. Claim</TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Expense Type
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <DollarSign className="h-4 w-4" />
+                      Total Amount
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <FileBarChart className="h-4 w-4" />
+                      No. of Reports
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Percent className="h-4 w-4" />
+                      % of Amount
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Percent className="h-4 w-4" />
+                      % of Count
+                    </div>
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {expenseTypeData.map((type) => (
+                {enhancedData.map((type) => (
                   <TableRow key={type.name}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
@@ -129,8 +166,9 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
                       </div>
                     </TableCell>
                     <TableCell className="text-right">${type.value.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">{type.percentage}%</TableCell>
-                    <TableCell className="text-right">${type.avgClaim.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{type.reportCount}</TableCell>
+                    <TableCell className="text-right">{type.amountPercentage}%</TableCell>
+                    <TableCell className="text-right">{type.countPercentage}%</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50">
@@ -138,9 +176,14 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
                   <TableCell className="text-right font-bold">
                     ${totalAmount.toLocaleString()}
                   </TableCell>
-                  <TableCell className="text-right font-bold">100%</TableCell>
                   <TableCell className="text-right font-bold">
-                    ${overallAvgClaim.toLocaleString()}
+                    {totalReports}
+                  </TableCell>
+                  <TableCell className="text-right font-bold">
+                    100%
+                  </TableCell>
+                  <TableCell className="text-right font-bold">
+                    100%
                   </TableCell>
                 </TableRow>
               </TableBody>
