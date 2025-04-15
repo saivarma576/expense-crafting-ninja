@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, CircleAlert, AlertTriangle, Brain } from 'lucide-react';
+import { ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, CircleAlert, AlertTriangle, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +32,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
   violations
 }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [analysisProgress, setAnalysisProgress] = useState(0);
   
   // Get unique categories
@@ -64,8 +64,8 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
     }
   }, [open]);
   
-  const filteredViolations = activeCategory 
-    ? violations.filter(v => v.category === activeCategory)
+  const filteredViolations = selectedCategory 
+    ? violations.filter(v => v.category === selectedCategory)
     : violations;
   
   const hasErrors = violations.some(v => v.violationType === 'error');
@@ -77,8 +77,8 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={() => !isAnalyzing && onClose()}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[85vh] flex flex-col">
-        <DialogHeader className="p-6 pb-2">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[85vh] flex flex-col bg-gradient-to-br from-white to-gray-50">
+        <DialogHeader className="p-6 pb-2 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl font-semibold">
             {hasErrors ? (
               <ShieldX className="h-6 w-6 text-red-500" />
@@ -135,49 +135,59 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
               </div>
             </div>
           ) : (
-            <>
-              <div className="p-6 pb-0">
-                <div className="mb-4 flex flex-wrap gap-2">
-                  <Button 
-                    size="sm" 
-                    variant={activeCategory === null ? "default" : "outline"}
-                    onClick={() => setActiveCategory(null)}
-                    className="rounded-full text-xs h-7 px-3"
-                  >
-                    All ({violations.length})
-                  </Button>
-                  {categories.map(category => (
-                    <Button
-                      key={category}
-                      size="sm"
-                      variant={activeCategory === category ? "default" : "outline"}
-                      onClick={() => setActiveCategory(category)}
-                      className="rounded-full text-xs h-7 px-3"
-                    >
-                      {category} ({violations.filter(v => v.category === category).length})
-                    </Button>
-                  ))}
-                </div>
-                
-                <div className="flex items-center justify-between mb-3 text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <FileBarChart className="h-4 w-4" />
-                    <span>{violations.length} items analyzed</span>
+            <div className="p-4">
+              {/* Violation Statistics */}
+              <div className="flex items-center justify-between mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <div className="flex items-center gap-3">
+                  <div className="bg-blue-100 p-2 rounded-full">
+                    <FileBarChart className="h-5 w-5 text-blue-600" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1">
-                      <CircleAlert className="h-3 w-3 text-red-500" />
+                  <div>
+                    <h3 className="font-medium text-blue-900">Analysis Complete</h3>
+                    <p className="text-sm text-blue-700">{violations.length} items analyzed</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1 bg-red-50 px-2 py-1 rounded-full">
+                    <CircleAlert className="h-3.5 w-3.5 text-red-500" />
+                    <span className="text-xs font-medium text-red-600">
                       {violations.filter(v => v.violationType === 'error').length} Errors
                     </span>
-                    <span className="flex items-center gap-1">
-                      <AlertTriangle className="h-3 w-3 text-amber-500" />
+                  </div>
+                  <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-full">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="text-xs font-medium text-amber-600">
                       {violations.filter(v => v.violationType === 'warning').length} Warnings
                     </span>
                   </div>
                 </div>
               </div>
               
-              <div className="px-6 pb-6 space-y-3">
+              {/* Category Filters */}
+              <div className="mb-4 flex flex-wrap gap-2 px-2">
+                <Button 
+                  size="sm" 
+                  variant={selectedCategory === null ? "default" : "outline"}
+                  onClick={() => setSelectedCategory(null)}
+                  className="rounded-full text-xs h-7 px-3"
+                >
+                  All Issues ({violations.length})
+                </Button>
+                {categories.map(category => (
+                  <Button
+                    key={category}
+                    size="sm"
+                    variant={selectedCategory === category ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category)}
+                    className="rounded-full text-xs h-7 px-3"
+                  >
+                    {category} ({violations.filter(v => v.category === category).length})
+                  </Button>
+                ))}
+              </div>
+              
+              {/* Violations List */}
+              <div className="space-y-3 mt-4">
                 {filteredViolations.length > 0 ? (
                   filteredViolations.map((violation, index) => (
                     <motion.div
@@ -185,7 +195,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2, delay: index * 0.05 }}
-                      className={`p-3 rounded-lg border ${
+                      className={`p-3 rounded-lg border shadow-sm ${
                         violation.violationType === 'error' 
                           ? 'bg-red-50 border-red-200' 
                           : 'bg-amber-50 border-amber-200'
@@ -199,7 +209,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                             <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5" />
                           )}
                           <div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-medium text-sm">
                                 {violation.violationType === 'error' ? (
                                   <span className="text-red-700">Error</span>
@@ -233,13 +243,13 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                     </motion.div>
                   ))
                 ) : (
-                  <div className="text-center p-6 text-gray-500">
+                  <div className="text-center p-6 text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
                     <Check className="h-10 w-10 mx-auto text-green-500 mb-2" />
-                    <p>No policy violations found in this category</p>
+                    <p>No violations found in this category</p>
                   </div>
                 )}
               </div>
-            </>
+            </div>
           )}
         </div>
         
