@@ -9,12 +9,15 @@ import {
   CheckCircle,
   TrendingUp,
   TrendingDown,
-  ArrowUpRight,
-  ArrowDownRight
 } from 'lucide-react';
 import { motion } from "framer-motion";
-import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import StatCard from '../ui/StatCard';
+import { AreaChart, Area, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts';
+import { 
+  Tooltip as UITooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 interface StatsCardsProps {
   totalExpenses: number;
@@ -23,42 +26,59 @@ interface StatsCardsProps {
   averageExpenseAmount: number;
 }
 
-// Sample mini chart data - in a real app, this would come from the backend
+// Enhanced chart data with dates and expense counts
 const miniChartData = [
-  { name: 'Jan', value: 10 },
-  { name: 'Feb', value: 15 },
-  { name: 'Mar', value: 13 },
-  { name: 'Apr', value: 17 },
-  { name: 'May', value: 20 },
-  { name: 'Jun', value: 19 },
+  { name: 'Mon', value: 10, date: 'April 8', expenses: 12 },
+  { name: 'Tue', value: 15, date: 'April 9', expenses: 15 },
+  { name: 'Wed', value: 13, date: 'April 10', expenses: 13 },
+  { name: 'Thu', value: 17, date: 'April 11', expenses: 18 },
+  { name: 'Fri', value: 20, date: 'April 12', expenses: 22 },
+  { name: 'Sat', value: 19, date: 'April 13', expenses: 20 },
+  { name: 'Sun', value: 22, date: 'April 14', expenses: 24 },
 ];
 
 const pendingChartData = [
-  { name: 'Jan', value: 7 },
-  { name: 'Feb', value: 9 },
-  { name: 'Mar', value: 12 },
-  { name: 'Apr', value: 10 },
-  { name: 'May', value: 8 },
-  { name: 'Jun', value: 11 },
+  { name: 'Mon', value: 7, date: 'April 8', expenses: 8 },
+  { name: 'Tue', value: 9, date: 'April 9', expenses: 10 },
+  { name: 'Wed', value: 12, date: 'April 10', expenses: 13 },
+  { name: 'Thu', value: 10, date: 'April 11', expenses: 11 },
+  { name: 'Fri', value: 8, date: 'April 12', expenses: 9 },
+  { name: 'Sat', value: 11, date: 'April 13', expenses: 12 },
+  { name: 'Sun', value: 13, date: 'April 14', expenses: 14 },
 ];
 
 const rejectedChartData = [
-  { name: 'Jan', value: 3 },
-  { name: 'Feb', value: 5 },
-  { name: 'Mar', value: 4 },
-  { name: 'Apr', value: 2 },
-  { name: 'May', value: 6 },
-  { name: 'Jun', value: 4 },
+  { name: 'Mon', value: 3, date: 'April 8', expenses: 2 },
+  { name: 'Tue', value: 5, date: 'April 9', expenses: 4 },
+  { name: 'Wed', value: 4, date: 'April 10', expenses: 3 },
+  { name: 'Thu', value: 2, date: 'April 11', expenses: 2 },
+  { name: 'Fri', value: 6, date: 'April 12', expenses: 5 },
+  { name: 'Sat', value: 4, date: 'April 13', expenses: 3 },
+  { name: 'Sun', value: 5, date: 'April 14', expenses: 4 },
 ];
 
 const paidChartData = [
-  { name: 'Jan', value: 8 },
-  { name: 'Feb', value: 12 },
-  { name: 'Mar', value: 15 },
-  { name: 'Apr', value: 14 },
-  { name: 'May', value: 17 },
-  { name: 'Jun', value: 19 },
+  { name: 'Mon', value: 8, date: 'April 8', expenses: 9 },
+  { name: 'Tue', value: 12, date: 'April 9', expenses: 13 },
+  { name: 'Wed', value: 15, date: 'April 10', expenses: 16 },
+  { name: 'Thu', value: 14, date: 'April 11', expenses: 15 },
+  { name: 'Fri', value: 17, date: 'April 12', expenses: 18 },
+  { name: 'Sat', value: 19, date: 'April 13', expenses: 20 },
+  { name: 'Sun', value: 21, date: 'April 14', expenses: 22 },
 ];
+
+// Custom tooltip component for the sparkline charts
+const CustomTooltip = ({ active, payload }: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-2 border rounded-md shadow-sm text-xs">
+        <p className="font-medium">{payload[0].payload.date}</p>
+        <p>{payload[0].payload.expenses} expenses</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const ReportStatsCards: React.FC<StatsCardsProps> = ({ 
   totalExpenses, 
@@ -98,7 +118,7 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                 +8.2%
               </Badge>
               
-              <div className="h-10 w-24 absolute bottom-0 right-0 opacity-50">
+              <div className="h-12 w-28 absolute bottom-0 right-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={miniChartData}
                     margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -108,12 +128,15 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                         <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
+                    <Tooltip content={<CustomTooltip />} />
                     <Area 
                       type="monotone" 
                       dataKey="value" 
                       stroke="#3b82f6" 
                       fillOpacity={1} 
-                      fill="url(#colorTotal)" 
+                      fill="url(#colorTotal)"
+                      isAnimationActive={true}
+                      activeDot={{ r: 3, strokeWidth: 0 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -148,7 +171,7 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                 -3.5%
               </Badge>
               
-              <div className="h-10 w-24 absolute bottom-0 right-0 opacity-50">
+              <div className="h-12 w-28 absolute bottom-0 right-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={pendingChartData}
                     margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -158,12 +181,15 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                         <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
+                    <Tooltip content={<CustomTooltip />} />
                     <Area 
                       type="monotone" 
                       dataKey="value" 
                       stroke="#f59e0b" 
                       fillOpacity={1} 
                       fill="url(#colorPending)" 
+                      isAnimationActive={true}
+                      activeDot={{ r: 3, strokeWidth: 0 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -198,7 +224,7 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                 -2.8%
               </Badge>
               
-              <div className="h-10 w-24 absolute bottom-0 right-0 opacity-50">
+              <div className="h-12 w-28 absolute bottom-0 right-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={rejectedChartData}
                     margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -208,12 +234,15 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                         <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
+                    <Tooltip content={<CustomTooltip />} />
                     <Area 
                       type="monotone" 
                       dataKey="value" 
                       stroke="#ef4444" 
                       fillOpacity={1} 
                       fill="url(#colorRejected)" 
+                      isAnimationActive={true}
+                      activeDot={{ r: 3, strokeWidth: 0 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -248,7 +277,7 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                 +5.6%
               </Badge>
               
-              <div className="h-10 w-24 absolute bottom-0 right-0 opacity-50">
+              <div className="h-12 w-28 absolute bottom-0 right-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={paidChartData}
                     margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
@@ -258,12 +287,15 @@ const ReportStatsCards: React.FC<StatsCardsProps> = ({
                         <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
+                    <Tooltip content={<CustomTooltip />} />
                     <Area 
                       type="monotone" 
                       dataKey="value" 
                       stroke="#10b981" 
                       fillOpacity={1} 
                       fill="url(#colorPaid)" 
+                      isAnimationActive={true}
+                      activeDot={{ r: 3, strokeWidth: 0 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
