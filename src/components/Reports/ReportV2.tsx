@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Import refactored components
@@ -20,27 +20,55 @@ import {
   departmentData,
   departmentChartData,
   allExpensesData,
-  summaryStats
+  summaryStats,
+  getFilteredData
 } from './ReportData';
 
 const ReportV2: React.FC = () => {
   const [timeFilter, setTimeFilter] = useState('current');
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [activeTab, setActiveTab] = useState('summary');
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Filtered data based on date range
+  const [filteredData, setFilteredData] = useState({
+    monthlyExpenseData,
+    expenseTypeData,
+    complianceInsightsData,
+    departmentData,
+    departmentChartData,
+    allExpensesData,
+    summaryStats
+  });
+
+  // Update filtered data when time filter or custom date range changes
+  useEffect(() => {
+    // Generate filtered data based on timeFilter, startDate, and endDate
+    const newFilteredData = getFilteredData(timeFilter, startDate, endDate);
+    setFilteredData(newFilteredData);
+  }, [timeFilter, startDate, endDate]);
 
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <ReportHeader timeFilter={timeFilter} setTimeFilter={setTimeFilter} />
+      <ReportHeader 
+        timeFilter={timeFilter} 
+        setTimeFilter={setTimeFilter}
+        startDate={startDate}
+        endDate={endDate}
+        onStartDateChange={setStartDate}
+        onEndDateChange={setEndDate}
+      />
       
       {/* Stats Cards Section */}
       <ReportStatsCards 
-        totalExpenses={summaryStats.totalExpenses}
-        totalReports={summaryStats.totalReports}
-        approvedReports={summaryStats.approvedReports}
-        averageExpenseAmount={summaryStats.averageExpenseAmount}
+        totalExpenses={filteredData.summaryStats.totalExpenses}
+        totalReports={filteredData.summaryStats.totalReports}
+        approvedReports={filteredData.summaryStats.approvedReports}
+        averageExpenseAmount={filteredData.summaryStats.averageExpenseAmount}
       />
       
       {/* Main Content Tabs */}
@@ -58,25 +86,25 @@ const ReportV2: React.FC = () => {
           <MonthlySummaryTab 
             timeFilter={timeFilter}
             setTimeFilter={setTimeFilter}
-            monthlyExpenseData={monthlyExpenseData}
+            monthlyExpenseData={filteredData.monthlyExpenseData}
           />
         </TabsContent>
         
         {/* Expense Type Analysis Tab */}
         <TabsContent value="types" className="space-y-6">
-          <ExpenseTypeTab expenseTypeData={expenseTypeData} />
+          <ExpenseTypeTab expenseTypeData={filteredData.expenseTypeData} />
         </TabsContent>
         
         {/* Compliance Insights Tab */}
         <TabsContent value="compliance" className="space-y-6">
-          <ComplianceInsightsTab complianceInsightsData={complianceInsightsData} />
+          <ComplianceInsightsTab complianceInsightsData={filteredData.complianceInsightsData} />
         </TabsContent>
         
         {/* Department-wise Summary Tab */}
         <TabsContent value="departments" className="space-y-6">
           <DepartmentWiseTab 
-            departmentData={departmentData}
-            departmentChartData={departmentChartData}
+            departmentData={filteredData.departmentData}
+            departmentChartData={filteredData.departmentChartData}
             departmentFilter={departmentFilter}
             setDepartmentFilter={setDepartmentFilter}
           />
@@ -85,7 +113,7 @@ const ReportV2: React.FC = () => {
         {/* All Expenses Tab */}
         <TabsContent value="all-expenses" className="space-y-6">
           <AllExpensesTab 
-            allExpensesData={allExpensesData}
+            allExpensesData={filteredData.allExpensesData}
             statusFilter={statusFilter}
             setStatusFilter={setStatusFilter}
             searchQuery={searchQuery}

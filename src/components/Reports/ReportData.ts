@@ -1,132 +1,161 @@
 
-// Monthly expense summary data
+import { subMonths, isWithinInterval, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear } from 'date-fns';
+
+// Mock data for monthly expenses
 export const monthlyExpenseData = [
-  { month: 'January 2025', totalExpenses: 120000, reports: 45, avgAmount: 2667 },
-  { month: 'February 2025', totalExpenses: 98500, reports: 38, avgAmount: 2592 },
-  { month: 'March 2025', totalExpenses: 134250, reports: 50, avgAmount: 2685 },
-  { month: 'April 2025', totalExpenses: 115750, reports: 43, avgAmount: 2692 },
-  { month: 'May 2025', totalExpenses: 142000, reports: 52, avgAmount: 2731 },
-  { month: 'June 2025', totalExpenses: 128500, reports: 48, avgAmount: 2677 }
+  { month: 'Jan', expenses: 15000 },
+  { month: 'Feb', expenses: 18000 },
+  { month: 'Mar', expenses: 22000 },
+  { month: 'Apr', expenses: 25000 },
+  { month: 'May', expenses: 21000 },
+  { month: 'Jun', expenses: 23000 },
+  { month: 'Jul', expenses: 26000 },
+  { month: 'Aug', expenses: 24000 },
+  { month: 'Sep', expenses: 29000 },
+  { month: 'Oct', expenses: 27000 },
+  { month: 'Nov', expenses: 30000 },
+  { month: 'Dec', expenses: 32000 },
 ];
 
-// Expense type analysis data
+// Mock data for expense type distribution
 export const expenseTypeData = [
-  { name: 'Lodging', value: 45000, percentage: 33.5, avgClaim: 3750, color: '#4f46e5' },
-  { name: 'Travel (Air/Uber)', value: 28000, percentage: 20.8, avgClaim: 1867, color: '#8b5cf6' },
-  { name: 'Meals', value: 18000, percentage: 13.4, avgClaim: 900, color: '#3b82f6' },
-  { name: 'Others', value: 43000, percentage: 32.3, avgClaim: 2389, color: '#06b6d4' },
+  { type: 'Travel', amount: 28000, percentage: 35 },
+  { type: 'Office Supplies', amount: 12000, percentage: 15 },
+  { type: 'Meals', amount: 18000, percentage: 22.5 },
+  { type: 'Accommodation', amount: 16000, percentage: 20 },
+  { type: 'Other', amount: 6000, percentage: 7.5 },
 ];
 
-// New compliance insights data (replacement for policy violations)
+// Mock data for compliance insights
 export const complianceInsightsData = [
-  { category: 'Missing Receipts', count: 12, trend: -2, risk: 'medium', impact: 8500 },
-  { category: 'Exceeded Limits', count: 8, trend: 3, risk: 'high', impact: 12400 },
-  { category: 'Late Submissions', count: 14, trend: -5, risk: 'low', impact: 5200 },
-  { category: 'Duplicate Claims', count: 3, trend: 0, risk: 'high', impact: 6800 },
+  { category: 'Missing Receipts', count: 24, status: 'Non-Compliant' },
+  { category: 'Over Threshold', count: 18, status: 'Non-Compliant' },
+  { category: 'Late Submission', count: 12, status: 'Warning' },
+  { category: 'Duplicate Claims', count: 5, status: 'Non-Compliant' },
+  { category: 'Incorrect Category', count: 9, status: 'Warning' },
+  { category: 'Approved', count: 136, status: 'Compliant' },
 ];
 
-// Department data
+// Mock data for department spending
 export const departmentData = [
-  { 
-    department: 'Finance', 
-    totalExpense: 62000, 
-    topExpenseType: 'Lodging', 
-    violations: 3,
-    expenses: {
-      lodging: 28000,
-      travel: 15000,
-      meals: 8000,
-      others: 11000
-    }
-  },
-  { 
-    department: 'Sales', 
-    totalExpense: 85500, 
-    topExpenseType: 'Travel', 
-    violations: 2,
-    expenses: {
-      lodging: 25000,
-      travel: 35500,
-      meals: 15000,
-      others: 10000
-    }
-  },
-  { 
-    department: 'Marketing', 
-    totalExpense: 48000, 
-    topExpenseType: 'Meals', 
-    violations: 1,
-    expenses: {
-      lodging: 12000,
-      travel: 10000,
-      meals: 18000,
-      others: 8000
-    }
-  },
-  { 
-    department: 'IT', 
-    totalExpense: 67300, 
-    topExpenseType: 'Office Supplies', 
-    violations: 0,
-    expenses: {
-      lodging: 18000,
-      travel: 14000,
-      meals: 5300,
-      others: 30000
-    }
-  },
+  { department: 'Sales', amount: 32000, count: 45, avgAmount: 711 },
+  { department: 'Marketing', amount: 28000, count: 38, avgAmount: 737 },
+  { department: 'Engineering', amount: 24000, count: 30, avgAmount: 800 },
+  { department: 'Finance', amount: 15000, count: 22, avgAmount: 682 },
+  { department: 'HR', amount: 9000, count: 15, avgAmount: 600 },
+  { department: 'Operations', amount: 12000, count: 20, avgAmount: 600 },
 ];
 
-// Department chart data
+// Mock data for department chart
 export const departmentChartData = [
-  {
-    name: 'Finance',
-    Lodging: 28000,
-    Travel: 15000,
-    Meals: 8000,
-    Others: 11000,
-  },
-  {
-    name: 'Sales',
-    Lodging: 25000,
-    Travel: 35500,
-    Meals: 15000,
-    Others: 10000,
-  },
-  {
-    name: 'Marketing',
-    Lodging: 12000,
-    Travel: 10000,
-    Meals: 18000,
-    Others: 8000,
-  },
-  {
-    name: 'IT',
-    Lodging: 18000,
-    Travel: 14000,
-    Meals: 5300,
-    Others: 30000,
-  },
+  { month: 'Jan', Sales: 3200, Marketing: 2800, Engineering: 2400, Finance: 1500, HR: 900 },
+  { month: 'Feb', Sales: 3800, Marketing: 3100, Engineering: 2600, Finance: 1700, HR: 950 },
+  { month: 'Mar', Sales: 4200, Marketing: 3500, Engineering: 2900, Finance: 1900, HR: 1050 },
+  { month: 'Apr', Sales: 3900, Marketing: 3300, Engineering: 2700, Finance: 1800, HR: 1000 },
+  { month: 'May', Sales: 4500, Marketing: 3800, Engineering: 3100, Finance: 2100, HR: 1150 },
+  { month: 'Jun', Sales: 4100, Marketing: 3600, Engineering: 2800, Finance: 2000, HR: 1100 },
 ];
 
-// All expenses data for the list view
+// Mock data for all expenses
 export const allExpensesData = [
-  { id: 'EXP-2546', employee: 'Rajesh Kumar', date: '15-Jun-25', type: 'Lodging', amount: 9500, status: 'Approved' },
-  { id: 'EXP-2545', employee: 'Meena Sharma', date: '14-Jun-25', type: 'Travel', amount: 12400, status: 'Pending' },
-  { id: 'EXP-2544', employee: 'Ajay Singh', date: '12-Jun-25', type: 'Meals', amount: 1850, status: 'Approved' },
-  { id: 'EXP-2543', employee: 'Priya Patel', date: '10-Jun-25', type: 'Equipment', amount: 24500, status: 'Rejected' },
-  { id: 'EXP-2542', employee: 'Vikram Mehta', date: '08-Jun-25', type: 'Office Supplies', amount: 3200, status: 'Approved' },
-  { id: 'EXP-2541', employee: 'Neha Gupta', date: '06-Jun-25', type: 'Travel', amount: 18700, status: 'Pending' },
-  { id: 'EXP-2540', employee: 'Sanjay Verma', date: '05-Jun-25', type: 'Lodging', amount: 8900, status: 'Approved' },
-  { id: 'EXP-2539', employee: 'Anita Desai', date: '03-Jun-25', type: 'Meals', amount: 2100, status: 'Approved' },
-  { id: 'EXP-2538', employee: 'Rahul Joshi', date: '01-Jun-25', type: 'Travel', amount: 21300, status: 'Pending' },
-  { id: 'EXP-2537', employee: 'Deepak Sharma', date: '30-May-25', type: 'Equipment', amount: 35000, status: 'Approved' },
+  { id: 'EXP001', employee: 'John Smith', date: '2025-04-05', type: 'Travel', amount: 1200, status: 'Approved' },
+  { id: 'EXP002', employee: 'Sarah Johnson', date: '2025-04-08', type: 'Office Supplies', amount: 450, status: 'Approved' },
+  { id: 'EXP003', employee: 'Michael Brown', date: '2025-04-10', type: 'Meals', amount: 85, status: 'Pending' },
+  { id: 'EXP004', employee: 'Emily Davis', date: '2025-04-12', type: 'Accommodation', amount: 650, status: 'Approved' },
+  { id: 'EXP005', employee: 'Robert Wilson', date: '2025-04-15', type: 'Travel', amount: 980, status: 'Rejected' },
+  { id: 'EXP006', employee: 'Jennifer Lee', date: '2025-04-18', type: 'Meals', amount: 120, status: 'Pending' },
+  { id: 'EXP007', employee: 'David Miller', date: '2025-03-20', type: 'Office Supplies', amount: 320, status: 'Approved' },
+  { id: 'EXP008', employee: 'Lisa Anderson', date: '2025-03-22', type: 'Travel', amount: 1500, status: 'Approved' },
+  { id: 'EXP009', employee: 'James Taylor', date: '2025-03-25', type: 'Accommodation', amount: 750, status: 'Pending' },
+  { id: 'EXP010', employee: 'Patricia Moore', date: '2025-03-28', type: 'Meals', amount: 95, status: 'Rejected' },
+  { id: 'EXP011', employee: 'Thomas Jackson', date: '2025-02-02', type: 'Travel', amount: 1100, status: 'Approved' },
+  { id: 'EXP012', employee: 'Barbara White', date: '2025-02-05', type: 'Office Supplies', amount: 280, status: 'Approved' },
+  { id: 'EXP013', employee: 'Charles Harris', date: '2025-02-08', type: 'Meals', amount: 110, status: 'Pending' },
+  { id: 'EXP014', employee: 'Susan Martin', date: '2025-02-12', type: 'Accommodation', amount: 680, status: 'Approved' },
+  { id: 'EXP015', employee: 'Joseph Thompson', date: '2025-02-15', type: 'Travel', amount: 950, status: 'Rejected' },
 ];
 
-// Summary statistics
+// Summary stats for the cards
 export const summaryStats = {
-  totalExpenses: 352500,
-  totalReports: 143,
-  approvedReports: 117,
-  averageExpenseAmount: 2466
+  totalExpenses: 120000,
+  totalReports: 204,
+  approvedReports: 167,
+  averageExpenseAmount: 588,
+};
+
+// Function to filter data based on time filter and date range
+export const getFilteredData = (
+  timeFilter: string,
+  startDate?: Date,
+  endDate?: Date
+) => {
+  const now = new Date();
+  let filterStartDate: Date;
+  let filterEndDate: Date = now;
+
+  // Determine date range based on timeFilter
+  if (timeFilter === 'custom' && startDate && endDate) {
+    filterStartDate = startDate;
+    filterEndDate = endDate;
+  } else if (timeFilter === 'previous') {
+    filterStartDate = startOfQuarter(subMonths(now, 3));
+    filterEndDate = endOfQuarter(subMonths(now, 3));
+  } else if (timeFilter === 'ytd') {
+    filterStartDate = startOfYear(now);
+  } else {
+    // Default to current quarter
+    filterStartDate = startOfQuarter(now);
+    filterEndDate = endOfQuarter(now);
+  }
+
+  // Filter expenses by date
+  const filteredExpenses = allExpensesData.filter(expense => {
+    const expenseDate = new Date(expense.date);
+    return isWithinInterval(expenseDate, { start: filterStartDate, end: filterEndDate });
+  });
+
+  // Calculate summary stats based on filtered expenses
+  const totalExpenses = filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+  const approvedExpenses = filteredExpenses.filter(expense => expense.status === 'Approved');
+  
+  const filteredSummaryStats = {
+    totalExpenses,
+    totalReports: filteredExpenses.length,
+    approvedReports: approvedExpenses.length,
+    averageExpenseAmount: filteredExpenses.length > 0 ? Math.round(totalExpenses / filteredExpenses.length) : 0,
+  };
+
+  // For this example, we're simulating filtered data for other components
+  // In a real app, you would filter each dataset based on the date range
+  
+  // Create month-filtered data for charts
+  const getMonthIndex = (monthStr: string) => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months.indexOf(monthStr);
+  };
+
+  // Filter monthly data
+  const filteredMonthlyData = monthlyExpenseData.filter(item => {
+    const itemDate = new Date(now.getFullYear(), getMonthIndex(item.month), 1);
+    return isWithinInterval(itemDate, { start: filterStartDate, end: filterEndDate });
+  });
+
+  // For other data, we'll simulate filtering by reducing amounts proportionally
+  // In a real app, you would properly filter each dataset based on dates
+  const filterRatio = filteredExpenses.length / allExpensesData.length;
+  
+  const filteredExpenseTypeData = expenseTypeData.map(item => ({
+    ...item,
+    amount: Math.round(item.amount * filterRatio)
+  }));
+
+  return {
+    monthlyExpenseData: filteredMonthlyData,
+    expenseTypeData: filteredExpenseTypeData,
+    complianceInsightsData,  // For demo, keeping original data
+    departmentData,          // For demo, keeping original data
+    departmentChartData,     // For demo, keeping original data
+    allExpensesData: filteredExpenses,
+    summaryStats: filteredSummaryStats
+  };
 };
