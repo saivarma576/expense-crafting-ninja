@@ -44,6 +44,28 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+// Format date to "26 Apr, 2025" pattern
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).replace(/\s/g, ' ');
+  } catch (e) {
+    return dateString; // Return original string if parsing fails
+  }
+};
+
+// Format currency consistently
+const formatCurrency = (amount: number) => {
+  return amount.toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
+
 // Mock expense summary data
 const expenseSummaryData = [
   { type: 'Lodging', amount: 8702.00, claims: 10, avgAmount: 870.20, icon: <Home className="h-4 w-4" /> },
@@ -197,15 +219,15 @@ const ExpenseReportTables: React.FC = () => {
                       </div>
                       {item.type}
                     </TableCell>
-                    <TableCell className="text-right font-semibold">${item.amount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right font-semibold">${formatCurrency(item.amount)}</TableCell>
                     <TableCell className="text-right">{item.claims}</TableCell>
-                    <TableCell className="text-right">${item.avgAmount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.avgAmount)}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50">
                   <TableCell className="font-bold">Total</TableCell>
                   <TableCell className="text-right font-bold">
-                    ${expenseSummaryData.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
+                    ${formatCurrency(expenseSummaryData.reduce((sum, item) => sum + item.amount, 0))}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
                     {expenseSummaryData.reduce((sum, item) => sum + item.claims, 0)}
@@ -236,8 +258,8 @@ const ExpenseReportTables: React.FC = () => {
                   <TableRow key={index}>
                     <TableCell className="font-medium">{item.employee}</TableCell>
                     <TableCell>{item.city}</TableCell>
-                    <TableCell className="text-right">${item.hotelRate}</TableCell>
-                    <TableCell className="text-right">${item.conusRate}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.hotelRate)}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.conusRate)}</TableCell>
                     <TableCell>
                       {item.overLimit ? (
                         <Badge variant="destructive" className="flex items-center gap-1 w-fit">
@@ -286,12 +308,12 @@ const ExpenseReportTables: React.FC = () => {
                 {mealsPerDiemData.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{item.employee}</TableCell>
-                    <TableCell>{item.date}</TableCell>
+                    <TableCell>{formatDate(item.date)}</TableCell>
                     <TableCell>{item.city}</TableCell>
-                    <TableCell className="text-right">${item.amount}</TableCell>
-                    <TableCell className="text-right">${item.perDiemRate}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.amount)}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.perDiemRate)}</TableCell>
                     <TableCell className="text-right">
-                      {item.variance > 0 ? `+$${item.variance}` : `$${item.variance}`}
+                      {item.variance > 0 ? `+$${formatCurrency(item.variance)}` : `$${formatCurrency(item.variance)}`}
                     </TableCell>
                     <TableCell>
                       {item.variance > 0 ? (
@@ -330,10 +352,10 @@ const ExpenseReportTables: React.FC = () => {
                 {mileageReimbursementData.map((item, index) => (
                   <TableRow key={index}>
                     <TableCell className="font-medium">{item.employee}</TableCell>
-                    <TableCell>{item.date}</TableCell>
+                    <TableCell>{formatDate(item.date)}</TableCell>
                     <TableCell className="text-right">{item.miles}</TableCell>
-                    <TableCell className="text-right">${item.rateUsed.toFixed(2)}</TableCell>
-                    <TableCell className="text-right">${item.total.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.rateUsed)}</TableCell>
+                    <TableCell className="text-right">${formatCurrency(item.total)}</TableCell>
                     <TableCell>
                       {item.notes === 'OK' ? (
                         <Badge variant="success" className="flex items-center gap-1 w-fit">

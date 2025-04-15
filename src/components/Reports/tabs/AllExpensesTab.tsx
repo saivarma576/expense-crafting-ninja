@@ -19,6 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export interface ExpenseItem {
   id: string;
@@ -45,6 +54,10 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
   searchQuery,
   setSearchQuery
 }) => {
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   // Filter expenses based on status and search query
   const filteredExpenses = allExpensesData.filter(expense => {
     const matchesStatus = statusFilter === 'all' || expense.status.toLowerCase() === statusFilter.toLowerCase();
@@ -55,6 +68,23 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
     
     return matchesStatus && matchesSearch;
   });
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+  const paginatedExpenses = filteredExpenses.slice(
+    (currentPage - 1) * itemsPerPage, 
+    currentPage * itemsPerPage
+  );
+
+  // Format date to "26 Apr, 2025" pattern
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }).replace(/\s/g, ' ');
+  };
   
   // Format status for display
   const getStatusBadge = (status: string) => {
@@ -106,27 +136,30 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-hidden rounded-lg border border-muted/30">
+        <div className="rounded-md border">
           <Table>
-            <TableHeader className="bg-muted/20">
+            <TableHeader>
               <TableRow>
-                <TableHead>ID#</TableHead>
-                <TableHead>Employee</TableHead>
-                <TableHead>Expense Number</TableHead>
-                <TableHead>Creation Date</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="font-semibold">ID#</TableHead>
+                <TableHead className="font-semibold">Employee</TableHead>
+                <TableHead className="font-semibold">Expense Number</TableHead>
+                <TableHead className="font-semibold">Creation Date</TableHead>
+                <TableHead className="font-semibold text-right">Amount</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredExpenses.length > 0 ? (
-                filteredExpenses.map((expense) => (
+              {paginatedExpenses.length > 0 ? (
+                paginatedExpenses.map((expense) => (
                   <TableRow key={expense.id} className="hover:bg-muted/20">
                     <TableCell className="font-medium">{expense.id}</TableCell>
                     <TableCell>{expense.employee}</TableCell>
                     <TableCell>{expense.expenseNumber}</TableCell>
-                    <TableCell>{expense.date}</TableCell>
-                    <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                    <TableCell>{formatDate(expense.date)}</TableCell>
+                    <TableCell className="text-right">${expense.amount.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2
+                    })}</TableCell>
                     <TableCell>{getStatusBadge(expense.status)}</TableCell>
                   </TableRow>
                 ))
@@ -140,6 +173,89 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
             </TableBody>
           </Table>
         </div>
+        
+        {filteredExpenses.length > itemsPerPage && (
+          <div className="mt-4">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious 
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                
+                {/* Show first page */}
+                <PaginationItem>
+                  <PaginationLink 
+                    isActive={currentPage === 1} 
+                    onClick={() => setCurrentPage(1)}
+                  >
+                    1
+                  </PaginationLink>
+                </PaginationItem>
+                
+                {/* Show ellipsis if needed */}
+                {currentPage > 3 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+                
+                {/* Show current page neighborhood */}
+                {currentPage > 2 && (
+                  <PaginationItem>
+                    <PaginationLink onClick={() => setCurrentPage(currentPage - 1)}>
+                      {currentPage - 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                )}
+                
+                {currentPage !== 1 && currentPage !== totalPages && (
+                  <PaginationItem>
+                    <PaginationLink isActive={true}>
+                      {currentPage}
+                    </PaginationLink>
+                  </PaginationItem>
+                )}
+                
+                {currentPage < totalPages - 1 && (
+                  <PaginationItem>
+                    <PaginationLink onClick={() => setCurrentPage(currentPage + 1)}>
+                      {currentPage + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                )}
+                
+                {/* Show ellipsis if needed */}
+                {currentPage < totalPages - 2 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+                
+                {/* Show last page if not already shown */}
+                {totalPages > 1 && (
+                  <PaginationItem>
+                    <PaginationLink 
+                      isActive={currentPage === totalPages} 
+                      onClick={() => setCurrentPage(totalPages)}
+                    >
+                      {totalPages}
+                    </PaginationLink>
+                  </PaginationItem>
+                )}
+                
+                <PaginationItem>
+                  <PaginationNext 
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
