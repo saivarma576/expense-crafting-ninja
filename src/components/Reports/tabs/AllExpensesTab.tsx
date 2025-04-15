@@ -24,7 +24,7 @@ interface ExpenseItem {
   id: string;
   employee: string;
   date: string;
-  type: string;
+  expenseNumber: string;
   amount: number;
   status: string;
 }
@@ -56,7 +56,7 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
       const query = searchQuery.toLowerCase();
       return expense.id.toLowerCase().includes(query) || 
              expense.employee.toLowerCase().includes(query) ||
-             expense.type.toLowerCase().includes(query);
+             expense.expenseNumber.toLowerCase().includes(query);
     }
     
     return true;
@@ -79,7 +79,7 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Search by ID, employee or type..." 
+              placeholder="Search by ID, employee or expense number..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-9"
@@ -111,10 +111,10 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Expense ID</TableHead>
+              <TableHead>ID#</TableHead>
               <TableHead>Employee</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead>Expense Number</TableHead>
+              <TableHead>Creation Date</TableHead>
               <TableHead className="text-right">Amount (₹)</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -126,8 +126,8 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
                 <TableRow key={expense.id}>
                   <TableCell className="font-medium">{expense.id}</TableCell>
                   <TableCell>{expense.employee}</TableCell>
+                  <TableCell>{expense.expenseNumber}</TableCell>
                   <TableCell>{expense.date}</TableCell>
-                  <TableCell>{expense.type}</TableCell>
                   <TableCell className="text-right">{expense.amount.toLocaleString()}</TableCell>
                   <TableCell>
                     <Badge variant={
