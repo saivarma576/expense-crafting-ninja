@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -28,7 +27,7 @@ const ReportV2: React.FC = () => {
   const [timeFilter, setTimeFilter] = useState('current');
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [activeTab, setActiveTab] = useState('summary');
+  const [activeTab, setActiveTab] = useState('all-expenses');
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,7 +71,11 @@ const ReportV2: React.FC = () => {
       />
       
       {/* Main Content Tabs */}
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
+      <Tabs 
+        defaultValue={activeTab} 
+        onValueChange={setActiveTab} 
+        className="w-full"
+      >
         <TabsList className="grid grid-cols-5 w-full mb-6">
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="types">Expense Types</TabsTrigger>
