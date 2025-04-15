@@ -64,10 +64,23 @@ const MonthlySummaryTab: React.FC<MonthlySummaryTabProps> = ({
   setTimeFilter, 
   monthlyExpenseData 
 }) => {
+  // Check if data exists and has sufficient length before slicing
+  const hasData = monthlyExpenseData && monthlyExpenseData.length > 0;
+  
   // Filter monthly data based on time filter
-  const filteredMonthlyData = timeFilter === 'current' 
-    ? monthlyExpenseData.slice(3, 6) 
-    : monthlyExpenseData.slice(0, 3);
+  const filteredMonthlyData = hasData ? (
+    timeFilter === 'current' 
+      ? monthlyExpenseData.slice(-3) // Get the latest 3 months
+      : monthlyExpenseData.slice(0, 3) // Get the first 3 months
+  ) : [];
+  
+  // Calculate totals safely with handling for empty data
+  const totalExpenses = filteredMonthlyData.reduce((sum, item) => sum + (item?.totalExpenses || 0), 0);
+  const totalReports = filteredMonthlyData.reduce((sum, item) => sum + (item?.reports || 0), 0);
+  const avgExpense = totalReports > 0 ? Math.round(totalExpenses / totalReports) : 0;
+  
+  // Determine quarter label based on time filter
+  const quarterLabel = timeFilter === 'current' ? 'Apr-Jun 2025' : 'Jan-Mar 2025';
     
   return (
     <Card>
@@ -97,47 +110,54 @@ const MonthlySummaryTab: React.FC<MonthlySummaryTabProps> = ({
           </div>
         </div>
         <CardDescription>
-          Monthly breakdown of expenses for {timeFilter === 'current' ? 'Apr-Jun 2025' : 'Jan-Mar 2025'}
+          Monthly breakdown of expenses for {quarterLabel}
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <MonthlyExpenseChart data={filteredMonthlyData} />
-        
-        <div className="mt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Month</TableHead>
-                <TableHead className="text-right">Total Expenses</TableHead>
-                <TableHead className="text-right"># of Reports</TableHead>
-                <TableHead className="text-right">Avg. Amount per Report</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredMonthlyData.map((month) => (
-                <TableRow key={month.month}>
-                  <TableCell className="font-medium">{month.month}</TableCell>
-                  <TableCell className="text-right">₹{month.totalExpenses.toLocaleString()}</TableCell>
-                  <TableCell className="text-right">{month.reports}</TableCell>
-                  <TableCell className="text-right">₹{month.avgAmount.toLocaleString()}</TableCell>
-                </TableRow>
-              ))}
-              <TableRow className="bg-muted/50">
-                <TableCell className="font-bold">Total</TableCell>
-                <TableCell className="text-right font-bold">
-                  ₹{filteredMonthlyData.reduce((sum, item) => sum + item.totalExpenses, 0).toLocaleString()}
-                </TableCell>
-                <TableCell className="text-right font-bold">
-                  {filteredMonthlyData.reduce((sum, item) => sum + item.reports, 0)}
-                </TableCell>
-                <TableCell className="text-right font-bold">
-                  ₹{Math.round(filteredMonthlyData.reduce((sum, item) => sum + item.totalExpenses, 0) / 
-                    filteredMonthlyData.reduce((sum, item) => sum + item.reports, 0)).toLocaleString()}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
+        {hasData ? (
+          <>
+            <MonthlyExpenseChart data={filteredMonthlyData} />
+            
+            <div className="mt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Month</TableHead>
+                    <TableHead className="text-right">Total Expenses</TableHead>
+                    <TableHead className="text-right"># of Reports</TableHead>
+                    <TableHead className="text-right">Avg. Amount per Report</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredMonthlyData.map((month) => (
+                    <TableRow key={month.month}>
+                      <TableCell className="font-medium">{month.month}</TableCell>
+                      <TableCell className="text-right">₹{month.totalExpenses.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{month.reports}</TableCell>
+                      <TableCell className="text-right">₹{month.avgAmount.toLocaleString()}</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow className="bg-muted/50">
+                    <TableCell className="font-bold">Total</TableCell>
+                    <TableCell className="text-right font-bold">
+                      ₹{totalExpenses.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      {totalReports}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      ₹{avgExpense.toLocaleString()}
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
+          </>
+        ) : (
+          <div className="py-8 text-center text-muted-foreground">
+            No expense data available for the selected period.
+          </div>
+        )}
       </CardContent>
     </Card>
   );

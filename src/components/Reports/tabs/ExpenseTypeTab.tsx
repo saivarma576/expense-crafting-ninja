@@ -81,6 +81,17 @@ const ExpenseTypePieChart = ({ data }: { data: ExpenseTypeData[] }) => {
 };
 
 const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
+  const hasData = expenseTypeData && expenseTypeData.length > 0;
+  
+  // Calculate totals safely
+  const totalAmount = hasData ? 
+    expenseTypeData.reduce((sum, item) => sum + item.value, 0) : 0;
+  
+  const totalClaims = hasData ?
+    expenseTypeData.reduce((sum, item) => sum + (item.value / item.avgClaim), 0) : 0;
+  
+  const overallAvgClaim = totalClaims > 0 ? Math.round(totalAmount / totalClaims) : 0;
+  
   return (
     <Card>
       <CardHeader>
@@ -93,46 +104,53 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="mb-6">
-          <ExpenseTypePieChart data={expenseTypeData} />
-        </div>
-        
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Expense Type</TableHead>
-              <TableHead className="text-right">Total Amount</TableHead>
-              <TableHead className="text-right">% of Total</TableHead>
-              <TableHead className="text-right">Avg. Claim</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {expenseTypeData.map((type) => (
-              <TableRow key={type.name}>
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: type.color }}></div>
-                    {type.name}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">₹{type.value.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{type.percentage}%</TableCell>
-                <TableCell className="text-right">₹{type.avgClaim.toLocaleString()}</TableCell>
-              </TableRow>
-            ))}
-            <TableRow className="bg-muted/50">
-              <TableCell className="font-bold">Total</TableCell>
-              <TableCell className="text-right font-bold">
-                ₹{expenseTypeData.reduce((sum, item) => sum + item.value, 0).toLocaleString()}
-              </TableCell>
-              <TableCell className="text-right font-bold">100%</TableCell>
-              <TableCell className="text-right font-bold">
-                ₹{Math.round(expenseTypeData.reduce((sum, item) => sum + item.value, 0) / 
-                  expenseTypeData.reduce((sum, item) => sum + (item.value / item.avgClaim), 0)).toLocaleString()}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
+        {hasData ? (
+          <>
+            <div className="mb-6">
+              <ExpenseTypePieChart data={expenseTypeData} />
+            </div>
+            
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Expense Type</TableHead>
+                  <TableHead className="text-right">Total Amount</TableHead>
+                  <TableHead className="text-right">% of Total</TableHead>
+                  <TableHead className="text-right">Avg. Claim</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {expenseTypeData.map((type) => (
+                  <TableRow key={type.name}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: type.color }}></div>
+                        {type.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">₹{type.value.toLocaleString()}</TableCell>
+                    <TableCell className="text-right">{type.percentage}%</TableCell>
+                    <TableCell className="text-right">₹{type.avgClaim.toLocaleString()}</TableCell>
+                  </TableRow>
+                ))}
+                <TableRow className="bg-muted/50">
+                  <TableCell className="font-bold">Total</TableCell>
+                  <TableCell className="text-right font-bold">
+                    ₹{totalAmount.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right font-bold">100%</TableCell>
+                  <TableCell className="text-right font-bold">
+                    ₹{overallAvgClaim.toLocaleString()}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </>
+        ) : (
+          <div className="py-8 text-center text-muted-foreground">
+            No expense type data available for the selected period.
+          </div>
+        )}
       </CardContent>
     </Card>
   );
