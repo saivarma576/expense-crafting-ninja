@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -213,7 +214,7 @@ const Reports: React.FC = () => {
                 className="flex items-center gap-1.5 border-dashed"
               >
                 <Sparkles className="h-4 w-4 text-amber-500" />
-                Try Modern Reports V2
+                Try Modern Reports Dashboard
                 <Badge variant="secondary" className="ml-2 text-xs">New</Badge>
               </Button>
             </Link>
