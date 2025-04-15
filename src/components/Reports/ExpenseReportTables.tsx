@@ -9,12 +9,6 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { 
   Card, 
   CardContent, 
   CardDescription, 
@@ -43,8 +37,10 @@ import {
   Download, 
   Flag, 
   AlertTriangle,
-  Check
+  Check,
+  ChevronLeft
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Mock expense summary data
 const expenseSummaryData = [
@@ -90,18 +86,33 @@ const mileageReimbursementData = [
   { employee: 'J. Brown', date: '10/25/2023', miles: 120, rateUsed: 0.65, total: 78, notes: '⚠️ Different rate used' },
 ];
 
-const ExpenseReportTables: React.FC = () => {
+const ExpenseReportDetail: React.FC = () => {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all');
   const [dateRange, setDateRange] = useState('current-month');
   const [department, setDepartment] = useState('all');
+  const [activeTab, setActiveTab] = useState('expense-summary');
+
+  const handleBackToReports = () => {
+    navigate('/reports');
+  };
 
   return (
     <div className="space-y-8">
+      <Button 
+        variant="outline" 
+        className="flex items-center gap-1.5 mb-4" 
+        onClick={handleBackToReports}
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Back to Reports
+      </Button>
+      
       <Card>
         <CardHeader className="pb-3">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="text-2xl font-bold">Expense Reports</CardTitle>
+              <CardTitle className="text-2xl font-bold">Monthly Expense Summary</CardTitle>
               <CardDescription>
                 Comprehensive expense analytics and compliance reports
               </CardDescription>
@@ -174,217 +185,48 @@ const ExpenseReportTables: React.FC = () => {
             </Button>
           </div>
           
-          <Tabs defaultValue="expense-summary" className="w-full">
-            <TabsList className="grid grid-cols-5 mb-6">
-              <TabsTrigger value="expense-summary">Expense Summary</TabsTrigger>
-              <TabsTrigger value="lodging-report">Lodging Report</TabsTrigger>
-              <TabsTrigger value="gasoline-expenses">Gasoline Expenses</TabsTrigger>
-              <TabsTrigger value="meals-per-diem">Meals Per Diem</TabsTrigger>
-              <TabsTrigger value="mileage-reimbursement">Mileage Report</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="expense-summary">
-              <Table>
-                <TableCaption>Expense Summary by Type and Amount</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Expense Type</TableHead>
-                    <TableHead className="text-right">Total Amount (USD)</TableHead>
-                    <TableHead className="text-right">No. of Claims</TableHead>
-                    <TableHead className="text-right">Avg Claim Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {expenseSummaryData.map((item) => (
-                    <TableRow key={item.type}>
-                      <TableCell className="font-medium flex items-center gap-2">
-                        <div className="p-1.5 rounded-full bg-gray-100">
-                          {item.icon}
-                        </div>
-                        {item.type}
-                      </TableCell>
-                      <TableCell className="text-right font-semibold">${item.amount.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">{item.claims}</TableCell>
-                      <TableCell className="text-right">${item.avgAmount.toFixed(2)}</TableCell>
-                    </TableRow>
-                  ))}
-                  <TableRow className="bg-muted/50">
-                    <TableCell className="font-bold">Total</TableCell>
-                    <TableCell className="text-right font-bold">
-                      ${expenseSummaryData.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
+          <div className="space-y-4">
+            <div className="font-medium text-lg mb-2">Expense Summary by Type and Amount</div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Expense Type</TableHead>
+                  <TableHead className="text-right">Total Amount (USD)</TableHead>
+                  <TableHead className="text-right">No. of Claims</TableHead>
+                  <TableHead className="text-right">Avg Claim Amount</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {expenseSummaryData.map((item) => (
+                  <TableRow key={item.type}>
+                    <TableCell className="font-medium flex items-center gap-2">
+                      <div className="p-1.5 rounded-full bg-gray-100">
+                        {item.icon}
+                      </div>
+                      {item.type}
                     </TableCell>
-                    <TableCell className="text-right font-semibold">
-                      {expenseSummaryData.reduce((sum, item) => sum + item.claims, 0)}
-                    </TableCell>
-                    <TableCell className="text-right"></TableCell>
+                    <TableCell className="text-right font-semibold">${item.amount.toFixed(2)}</TableCell>
+                    <TableCell className="text-right">{item.claims}</TableCell>
+                    <TableCell className="text-right">${item.avgAmount.toFixed(2)}</TableCell>
                   </TableRow>
-                </TableBody>
-              </Table>
-            </TabsContent>
-            
-            <TabsContent value="lodging-report">
-              <Table>
-                <TableCaption>Lodging Over CONUS Rate Report</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee Name</TableHead>
-                    <TableHead>City</TableHead>
-                    <TableHead className="text-right">Hotel Rate</TableHead>
-                    <TableHead className="text-right">CONUS Rate</TableHead>
-                    <TableHead className="text-center">Over Limit?</TableHead>
-                    <TableHead className="text-center">Explanation Provided?</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {lodgingReportData.map((item) => (
-                    <TableRow key={item.employee} className={item.overLimit && !item.explanation ? "bg-red-50" : ""}>
-                      <TableCell className="font-medium">{item.employee}</TableCell>
-                      <TableCell>{item.city}</TableCell>
-                      <TableCell className="text-right font-semibold">${item.hotelRate}</TableCell>
-                      <TableCell className="text-right">${item.conusRate}</TableCell>
-                      <TableCell className="text-center">
-                        {item.overLimit ? (
-                          <Badge variant="outline" className="bg-red-50 text-red-600 border-red-200">
-                            ✅
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="bg-green-50 text-green-600 border-green-200">
-                            ❌
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item.explanation ? "Yes" : "-"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            
-            <TabsContent value="gasoline-expenses">
-              <Table>
-                <TableCaption>Gasoline Expenses with Explanation</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-center">Explanation Provided?</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {gasolineExpensesData.map((item) => (
-                    <TableRow key={`${item.employee}-${item.date}`} className={!item.explanation ? "bg-amber-50" : ""}>
-                      <TableCell className="font-medium">{item.employee}</TableCell>
-                      <TableCell>{item.date}</TableCell>
-                      <TableCell className="text-right">${item.amount}</TableCell>
-                      <TableCell className="text-center">
-                        {item.explanation ? (
-                          <Check className="h-5 w-5 text-green-500 mx-auto" />
-                        ) : (
-                          <div className="flex items-center justify-center gap-1 text-amber-600">
-                            <AlertTriangle className="h-4 w-4" />
-                            <span className="text-xs">Needs review</span>
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="h-8 px-2">
-                          <Flag className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            
-            <TabsContent value="meals-per-diem">
-              <Table>
-                <TableCaption>Meals with Per Diem Variance</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>City</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead className="text-right">Per Diem Rate</TableHead>
-                    <TableHead className="text-right">Variance</TableHead>
-                    <TableHead className="text-center">Explanation Provided?</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mealsPerDiemData.map((item) => (
-                    <TableRow 
-                      key={`${item.employee}-${item.date}`} 
-                      className={item.variance > 0 && !item.explanation ? "bg-amber-50" : ""}
-                    >
-                      <TableCell className="font-medium">{item.employee}</TableCell>
-                      <TableCell>{item.date}</TableCell>
-                      <TableCell>{item.city}</TableCell>
-                      <TableCell className="text-right">${item.amount}</TableCell>
-                      <TableCell className="text-right">${item.perDiemRate}</TableCell>
-                      <TableCell className={`text-right font-medium ${
-                        item.variance > 0 ? "text-red-600" : 
-                        item.variance < 0 ? "text-green-600" : "text-gray-600"
-                      }`}>
-                        {item.variance > 0 ? `+$${item.variance}` : 
-                         item.variance < 0 ? `-$${Math.abs(item.variance)}` : "$0"}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {item.explanation ? "✅" : item.variance !== 0 ? "-" : ""}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-            
-            <TabsContent value="mileage-reimbursement">
-              <Table>
-                <TableCaption>Mileage Reimbursement Report</TableCaption>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Employee</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Miles</TableHead>
-                    <TableHead className="text-right">Rate Used</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead>Notes</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {mileageReimbursementData.map((item) => (
-                    <TableRow key={`${item.employee}-${item.date}`} 
-                      className={item.notes.includes('Different') ? "bg-amber-50" : ""}
-                    >
-                      <TableCell className="font-medium">{item.employee}</TableCell>
-                      <TableCell>{item.date}</TableCell>
-                      <TableCell className="text-right">{item.miles}</TableCell>
-                      <TableCell className="text-right">${item.rateUsed.toFixed(2)}</TableCell>
-                      <TableCell className="text-right">${item.total.toFixed(2)}</TableCell>
-                      <TableCell>
-                        {item.notes.includes('Different') ? (
-                          <div className="flex items-center text-amber-700">
-                            <AlertTriangle className="h-4 w-4 mr-1" />
-                            <span className="text-sm">{item.notes}</span>
-                          </div>
-                        ) : (
-                          item.notes
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TabsContent>
-          </Tabs>
+                ))}
+                <TableRow className="bg-muted/50">
+                  <TableCell className="font-bold">Total</TableCell>
+                  <TableCell className="text-right font-bold">
+                    ${expenseSummaryData.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
+                  </TableCell>
+                  <TableCell className="text-right font-semibold">
+                    {expenseSummaryData.reduce((sum, item) => sum + item.claims, 0)}
+                  </TableCell>
+                  <TableCell className="text-right"></TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
           
           <div className="flex justify-between items-center mt-6 pt-4 border-t">
             <div className="text-sm text-gray-500">
-              Showing data for October 2023
+              Showing data for April 2025
             </div>
             <Button className="flex items-center gap-1.5">
               <Download className="h-4 w-4" />
@@ -397,4 +239,4 @@ const ExpenseReportTables: React.FC = () => {
   );
 };
 
-export default ExpenseReportTables;
+export default ExpenseReportDetail;
