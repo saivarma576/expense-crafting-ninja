@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ShieldX, Zap, Check, ArrowRight, FileBarChart, X, Loader2, CircleAlert, AlertTriangle, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -163,33 +162,10 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                 </div>
               </div>
               
-              {/* Category Filters */}
-              <div className="mb-4 flex flex-wrap gap-2 px-2">
-                <Button 
-                  size="sm" 
-                  variant={selectedCategory === null ? "default" : "outline"}
-                  onClick={() => setSelectedCategory(null)}
-                  className="rounded-full text-xs h-7 px-3"
-                >
-                  All Issues ({violations.length})
-                </Button>
-                {categories.map(category => (
-                  <Button
-                    key={category}
-                    size="sm"
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    onClick={() => setSelectedCategory(category)}
-                    className="rounded-full text-xs h-7 px-3"
-                  >
-                    {category} ({violations.filter(v => v.category === category).length})
-                  </Button>
-                ))}
-              </div>
-              
               {/* Violations List */}
               <div className="space-y-3 mt-4">
-                {filteredViolations.length > 0 ? (
-                  filteredViolations.map((violation, index) => (
+                {violations.length > 0 ? (
+                  violations.map((violation, index) => (
                     <motion.div
                       key={violation.id}
                       initial={{ opacity: 0, y: 10 }}
@@ -245,7 +221,7 @@ const PolicyViolationsModal: React.FC<PolicyViolationsModalProps> = ({
                 ) : (
                   <div className="text-center p-6 text-gray-500 bg-gray-50 rounded-lg border border-gray-100">
                     <Check className="h-10 w-10 mx-auto text-green-500 mb-2" />
-                    <p>No violations found in this category</p>
+                    <p>No violations found</p>
                   </div>
                 )}
               </div>
