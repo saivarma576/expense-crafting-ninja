@@ -17,7 +17,7 @@ import {
   Legend
 } from 'recharts';
 
-interface ExpenseTypeData {
+export interface ExpenseTypeData {
   name: string;
   value: number;
   percentage: number;

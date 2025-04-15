@@ -20,7 +20,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-interface MonthlyExpenseData {
+export interface MonthlyExpenseData {
   month: string;
   totalExpenses: number;
   reports: number;

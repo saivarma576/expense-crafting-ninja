@@ -28,7 +28,7 @@ import {
   Legend
 } from 'recharts';
 
-interface DepartmentData {
+export interface DepartmentData {
   department: string;
   totalExpense: number;
   topExpenseType: string;
@@ -41,7 +41,7 @@ interface DepartmentData {
   }
 }
 
-interface DepartmentChartData {
+export interface DepartmentChartData {
   name: string;
   Lodging: number;
   Travel: number;

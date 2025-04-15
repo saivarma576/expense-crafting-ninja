@@ -1,59 +1,95 @@
 
 import { subMonths, isWithinInterval, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear } from 'date-fns';
 
-// Mock data for monthly expenses
+// Mock data for monthly expenses - Updated to match MonthlyExpenseData interface
 export const monthlyExpenseData = [
-  { month: 'Jan', expenses: 15000 },
-  { month: 'Feb', expenses: 18000 },
-  { month: 'Mar', expenses: 22000 },
-  { month: 'Apr', expenses: 25000 },
-  { month: 'May', expenses: 21000 },
-  { month: 'Jun', expenses: 23000 },
-  { month: 'Jul', expenses: 26000 },
-  { month: 'Aug', expenses: 24000 },
-  { month: 'Sep', expenses: 29000 },
-  { month: 'Oct', expenses: 27000 },
-  { month: 'Nov', expenses: 30000 },
-  { month: 'Dec', expenses: 32000 },
+  { month: 'Jan', totalExpenses: 15000, reports: 24, avgAmount: 625 },
+  { month: 'Feb', totalExpenses: 18000, reports: 28, avgAmount: 643 },
+  { month: 'Mar', totalExpenses: 22000, reports: 32, avgAmount: 688 },
+  { month: 'Apr', totalExpenses: 25000, reports: 36, avgAmount: 694 },
+  { month: 'May', totalExpenses: 21000, reports: 30, avgAmount: 700 },
+  { month: 'Jun', totalExpenses: 23000, reports: 33, avgAmount: 697 },
+  { month: 'Jul', totalExpenses: 26000, reports: 38, avgAmount: 684 },
+  { month: 'Aug', totalExpenses: 24000, reports: 35, avgAmount: 686 },
+  { month: 'Sep', totalExpenses: 29000, reports: 42, avgAmount: 690 },
+  { month: 'Oct', totalExpenses: 27000, reports: 39, avgAmount: 692 },
+  { month: 'Nov', totalExpenses: 30000, reports: 43, avgAmount: 698 },
+  { month: 'Dec', totalExpenses: 32000, reports: 45, avgAmount: 711 },
 ];
 
-// Mock data for expense type distribution
+// Mock data for expense type distribution - Updated to match ExpenseTypeData interface
 export const expenseTypeData = [
-  { type: 'Travel', amount: 28000, percentage: 35 },
-  { type: 'Office Supplies', amount: 12000, percentage: 15 },
-  { type: 'Meals', amount: 18000, percentage: 22.5 },
-  { type: 'Accommodation', amount: 16000, percentage: 20 },
-  { type: 'Other', amount: 6000, percentage: 7.5 },
+  { name: 'Travel', value: 28000, percentage: 35, avgClaim: 718, color: '#4f46e5' },
+  { name: 'Office Supplies', value: 12000, percentage: 15, avgClaim: 632, color: '#3b82f6' },
+  { name: 'Meals', value: 18000, percentage: 22.5, avgClaim: 545, color: '#10b981' },
+  { name: 'Accommodation', value: 16000, percentage: 20, avgClaim: 842, color: '#f59e0b' },
+  { name: 'Other', value: 6000, percentage: 7.5, avgClaim: 500, color: '#6b7280' },
 ];
 
-// Mock data for compliance insights
+// Mock data for compliance insights - Updated to match ComplianceInsight interface
 export const complianceInsightsData = [
-  { category: 'Missing Receipts', count: 24, status: 'Non-Compliant' },
-  { category: 'Over Threshold', count: 18, status: 'Non-Compliant' },
-  { category: 'Late Submission', count: 12, status: 'Warning' },
-  { category: 'Duplicate Claims', count: 5, status: 'Non-Compliant' },
-  { category: 'Incorrect Category', count: 9, status: 'Warning' },
-  { category: 'Approved', count: 136, status: 'Compliant' },
+  { category: 'Missing Receipts', count: 24, trend: 5, risk: 'high', impact: 12500, status: 'Non-Compliant' },
+  { category: 'Over Threshold', count: 18, trend: -2, risk: 'medium', impact: 8700, status: 'Non-Compliant' },
+  { category: 'Late Submission', count: 12, trend: -10, risk: 'low', impact: 5200, status: 'Warning' },
+  { category: 'Duplicate Claims', count: 5, trend: -15, risk: 'high', impact: 3800, status: 'Non-Compliant' },
+  { category: 'Incorrect Category', count: 9, trend: 0, risk: 'medium', impact: 2700, status: 'Warning' },
+  { category: 'Approved', count: 136, trend: 8, risk: 'low', impact: 0, status: 'Compliant' },
 ];
 
-// Mock data for department spending
+// Mock data for department spending - Updated to match DepartmentData interface
 export const departmentData = [
-  { department: 'Sales', amount: 32000, count: 45, avgAmount: 711 },
-  { department: 'Marketing', amount: 28000, count: 38, avgAmount: 737 },
-  { department: 'Engineering', amount: 24000, count: 30, avgAmount: 800 },
-  { department: 'Finance', amount: 15000, count: 22, avgAmount: 682 },
-  { department: 'HR', amount: 9000, count: 15, avgAmount: 600 },
-  { department: 'Operations', amount: 12000, count: 20, avgAmount: 600 },
+  { 
+    department: 'Sales', 
+    totalExpense: 32000, 
+    topExpenseType: 'Travel', 
+    violations: 6,
+    expenses: { lodging: 12000, travel: 9500, meals: 6800, others: 3700 }
+  },
+  { 
+    department: 'Marketing', 
+    totalExpense: 28000, 
+    topExpenseType: 'Meals', 
+    violations: 4,
+    expenses: { lodging: 9000, travel: 7500, meals: 8200, others: 3300 }
+  },
+  { 
+    department: 'Engineering', 
+    totalExpense: 24000, 
+    topExpenseType: 'Travel', 
+    violations: 2,
+    expenses: { lodging: 8500, travel: 9800, meals: 3200, others: 2500 }
+  },
+  { 
+    department: 'Finance', 
+    totalExpense: 15000, 
+    topExpenseType: 'Office Supplies', 
+    violations: 1,
+    expenses: { lodging: 4200, travel: 3800, meals: 2500, others: 4500 }
+  },
+  { 
+    department: 'HR', 
+    totalExpense: 9000, 
+    topExpenseType: 'Training', 
+    violations: 0,
+    expenses: { lodging: 2200, travel: 1800, meals: 1500, others: 3500 }
+  },
+  { 
+    department: 'Operations', 
+    totalExpense: 12000, 
+    topExpenseType: 'Travel', 
+    violations: 3,
+    expenses: { lodging: 3800, travel: 4500, meals: 2200, others: 1500 }
+  },
 ];
 
-// Mock data for department chart
+// Mock data for department chart - Updated to match DepartmentChartData interface
 export const departmentChartData = [
-  { month: 'Jan', Sales: 3200, Marketing: 2800, Engineering: 2400, Finance: 1500, HR: 900 },
-  { month: 'Feb', Sales: 3800, Marketing: 3100, Engineering: 2600, Finance: 1700, HR: 950 },
-  { month: 'Mar', Sales: 4200, Marketing: 3500, Engineering: 2900, Finance: 1900, HR: 1050 },
-  { month: 'Apr', Sales: 3900, Marketing: 3300, Engineering: 2700, Finance: 1800, HR: 1000 },
-  { month: 'May', Sales: 4500, Marketing: 3800, Engineering: 3100, Finance: 2100, HR: 1150 },
-  { month: 'Jun', Sales: 4100, Marketing: 3600, Engineering: 2800, Finance: 2000, HR: 1100 },
+  { name: 'Jan', Lodging: 8200, Travel: 7500, Meals: 5800, Others: 3500 },
+  { name: 'Feb', Lodging: 9000, Travel: 8300, Meals: 6200, Others: 3800 },
+  { name: 'Mar', Lodging: 9800, Travel: 9100, Meals: 6800, Others: 4300 },
+  { name: 'Apr', Lodging: 9200, Travel: 8500, Meals: 6500, Others: 4100 },
+  { name: 'May', Lodging: 10500, Travel: 9800, Meals: 7200, Others: 4700 },
+  { name: 'Jun', Lodging: 9800, Travel: 9200, Meals: 6700, Others: 4400 },
 ];
 
 // Mock data for all expenses
@@ -125,9 +161,6 @@ export const getFilteredData = (
     averageExpenseAmount: filteredExpenses.length > 0 ? Math.round(totalExpenses / filteredExpenses.length) : 0,
   };
 
-  // For this example, we're simulating filtered data for other components
-  // In a real app, you would filter each dataset based on the date range
-  
   // Create month-filtered data for charts
   const getMonthIndex = (monthStr: string) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -146,7 +179,7 @@ export const getFilteredData = (
   
   const filteredExpenseTypeData = expenseTypeData.map(item => ({
     ...item,
-    amount: Math.round(item.amount * filterRatio)
+    value: Math.round(item.value * filterRatio)
   }));
 
   return {

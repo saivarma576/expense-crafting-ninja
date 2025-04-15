@@ -11,12 +11,13 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-interface ComplianceInsight {
+export interface ComplianceInsight {
   category: string;
   count: number;
   trend: number;
   risk: string;
   impact: number;
+  status?: string;
 }
 
 interface ComplianceInsightsTabProps {
