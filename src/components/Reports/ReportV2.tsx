@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -70,20 +71,31 @@ const ReportV2: React.FC = () => {
         averageExpenseAmount={filteredData.summaryStats.averageExpenseAmount}
       />
       
-      {/* Main Content Tabs */}
+      {/* Main Content Tabs - Moved All Expenses to first position */}
       <Tabs 
         defaultValue={activeTab} 
         onValueChange={setActiveTab} 
         className="w-full"
       >
         <TabsList className="grid grid-cols-5 w-full mb-6">
+          <TabsTrigger value="all-expenses">All Expenses</TabsTrigger>
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="types">Expense Types</TabsTrigger>
           <TabsTrigger value="compliance">Compliance</TabsTrigger>
           <TabsTrigger value="departments">Departments</TabsTrigger>
-          <TabsTrigger value="all-expenses">All Expenses</TabsTrigger>
         </TabsList>
         
+        {/* All Expenses Tab - Now first */}
+        <TabsContent value="all-expenses" className="space-y-6">
+          <AllExpensesTab 
+            allExpensesData={filteredData.allExpensesData}
+            statusFilter={statusFilter}
+            setStatusFilter={setStatusFilter}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+          />
+        </TabsContent>
+
         {/* Monthly Expense Summary Tab */}
         <TabsContent value="summary" className="space-y-6">
           <MonthlySummaryTab 
@@ -110,17 +122,6 @@ const ReportV2: React.FC = () => {
             departmentChartData={filteredData.departmentChartData}
             departmentFilter={departmentFilter}
             setDepartmentFilter={setDepartmentFilter}
-          />
-        </TabsContent>
-        
-        {/* All Expenses Tab */}
-        <TabsContent value="all-expenses" className="space-y-6">
-          <AllExpensesTab 
-            allExpensesData={filteredData.allExpensesData}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
           />
         </TabsContent>
       </Tabs>

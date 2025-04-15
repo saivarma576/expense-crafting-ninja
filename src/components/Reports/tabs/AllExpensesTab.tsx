@@ -106,38 +106,40 @@ const AllExpensesTab: React.FC<AllExpensesTabProps> = ({
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID#</TableHead>
-              <TableHead>Employee</TableHead>
-              <TableHead>Expense Number</TableHead>
-              <TableHead>Creation Date</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredExpenses.length > 0 ? (
-              filteredExpenses.map((expense) => (
-                <TableRow key={expense.id}>
-                  <TableCell className="font-medium">{expense.id}</TableCell>
-                  <TableCell>{expense.employee}</TableCell>
-                  <TableCell>{expense.expenseNumber}</TableCell>
-                  <TableCell>{expense.date}</TableCell>
-                  <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
-                  <TableCell>{getStatusBadge(expense.status)}</TableCell>
-                </TableRow>
-              ))
-            ) : (
+        <div className="overflow-hidden rounded-lg border border-muted/30">
+          <Table>
+            <TableHeader className="bg-muted/20">
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  No matching expenses found.
-                </TableCell>
+                <TableHead>ID#</TableHead>
+                <TableHead>Employee</TableHead>
+                <TableHead>Expense Number</TableHead>
+                <TableHead>Creation Date</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredExpenses.length > 0 ? (
+                filteredExpenses.map((expense) => (
+                  <TableRow key={expense.id} className="hover:bg-muted/20">
+                    <TableCell className="font-medium">{expense.id}</TableCell>
+                    <TableCell>{expense.employee}</TableCell>
+                    <TableCell>{expense.expenseNumber}</TableCell>
+                    <TableCell>{expense.date}</TableCell>
+                    <TableCell className="text-right">${expense.amount.toLocaleString()}</TableCell>
+                    <TableCell>{getStatusBadge(expense.status)}</TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center">
+                    No matching expenses found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );

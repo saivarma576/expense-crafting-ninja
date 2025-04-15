@@ -121,73 +121,75 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
               <ExpenseTypePieChart data={expenseTypeData} />
             </div>
             
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4" />
-                      Expense Type
-                    </div>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <DollarSign className="h-4 w-4" />
-                      Total Amount
-                    </div>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <FileBarChart className="h-4 w-4" />
-                      No. of Reports
-                    </div>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Percent className="h-4 w-4" />
-                      % of Amount
-                    </div>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Percent className="h-4 w-4" />
-                      % of Count
-                    </div>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {enhancedData.map((type) => (
-                  <TableRow key={type.name}>
-                    <TableCell className="font-medium">
+            <div className="overflow-hidden rounded-lg border border-muted/30">
+              <Table>
+                <TableHeader className="bg-muted/20">
+                  <TableRow>
+                    <TableHead>
                       <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: type.color }}></div>
-                        {type.name}
+                        <FileText className="h-4 w-4" />
+                        Expense Type
                       </div>
-                    </TableCell>
-                    <TableCell className="text-right">${type.value.toLocaleString()}</TableCell>
-                    <TableCell className="text-right">{type.reportCount}</TableCell>
-                    <TableCell className="text-right">{type.amountPercentage}%</TableCell>
-                    <TableCell className="text-right">{type.countPercentage}%</TableCell>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <DollarSign className="h-4 w-4" />
+                        Total Amount
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <FileBarChart className="h-4 w-4" />
+                        No. of Reports
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Percent className="h-4 w-4" />
+                        % of Amount
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Percent className="h-4 w-4" />
+                        % of Count
+                      </div>
+                    </TableHead>
                   </TableRow>
-                ))}
-                <TableRow className="bg-muted/50">
-                  <TableCell className="font-bold">Total</TableCell>
-                  <TableCell className="text-right font-bold">
-                    ${totalAmount.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right font-bold">
-                    {totalReports}
-                  </TableCell>
-                  <TableCell className="text-right font-bold">
-                    100%
-                  </TableCell>
-                  <TableCell className="text-right font-bold">
-                    100%
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {enhancedData.map((type) => (
+                    <TableRow key={type.name} className="hover:bg-muted/20">
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: type.color }}></div>
+                          {type.name}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">${type.value.toLocaleString()}</TableCell>
+                      <TableCell className="text-right">{type.reportCount}</TableCell>
+                      <TableCell className="text-right">{type.amountPercentage}%</TableCell>
+                      <TableCell className="text-right">{type.countPercentage}%</TableCell>
+                    </TableRow>
+                  ))}
+                  <TableRow className="bg-muted/50">
+                    <TableCell className="font-bold">Total</TableCell>
+                    <TableCell className="text-right font-bold">
+                      ${totalAmount.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      {totalReports}
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      100%
+                    </TableCell>
+                    <TableCell className="text-right font-bold">
+                      100%
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
           </>
         ) : (
           <div className="py-8 text-center text-muted-foreground">
