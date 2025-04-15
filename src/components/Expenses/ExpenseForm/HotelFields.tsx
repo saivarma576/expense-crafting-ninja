@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Building, MapPin } from 'lucide-react';
+import { Building, MapPin } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 
@@ -83,9 +82,8 @@ const HotelFields: React.FC<FieldGroupProps> = ({
               type="date"
               value={values.throughDate || ''}
               onChange={(e) => onChange('throughDate', e.target.value)}
-              className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.throughDate ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-8 px-2 py-1 text-sm ${llmSuggestions.throughDate ? 'border-amber-300 pr-8' : ''}`}
             />
-            <Calendar className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator
               llmSuggestion={llmSuggestions.throughDate}
             />

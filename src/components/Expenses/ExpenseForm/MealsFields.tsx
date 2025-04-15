@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Calendar, Clock, MapPin, Building } from 'lucide-react';
+import { Clock, MapPin, Building } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 
@@ -63,9 +62,8 @@ const MealsFields: React.FC<FieldGroupProps> = ({
               type="time"
               value={values.departureTime || ''}
               onChange={(e) => onChange('departureTime', e.target.value)}
-              className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.departureTime ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-8 px-2 py-1 text-sm ${llmSuggestions.departureTime ? 'border-amber-300 pr-8' : ''}`}
             />
-            <Clock className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator
               llmSuggestion={llmSuggestions.departureTime}
             />
@@ -82,9 +80,8 @@ const MealsFields: React.FC<FieldGroupProps> = ({
               type="time"
               value={values.returnTime || ''}
               onChange={(e) => onChange('returnTime', e.target.value)}
-              className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.returnTime ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-8 px-2 py-1 text-sm ${llmSuggestions.returnTime ? 'border-amber-300 pr-8' : ''}`}
             />
-            <Clock className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator
               llmSuggestion={llmSuggestions.returnTime}
             />

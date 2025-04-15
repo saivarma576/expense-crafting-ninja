@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseType } from '@/types/expense';
@@ -6,9 +5,8 @@ import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Zap, FileCheck, AlertCircle, MessageSquare } from 'lucide-react';
-import { Input } from "@/components/ui/input"; // Added missing Input import
+import { Input } from "@/components/ui/input";
 
-// Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
 import ReceiptPreview from './ReceiptPreview';
 import { ExpenseLineItemFormData, FormProps } from './ExpenseForm/types';
@@ -41,7 +39,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   onCancel,
   editingItem
 }) => {
-  // State for basic fields
   const [type, setType] = useState<ExpenseType>(editingItem?.type || 'other');
   const [amount, setAmount] = useState(editingItem?.amount || 0);
   const [date, setDate] = useState(editingItem?.date || format(new Date(), 'yyyy-MM-dd'));
@@ -54,18 +51,15 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const [notes, setNotes] = useState(editingItem?.notes || '');
   const [merchantName, setMerchantName] = useState(editingItem?.merchantName || '');
   
-  // State for receipt
   const [receiptUrl, setReceiptUrl] = useState(editingItem?.receiptUrl || '');
   const [receiptName, setReceiptName] = useState(editingItem?.receiptName || '');
   const [showReceiptDialog, setShowReceiptDialog] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   
-  // State for OCR data
   const [ocrData, setOcrData] = useState<any>(null);
   const [showMismatchDialog, setShowMismatchDialog] = useState(false);
   const [dataMismatches, setDataMismatches] = useState<any[] | null>(null);
   
-  // State for type-specific fields
   const [glAccount, setGlAccount] = useState(editingItem?.glAccount || '');
   const [zipCode, setZipCode] = useState(editingItem?.zipCode || '');
   const [city, setCity] = useState(editingItem?.city || '');
@@ -78,23 +72,19 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const [miles, setMiles] = useState(editingItem?.miles || 0);
   const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || STANDARD_RATES.MILEAGE_RATE);
 
-  // State for validation
   const [validationWarnings, setValidationWarnings] = useState<{
     programmaticErrors: {field: string, error: string}[],
     llmWarnings: string[]
   }>({ programmaticErrors: [], llmWarnings: [] });
   const [showValidationWarnings, setShowValidationWarnings] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
-  const [showValidationPanel, setShowValidationPanel] = useState(true);
   const [llmSuggestions, setLlmSuggestions] = useState<Record<string, string | null>>({});
   const [showAIAssistant, setShowAIAssistant] = useState(false);
 
-  // Generate a consistent ID for the form values
   const formId = editingItem?.id || `item-${Date.now()}`;
 
-  // All form values in a single object for passing to components
   const formValues: ExpenseLineItemFormData = {
-    id: formId, // Added the required id property
+    id: formId,
     type, 
     amount, 
     date, 
@@ -121,31 +111,25 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     receiptName
   };
 
-  // Effect to auto-calculate mileage amount
   useEffect(() => {
     if (type === 'mileage' && miles > 0) {
       setAmount(parseFloat((miles * mileageRate).toFixed(2)));
     }
   }, [miles, mileageRate, type]);
 
-  // Effect to handle zip code lookup
   useEffect(() => {
     if (zipCode && zipCode.length === 5) {
-      // This would normally be an API call to lookup the city
-      // For now we'll just set a dummy city
       setCity('New York');
       toast.success(`City updated based on zip code: ${zipCode}`);
     }
   }, [zipCode]);
 
-  // Validate a field when its value changes
   const validateAndSetFieldError = (field: string, value: any) => {
     const error = validateField(field, value);
     setFieldErrors(prev => ({ ...prev, [field]: error }));
     return error;
   };
 
-  // Determine which fields to show based on expense type
   const needsGlAccount = ['transport', 'auditing', 'baggage', 'business_meals', 
                          'subscriptions', 'gasoline', 'office_supplies', 'other', 
                          'parking', 'postage', 'professional_fees', 'registration', 'rental'].includes(type);
@@ -154,18 +138,15 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const isMeals = type === 'meals';
   const isMileage = type === 'mileage';
 
-  // Add LLM suggestions for specific fields based on context
   useEffect(() => {
     const suggestions: Record<string, string | null> = {};
     
-    // Amount suggestions
     if (type === 'hotel' && amount > STANDARD_RATES.HOTEL_RATE) {
       suggestions.amount = `Hotel expense exceeds the standard rate of $${STANDARD_RATES.HOTEL_RATE}. Consider explaining the reason.`;
     } else if (type === 'meals' && amount > STANDARD_RATES.MEALS_RATE) {
       suggestions.amount = `Meal expense exceeds the standard rate of $${STANDARD_RATES.MEALS_RATE}. Note if alcohol was included.`;
     }
     
-    // Date suggestions
     const expenseDate = new Date(date);
     const today = new Date();
     const thirtyDaysAgo = new Date();
@@ -175,24 +156,20 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       suggestions.date = `This expense is over 30 days old. Submit promptly to comply with the 60-day rule.`;
     }
     
-    // Merchant suggestions
     if (merchantName && merchantName.toLowerCase().includes('amazon')) {
       suggestions.merchantName = `For Amazon purchases, please specify what was purchased in the description.`;
     }
     
-    // GL Account suggestions
     if (type === 'meals' && glAccount && glAccount !== '420100') {
       suggestions.glAccount = `For meals, the preferred GL Account is 420100 (Meals & Entertainment).`;
     } else if (type === 'hotel' && glAccount && glAccount !== '420200') {
       suggestions.glAccount = `For lodging, the preferred GL Account is 420200 (Lodging Expenses).`;
     }
     
-    // Description suggestions
     if (description && description.length < 15) {
       suggestions.description = `Please provide a more detailed description for better expense tracking.`;
     }
     
-    // Notes suggestions
     if (type === 'meals' && amount > 100 && (!notes || notes.length < 20)) {
       suggestions.notes = `For high-value meal expenses, please specify attendees and business purpose.`;
     }
@@ -201,7 +178,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   }, [type, amount, date, merchantName, glAccount, description, notes]);
 
   const handleFieldChange = (id: string, value: any) => {
-    // Update field value
     switch (id) {
       case 'type': setType(value); break;
       case 'amount': 
@@ -243,14 +219,13 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       default: break;
     }
     
-    // Check for OCR data mismatches after user input
     if (ocrData && ['merchantName', 'amount', 'date', 'type'].includes(id)) {
       const userData = {
         merchantName,
         amount,
         date,
         type,
-        [id]: value // Include the just-updated field
+        [id]: value
       };
       
       const mismatches = detectDataMismatch(ocrData, userData);
@@ -261,7 +236,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       }
     }
     
-    // Run validation after field updates
     runValidation();
   };
 
@@ -270,7 +244,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     setReceiptUrl(url);
     toast.success(`Receipt ${name} uploaded successfully`);
     
-    // Extract OCR data from receipt
     try {
       toast.loading('Extracting data from receipt...');
       const extractedData = await extractDataFromReceipt(url);
@@ -278,7 +251,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       toast.dismiss();
       toast.success('Receipt data extracted');
       
-      // Check for mismatches between OCR and user data
       const userData = {
         merchantName,
         amount,
@@ -292,7 +264,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       if (mismatches) {
         setShowMismatchDialog(true);
       } else {
-        // If no mismatches and fields are empty, update with OCR data
         handleOcrDataExtracted(extractedData);
       }
     } catch (error) {
@@ -301,12 +272,10 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       console.error('OCR extraction error:', error);
     }
     
-    // Run validation after receipt upload
     runValidation();
   };
 
   const handleOcrDataExtracted = (data: any) => {
-    // Only update fields that are empty or have default values
     if (data.merchantName && (!merchantName || merchantName === '')) {
       setMerchantName(data.merchantName);
     }
@@ -327,7 +296,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const handleAcceptOcrData = (field: string, value: any) => {
     handleFieldChange(field, value);
     
-    // Update the mismatches list to remove the resolved mismatch
     if (dataMismatches) {
       const updatedMismatches = dataMismatches.filter(mismatch => mismatch.field !== field);
       setDataMismatches(updatedMismatches.length > 0 ? updatedMismatches : null);
@@ -360,7 +328,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   };
 
   const runValidation = () => {
-    // Create the expense object with the required id property
     const expense: ExpenseLineItemFormData = {
       id: formId,
       type,
@@ -389,7 +356,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       mileageRate: isMileage ? mileageRate : undefined,
     };
     
-    // Get all validations
     const validations = getAllValidations(expense);
     
     setValidationWarnings({
@@ -403,11 +369,9 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   const validateForm = (): boolean => {
     const isValid = runValidation();
     
-    // Show validation warnings dialog if there are issues
     if (validationWarnings.programmaticErrors.length > 0 || validationWarnings.llmWarnings.length > 0) {
       setShowValidationWarnings(true);
       
-      // In testing mode, we allow submission even with warnings but not with errors
       return isValid;
     }
     
@@ -446,49 +410,20 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     });
   };
 
-  // Run initial validation on load
   useEffect(() => {
     runValidation();
   }, []);
 
   return (
     <div className="flex h-full">
-      {/* Left side - Form */}
       <div className="w-3/5 h-full px-4 py-3 relative">
-        <div className="mb-3 flex items-center">
-          <div className="flex-1" />
-          <div className="flex items-center gap-3">
-            {validationWarnings.programmaticErrors.length > 0 && (
-              <div className="flex items-center text-xs bg-red-50 text-red-600 py-1 px-2 rounded-full">
-                <AlertCircle className="h-3.5 w-3.5 mr-1" />
-                {validationWarnings.programmaticErrors.length} issue{validationWarnings.programmaticErrors.length !== 1 ? 's' : ''}
-              </div>
-            )}
-            {validationWarnings.llmWarnings.length > 0 && (
-              <div className="flex items-center text-xs bg-amber-50 text-amber-600 py-1 px-2 rounded-full">
-                <Zap className="h-3.5 w-3.5 mr-1" />
-                {validationWarnings.llmWarnings.length} suggestion{validationWarnings.llmWarnings.length !== 1 ? 's' : ''}
-              </div>
-            )}
-            <button 
-              onClick={() => setShowValidationPanel(prev => !prev)}
-              className="text-xs flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-600 py-1 px-2 rounded-full"
-            >
-              <FileCheck className="h-3.5 w-3.5" />
-              {showValidationPanel ? 'Hide' : 'Show'} validation panel
-            </button>
-          </div>
-        </div>
-        
         <ScrollArea className="h-[calc(100vh-140px)]">
           <div className="pr-4">
-            {/* Expense Type Selector */}
             <ExpenseTypeSelector 
               selectedType={type} 
               onTypeChange={setType} 
             />
 
-            {/* Common Fields */}
             <CommonFields
               type={type}
               values={formValues}
@@ -498,7 +433,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               llmSuggestions={llmSuggestions}
             />
 
-            {/* Type-specific Fields */}
             {needsGlAccount && (
               <GlAccountField 
                 values={formValues} 
@@ -533,20 +467,17 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               />
             )}
 
-            {/* Notes Field */}
             <NotesField 
               values={formValues} 
               onChange={handleFieldChange}
               llmSuggestions={llmSuggestions}
             />
 
-            {/* Action buttons */}
             <FormActions onCancel={onCancel} onSave={handleSave} />
           </div>
         </ScrollArea>
       </div>
 
-      {/* Right side - Receipt Preview */}
       <div className="w-2/5">
         <ReceiptPreview 
           receiptUrl={receiptUrl}
@@ -562,38 +493,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         />
       </div>
 
-      {/* Receipt Dialog */}
-      <Dialog open={showReceiptDialog} onOpenChange={setShowReceiptDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Receipt Preview</DialogTitle>
-            <DialogDescription>
-              {receiptName}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center items-center min-h-[300px] bg-gray-100 rounded-md">
-            {receiptUrl ? (
-              <img 
-                src={`/public/lovable-uploads/fc953625-155a-4230-9515-5801b4d67e6f.png`} 
-                alt="Receipt" 
-                className="max-w-full max-h-[400px] object-contain" 
-              />
-            ) : (
-              <div className="text-gray-500">No receipt available</div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Data Mismatch Dialog */}
-      <DataMismatchAlert
-        mismatches={dataMismatches}
-        isOpen={showMismatchDialog}
-        onClose={() => setShowMismatchDialog(false)}
-        onAcceptOcrData={handleAcceptOcrData}
-      />
-      
-      {/* Validation Warnings Dialog */}
       {showValidationWarnings && (
         <ValidationWarnings 
           programmaticErrors={validationWarnings.programmaticErrors}
@@ -603,70 +502,9 @@ const ExpenseLineItem: React.FC<FormProps> = ({
             setShowValidationWarnings(false);
             handleSave();
           }}
+          open={showValidationWarnings}
         />
       )}
-      
-      {/* AI Assistant Dialog */}
-      <Dialog open={showAIAssistant} onOpenChange={setShowAIAssistant}>
-        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-blue-500" />
-              AI Travel & Expense Assistant
-            </DialogTitle>
-            <DialogDescription>
-              Ask questions about policies or get suggestions for your expense
-            </DialogDescription>
-          </DialogHeader>
-          <div className="bg-gray-50 p-4 rounded-md mb-4">
-            <p className="text-sm text-gray-700">
-              I can help you understand expense policies and make suggestions to ensure compliance.
-              For example, you can ask:
-            </p>
-            <ul className="mt-2 space-y-1">
-              <li className="text-sm text-blue-600 cursor-pointer hover:underline">• What's the per diem rate for meals in New York?</li>
-              <li className="text-sm text-blue-600 cursor-pointer hover:underline">• Does this hotel expense need a receipt?</li>
-              <li className="text-sm text-blue-600 cursor-pointer hover:underline">• What GL account should I use for client meals?</li>
-            </ul>
-          </div>
-          <div className="bg-white p-4 rounded-md border h-60 overflow-auto">
-            <div className="flex items-start mb-4">
-              <div className="bg-blue-100 rounded-full h-8 w-8 flex items-center justify-center mr-2 flex-shrink-0">
-                <Zap className="h-4 w-4 text-blue-700" />
-              </div>
-              <div className="bg-blue-50 rounded-lg p-3 max-w-[80%]">
-                <p className="text-sm text-gray-700">
-                  I noticed you're creating a {type} expense. Is there anything 
-                  specific you'd like to know about this type of expense?
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="relative mt-2">
-            <Input 
-              placeholder="Type your question here..." 
-              className="pr-12"
-              disabled
-            />
-            <button className="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600">
-              <Zap className="h-5 w-5" />
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 text-center mt-2">
-            AI assistant in test mode - responses are examples only
-          </p>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Validation Summary Panel */}
-      <ValidationSummaryPanel
-        programmaticErrors={validationWarnings.programmaticErrors}
-        llmWarnings={validationWarnings.llmWarnings}
-        isVisible={showValidationPanel}
-        toggleVisibility={() => setShowValidationPanel(prev => !prev)}
-        onRevalidate={runValidation}
-        onAskAI={() => setShowAIAssistant(true)}
-      />
     </div>
   );
 };

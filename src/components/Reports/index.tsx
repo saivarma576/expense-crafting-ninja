@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ReportsHeader from './ReportsHeader';
 import ExpenseTrendChart from './ExpenseTrendChart';
@@ -7,14 +6,12 @@ import DepartmentExpenseChart from './DepartmentExpenseChart';
 import RecentReportsList from './RecentReportsList';
 import ExpenseReportTables from './ExpenseReportTables';
 import { monthlyData, categoryData, categoryGroups, deptData, recentReports } from './data';
-import { ChevronLeft, ChevronRight, ChartIcon, TableIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BarChart, Table as TableIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-// Fix type casting by ensuring recentReports match the ReportItem type
 const typedRecentReports = recentReports.map(report => {
   return {
     ...report,
-    // Ensure the type is one of the allowed types in ReportItem
     type: report.type as "quarterly" | "department" | "category" | "forecast"
   };
 });
