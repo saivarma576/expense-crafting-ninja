@@ -2,6 +2,7 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AlertCircle } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { cn } from '@/lib/utils';
@@ -24,8 +25,17 @@ const NotesField: React.FC<NotesFieldProps> = ({
   
   return (
     <div className="mb-6">
-      <Label htmlFor="notes" className="text-xs font-medium text-gray-700">
+      <Label htmlFor="notes" className={cn(
+        "text-xs font-medium text-gray-700",
+        isHighlighted && "text-amber-700 font-semibold"
+      )}>
         Additional Notes
+        {isHighlighted && (
+          <span className="ml-2 text-amber-500 text-xs">
+            <AlertCircle className="h-3.5 w-3.5 inline mr-1" />
+            Attention needed
+          </span>
+        )}
       </Label>
       <div className="relative">
         <Textarea
@@ -42,6 +52,7 @@ const NotesField: React.FC<NotesFieldProps> = ({
         <FieldValidationIndicator
           llmSuggestion={llmSuggestions.notes}
           className="top-2 -translate-y-0"
+          highlightField={isHighlighted}
         />
       </div>
       {(helperText || defaultHelperText) && (

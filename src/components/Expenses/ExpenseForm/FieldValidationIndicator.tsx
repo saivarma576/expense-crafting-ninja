@@ -8,12 +8,14 @@ interface FieldValidationIndicatorProps {
   programmaticError?: string | null;
   llmSuggestion?: string | null;
   className?: string;
+  highlightField?: boolean;
 }
 
 const FieldValidationIndicator: React.FC<FieldValidationIndicatorProps> = ({
   programmaticError,
   llmSuggestion,
-  className
+  className,
+  highlightField = false
 }) => {
   if (!programmaticError && !llmSuggestion) return null;
   
@@ -21,7 +23,11 @@ const FieldValidationIndicator: React.FC<FieldValidationIndicatorProps> = ({
   const hasSuggestion = !!llmSuggestion;
   
   return (
-    <div className={cn("absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1", className)}>
+    <div className={cn(
+      "absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1", 
+      className,
+      highlightField && "animate-bounce"
+    )}>
       {hasError && (
         <Popover>
           <PopoverTrigger asChild>

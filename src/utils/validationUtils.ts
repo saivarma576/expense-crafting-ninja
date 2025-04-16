@@ -40,18 +40,24 @@ export const validateField = (field: string, value: any): string | null => {
 };
 
 // LLM-based validations (displayed on form submit)
-export const performLLMValidation = (expense: ExpenseLineItemFormData): string[] => {
+export const performLLMValidation = (expense: ExpenseLineItemFormData): {
+  warnings: string[];
+  fieldWarnings: Record<string, string>;
+} => {
   const warnings = [];
+  const fieldWarnings: Record<string, string> = {};
   
   // Receipt warnings
   if (!expense.receiptUrl && expense.type !== 'mileage') {
     warnings.push('Receipt missing. Please upload a receipt or bank statement for this expense.');
+    fieldWarnings.receipt = 'Receipt is required for this expense type';
   }
   
   // Transport warnings
   if (expense.type === 'transport') {
     if (expense.amount > 500) {
       warnings.push('High transportation cost detected. Consider more cost-effective options for future travel.');
+      fieldWarnings.amount = 'Transportation expense exceeds standard rate';
     }
   }
   
@@ -60,6 +66,8 @@ export const performLLMValidation = (expense: ExpenseLineItemFormData): string[]
     const standardRate = 159; // From STANDARD_RATES
     if (expense.amount > standardRate && (!expense.perDiemExplanation || expense.perDiemExplanation.length < 10)) {
       warnings.push(`Lodging cost exceeds standard rate of $${standardRate}. Please provide a detailed explanation.`);
+      fieldWarnings.amount = `Exceeds standard rate of $${standardRate}, explanation needed`;
+      fieldWarnings.perDiemExplanation = 'Please explain why this exceeds the standard rate';
     }
   }
   
@@ -68,6 +76,7 @@ export const performLLMValidation = (expense: ExpenseLineItemFormData): string[]
     const standardRate = 80; // From STANDARD_RATES
     if (expense.amount > standardRate) {
       warnings.push(`Meal expense exceeds daily per diem of $${standardRate}. Please check if alcohol or excessive tips are included.`);
+      fieldWarnings.amount = `Exceeds daily per diem of $${standardRate}`;
     }
   }
   
@@ -79,28 +88,33 @@ export const performLLMValidation = (expense: ExpenseLineItemFormData): string[]
   
   if (expenseDate < thirtyDaysAgo) {
     warnings.push('This expense is over 30 days old. Submit promptly to comply with the 60-day rule.');
+    fieldWarnings.date = 'Expense is over 30 days old';
   }
   
   // Add more LLM-simulated validations
   if (expense.type === 'hotel' && !expense.zipCode) {
     warnings.push('Please provide the zip code for your lodging to verify per diem rates for the area.');
+    fieldWarnings.zipCode = 'Zip code required for lodging';
   }
   
   if (expense.amount > 300 && expense.description && expense.description.length < 20) {
     warnings.push('High-value expenses require more detailed descriptions. Please elaborate on the business purpose.');
+    fieldWarnings.description = 'More details needed for this amount';
   }
   
   if (expense.type === 'meals' && expense.amount > 50 && (!expense.notes || expense.notes.length < 10)) {
     warnings.push('Please indicate if any alcohol was included in this meal expense and who attended.');
+    fieldWarnings.notes = 'Please list attendees and verify no alcohol';
   }
   
-  return warnings;
+  return { warnings, fieldWarnings };
 };
 
 // Get both programmatic and LLM validations for displaying in the summary panel
 export const getAllValidations = (expense: ExpenseLineItemFormData) => {
   // Get programmatic errors
   const programmaticErrors: {field: string, error: string}[] = [];
+  const fieldErrors: Record<string, string> = {};
   
   // Check required fields
   const requiredFields: {field: string, label: string}[] = [
@@ -128,15 +142,18 @@ export const getAllValidations = (expense: ExpenseLineItemFormData) => {
     const error = validateField(field, value);
     if (error) {
       programmaticErrors.push({field: label, error});
+      fieldErrors[field] = error;
     }
   });
   
   // Get LLM warnings
-  const llmWarnings = performLLMValidation(expense);
+  const { warnings: llmWarnings, fieldWarnings } = performLLMValidation(expense);
   
   return {
     programmaticErrors,
     llmWarnings,
+    fieldErrors,
+    fieldWarnings,
     hasErrors: programmaticErrors.length > 0,
     hasWarnings: llmWarnings.length > 0
   };
@@ -163,4 +180,16 @@ export const showLLMWarnings = (warnings: string[]) => {
   
   // Log all warnings to console for reference
   console.log('Policy considerations:', warnings);
+};
+
+// Get field-specific validation for inline display
+export const getFieldValidation = (
+  fieldName: string, 
+  fieldErrors: Record<string, string>,
+  fieldWarnings: Record<string, string>
+) => {
+  return {
+    error: fieldErrors[fieldName],
+    warning: fieldWarnings[fieldName]
+  };
 };
