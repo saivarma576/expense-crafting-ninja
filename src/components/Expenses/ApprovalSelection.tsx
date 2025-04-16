@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { X, UserPlus, Search, Check, Users, AlertCircle } from 'lucide-react';
 import {
@@ -73,10 +72,10 @@ export const ApprovalSelection: React.FC = () => {
   
   const getLevelLabel = (level: number) => {
     switch (level) {
-      case 0: return "First Approver";
-      case 1: return "Second Approver";
-      case 2: return "Final Approver";
-      default: return `Approver ${level + 1}`;
+      case 0: return "Level 1";
+      case 1: return "Level 2";
+      case 2: return "Level 3";
+      default: return `Level ${level + 1}`;
     }
   };
   
@@ -154,7 +153,6 @@ export const ApprovalSelection: React.FC = () => {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {approvers.map((approver, index) => {
-          // Only show next level if previous level has an approver selected
           const shouldShow = index === 0 || approvers[index - 1] !== null;
           if (!shouldShow) return null;
           
