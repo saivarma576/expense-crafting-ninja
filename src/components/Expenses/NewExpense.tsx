@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -67,7 +66,6 @@ const initialLineItems = [
   }
 ];
 
-// Main content component separating the logic from providers
 const NewExpenseContent: React.FC = () => {
   const navigate = useNavigate();
   const { 
@@ -261,7 +259,6 @@ const NewExpenseContent: React.FC = () => {
   );
 };
 
-// Main component with providers
 const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
