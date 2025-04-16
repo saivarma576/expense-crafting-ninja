@@ -1,19 +1,22 @@
 
 import React, { useState } from 'react';
-import { X, UserPlus, Search } from 'lucide-react';
+import { X, UserPlus, Search, Check } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type Approver = {
   id: string;
@@ -22,96 +25,34 @@ type Approver = {
   role?: string;
 };
 
-type ApprovalLevelProps = {
-  level: number;
-  levelLabel: string;
-  approver: Approver | null;
-  onSelect: (approver: Approver) => void;
+type ApproverCardProps = {
+  approver: Approver;
   onRemove: () => void;
-  approverOptions: Approver[];
 };
 
-const ApprovalLevel: React.FC<ApprovalLevelProps> = ({
-  level,
-  levelLabel,
-  approver,
-  onSelect,
-  onRemove,
-  approverOptions,
-}) => {
-  const [open, setOpen] = useState(false);
-
+const ApproverCard: React.FC<ApproverCardProps> = ({ approver, onRemove }) => {
   return (
-    <div key={`level-${level}`} className="mb-3">
-      <div className="flex flex-col">
-        <label className="text-xs font-medium text-gray-700 mb-1">
-          {levelLabel}
-        </label>
-        
-        {approver ? (
-          <div className="flex items-center bg-gray-50 hover:bg-gray-100 transition-colors rounded-md border p-2.5">
-            <div className="flex-1">
-              <p className="text-sm font-medium">{approver.name}</p>
-              <p className="text-xs text-gray-500">{approver.email}</p>
-              {approver.role && <p className="text-xs text-gray-500">{approver.role}</p>}
-            </div>
-            <button 
-              onClick={onRemove}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-200 transition-colors"
-              aria-label={`Remove ${approver.name}`}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <button 
-                className="flex items-center gap-2 text-blue-600 rounded-md border border-gray-300 p-2.5 text-sm hover:bg-gray-50 transition-colors w-full"
-              >
-                <UserPlus className="h-4 w-4" />
-                <span>Select {levelLabel}</span>
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 w-80" align="start">
-              <Command>
-                <div className="flex items-center border-b px-3">
-                  <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                  <CommandInput 
-                    placeholder={`Search for ${levelLabel.toLowerCase()}...`} 
-                    className="h-9"
-                  />
-                </div>
-                <CommandEmpty>No approver found.</CommandEmpty>
-                <CommandGroup className="max-h-64 overflow-auto">
-                  {approverOptions.map((option) => (
-                    <CommandItem
-                      key={option.id}
-                      onSelect={() => {
-                        onSelect(option);
-                        setOpen(false);
-                      }}
-                      className="flex flex-col items-start py-2.5"
-                    >
-                      <p className="text-sm font-medium">{option.name}</p>
-                      <div className="flex flex-col text-xs text-gray-500">
-                        <span>{option.email}</span>
-                        {option.role && <span>{option.role}</span>}
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        )}
+    <div className="flex items-center bg-gray-50 hover:bg-gray-100 transition-colors rounded-md border p-2.5 mb-2">
+      <div className="flex-1">
+        <p className="text-sm font-medium">{approver.name}</p>
+        <p className="text-xs text-gray-500">{approver.email}</p>
+        {approver.role && <p className="text-xs text-gray-500">{approver.role}</p>}
       </div>
+      <button 
+        onClick={onRemove}
+        className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-200 transition-colors"
+        aria-label={`Remove ${approver.name}`}
+      >
+        <X className="h-4 w-4" />
+      </button>
     </div>
   );
 };
 
 export const ApprovalSelection: React.FC = () => {
   const [approvers, setApprovers] = useState<(Approver | null)[]>([null, null, null]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeLevel, setActiveLevel] = useState<number | null>(null);
   
   const MAX_APPROVERS = 3;
   
@@ -130,6 +71,8 @@ export const ApprovalSelection: React.FC = () => {
     const newApprovers = [...approvers];
     newApprovers[level] = approver;
     setApprovers(newApprovers);
+    setActiveLevel(null);
+    setSearchTerm('');
   };
   
   const handleRemoveApprover = (level: number) => {
@@ -147,31 +90,98 @@ export const ApprovalSelection: React.FC = () => {
     }
   };
   
+  const filteredApprovers = mockApproverOptions.filter(
+    approver => 
+      approver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      approver.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (approver.role && approver.role.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+  
   const getActiveApproverCount = () => approvers.filter(a => a !== null).length;
+  
+  const openApproverSelection = (level: number) => {
+    setActiveLevel(level);
+    setSearchTerm('');
+  };
   
   return (
     <div className="mb-8">
       <h3 className="text-base font-medium text-gray-800 mb-4">Select Approvers</h3>
       
-      <div className="space-y-1">
-        {approvers.map((approver, index) => {
-          // Only show next level if previous level has an approver selected
-          const shouldShow = index === 0 || approvers[index - 1] !== null;
-          if (!shouldShow) return null;
-          
-          return (
-            <ApprovalLevel
-              key={`approval-level-${index}`}
-              level={index}
-              levelLabel={getLevelLabel(index)}
-              approver={approver}
-              onSelect={(selected) => handleSetApprover(selected, index)}
-              onRemove={() => handleRemoveApprover(index)}
-              approverOptions={mockApproverOptions}
-            />
-          );
-        })}
-      </div>
+      {approvers.map((approver, index) => {
+        // Only show next level if previous level has an approver selected
+        const shouldShow = index === 0 || approvers[index - 1] !== null;
+        if (!shouldShow) return null;
+        
+        return (
+          <div key={`approval-level-${index}`} className="mb-3">
+            <div className="flex flex-col">
+              <label className="text-xs font-medium text-gray-700 mb-1">
+                {getLevelLabel(index)}
+              </label>
+              
+              {approver ? (
+                <ApproverCard 
+                  approver={approver} 
+                  onRemove={() => handleRemoveApprover(index)} 
+                />
+              ) : (
+                <div>
+                  {activeLevel === index ? (
+                    <div className="border rounded-md p-2 bg-white shadow-sm">
+                      <div className="flex items-center border-b pb-2 mb-2">
+                        <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                        <Input
+                          placeholder={`Search for ${getLevelLabel(index).toLowerCase()}...`}
+                          className="border-none shadow-none focus-visible:ring-0 h-8 p-0"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button 
+                          onClick={() => setActiveLevel(null)}
+                          className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                      
+                      <div className="max-h-64 overflow-y-auto">
+                        {filteredApprovers.length === 0 ? (
+                          <div className="py-3 text-center text-sm text-gray-500">
+                            No approver found.
+                          </div>
+                        ) : (
+                          filteredApprovers.map((option) => (
+                            <button
+                              key={option.id}
+                              onClick={() => handleSetApprover(option, index)}
+                              className="flex flex-col items-start py-2 px-2 w-full text-left rounded-md hover:bg-gray-100 transition-colors"
+                            >
+                              <p className="text-sm font-medium">{option.name}</p>
+                              <div className="flex flex-col text-xs text-gray-500">
+                                <span>{option.email}</span>
+                                {option.role && <span>{option.role}</span>}
+                              </div>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <button 
+                      className="flex items-center gap-2 text-blue-600 rounded-md border border-gray-300 p-2.5 text-sm hover:bg-gray-50 transition-colors w-full"
+                      onClick={() => openApproverSelection(index)}
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      <span>Select {getLevelLabel(index)}</span>
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
