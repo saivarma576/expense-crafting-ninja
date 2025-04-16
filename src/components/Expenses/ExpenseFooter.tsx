@@ -2,7 +2,6 @@
 import React from 'react';
 import { ArrowRight, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import TruncatedText from '@/components/ui/truncated-text';
 
 interface ExpenseFooterProps {
   onCancel: () => void;
@@ -15,16 +14,13 @@ const ExpenseFooter: React.FC<ExpenseFooterProps> = ({
   onSaveAsDraft,
   onSubmit
 }) => {
-  const policyText = `With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts. Comments section should be used for the documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual click here.`;
+  const policyText = `With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts.
+Comments section should be used for the documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual click here.`;
 
   return (
     <div className="border-t bg-white sticky bottom-0 p-4">
       <div className="flex flex-col space-y-4">
-        <TruncatedText 
-          text={policyText} 
-          maxLength={180} 
-          className="text-xs text-gray-600 mb-2"
-        />
+        <p className="text-xs text-gray-600 whitespace-pre-wrap">{policyText}</p>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
