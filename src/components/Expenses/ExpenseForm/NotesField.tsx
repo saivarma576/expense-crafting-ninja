@@ -5,18 +5,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { cn } from '@/lib/utils';
+import TruncatedText from '@/components/ui/truncated-text';
 
 interface NotesFieldProps extends FieldGroupProps {
   activeField?: string | null;
+  helperText?: string;
 }
 
 const NotesField: React.FC<NotesFieldProps> = ({ 
   values, 
   onChange,
   llmSuggestions = {},
-  activeField
+  activeField,
+  helperText
 }) => {
   const isHighlighted = activeField === 'notes';
+  const defaultHelperText = "Comments section should be used for documenting any differences between receipts and amounts requested.";
   
   return (
     <div className="mb-6">
@@ -40,6 +44,13 @@ const NotesField: React.FC<NotesFieldProps> = ({
           className="top-2 -translate-y-0"
         />
       </div>
+      {(helperText || defaultHelperText) && (
+        <TruncatedText
+          text={helperText || defaultHelperText}
+          maxLength={100}
+          className="text-xs text-gray-500 mt-1"
+        />
+      )}
     </div>
   );
 };
