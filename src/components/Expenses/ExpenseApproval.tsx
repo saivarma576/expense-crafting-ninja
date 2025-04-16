@@ -100,11 +100,13 @@ export const ExpenseApproval: React.FC = () => {
               </PopoverTrigger>
               <PopoverContent className="p-0 w-72" align="start">
                 <Command>
-                  <CommandInput 
-                    placeholder="Search for approver..." 
-                    className="h-9"
-                    startIcon={<Search className="h-4 w-4 text-gray-400" />}
-                  />
+                  <div className="flex items-center border-b px-3">
+                    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                    <CommandInput 
+                      placeholder="Search for approver..." 
+                      className="h-9"
+                    />
+                  </div>
                   <CommandEmpty>No approver found.</CommandEmpty>
                   <CommandGroup className="max-h-64 overflow-auto">
                     {mockApproverOptions.map((option) => (
