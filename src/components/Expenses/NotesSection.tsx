@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import TruncatedText from '@/components/ui/truncated-text';
 
 interface NotesSectionProps {
   notes: string;
@@ -26,11 +25,9 @@ const NotesSection: React.FC<NotesSectionProps> = ({
         className="min-h-[120px] text-sm resize-none bg-gray-50 border-gray-200 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
       />
       {(helperText || defaultHelperText) && (
-        <TruncatedText
-          text={helperText || defaultHelperText}
-          maxLength={100}
-          className="text-xs text-gray-500 mt-1"
-        />
+        <p className="text-xs text-gray-500 mt-1">
+          {helperText || defaultHelperText}
+        </p>
       )}
     </div>
   );
