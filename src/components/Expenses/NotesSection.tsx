@@ -1,19 +1,22 @@
 
 import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
+import TruncatedText from '@/components/ui/truncated-text';
 
 interface NotesSectionProps {
   notes: string;
   setNotes: (notes: string) => void;
   helperText?: string;
   showPolicyText?: boolean;
+  policyTextMaxLength?: number;
 }
 
 const NotesSection: React.FC<NotesSectionProps> = ({
   notes,
   setNotes,
   helperText,
-  showPolicyText = false
+  showPolicyText = false,
+  policyTextMaxLength = 150
 }) => {
   const policyText = "With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts. Comments section should be used for documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual click here.";
 
@@ -29,7 +32,10 @@ const NotesSection: React.FC<NotesSectionProps> = ({
       
       {showPolicyText && (
         <div className="mt-4 border-t pt-3 text-xs text-gray-500">
-          {policyText}
+          <TruncatedText 
+            text={policyText} 
+            maxLength={policyTextMaxLength} 
+          />
         </div>
       )}
     </div>

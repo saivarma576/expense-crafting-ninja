@@ -93,6 +93,7 @@ const DocumentsNotesSection: React.FC<DocumentsNotesSectionProps> = ({
         notes={notes} 
         setNotes={setNotes} 
         showPolicyText={true}
+        policyTextMaxLength={150}
       />
     </div>
   );
