@@ -35,8 +35,6 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { ApprovalJourney } from './ApprovalJourney';
-import { Progress } from '@/components/ui/progress'; 
 
 type Approver = {
   id: string;
@@ -123,33 +121,6 @@ export const ApprovalSelection: React.FC = () => {
     return duplicate;
   }, [approvers]);
 
-  // Create journey steps based on current approvers
-  const journeySteps = useMemo(() => {
-    return [
-      {
-        label: "First Approver",
-        completed: approvers[0] !== null,
-        current: approvers[0] === null && approvers[1] === null && approvers[2] === null
-      },
-      {
-        label: "Second Approver",
-        completed: approvers[1] !== null,
-        current: approvers[0] !== null && approvers[1] === null
-      },
-      {
-        label: "Final Approver",
-        completed: approvers[2] !== null,
-        current: approvers[0] !== null && approvers[1] !== null && approvers[2] === null
-      }
-    ];
-  }, [approvers]);
-
-  // Calculate completion percentage for progress bar
-  const completionPercentage = useMemo(() => {
-    const count = getActiveApproverCount();
-    return (count / 3) * 100;
-  }, [approvers]);
-
   return (
     <div className="mb-8 space-y-4">
       <div className="flex items-center justify-between">
@@ -179,19 +150,6 @@ export const ApprovalSelection: React.FC = () => {
             </HoverCardContent>
           </HoverCard>
         )}
-      </div>
-      
-      {/* Approval Journey */}
-      <ApprovalJourney steps={journeySteps} />
-      
-      {/* Progress bar */}
-      <div className="w-full mb-4">
-        <Progress value={completionPercentage} className="h-2" />
-        <p className="text-xs text-gray-500 mt-1 text-right">
-          {getActiveApproverCount() === 3 ? 
-            "All approvers selected" : 
-            `${getActiveApproverCount()} of 3 approvers selected`}
-        </p>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
