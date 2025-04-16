@@ -2,7 +2,7 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { FileDigit, AlertCircle } from 'lucide-react';
+import { FileDigit, AlertCircle, AlertTriangle } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { cn } from '@/lib/utils';
@@ -34,7 +34,7 @@ const GlAccountField: React.FC<GlAccountFieldProps> = ({
         GL Account <span className="text-red-500 ml-1">*</span>
         {isHighlighted && (
           <span className="ml-2 text-amber-500 text-xs flex items-center">
-            <AlertCircle className="h-3.5 w-3.5 mr-1" />
+            <AlertTriangle className="h-3.5 w-3.5 mr-1" />
             Attention needed
           </span>
         )}

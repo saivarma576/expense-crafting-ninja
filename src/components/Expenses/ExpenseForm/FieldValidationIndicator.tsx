@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AlertCircle, Zap, ChevronRight } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Zap, ChevronRight } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from '@/lib/utils';
 
@@ -53,15 +53,15 @@ const FieldValidationIndicator: React.FC<FieldValidationIndicatorProps> = ({
         <Popover>
           <PopoverTrigger asChild>
             <button className="group flex items-center justify-center h-5 w-5 rounded-full bg-amber-100 text-amber-500 animate-in fade-in zoom-in duration-300">
-              <Zap className="h-3.5 w-3.5" />
+              <AlertTriangle className="h-3.5 w-3.5" />
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-80 p-0 mr-2" side="right">
             <div className="bg-amber-50 p-3 rounded-md border border-amber-200">
               <div className="flex items-start gap-2">
-                <Zap className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-amber-700">AI Suggestion</p>
+                  <p className="text-sm font-medium text-amber-700">Policy Warning</p>
                   <p className="text-sm text-amber-600">{llmSuggestion}</p>
                 </div>
               </div>

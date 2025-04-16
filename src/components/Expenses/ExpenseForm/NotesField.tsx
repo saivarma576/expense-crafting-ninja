@@ -2,7 +2,7 @@
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, AlertTriangle } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { cn } from '@/lib/utils';
@@ -32,7 +32,7 @@ const NotesField: React.FC<NotesFieldProps> = ({
         Additional Notes
         {isHighlighted && (
           <span className="ml-2 text-amber-500 text-xs">
-            <AlertCircle className="h-3.5 w-3.5 inline mr-1" />
+            <AlertTriangle className="h-3.5 w-3.5 inline mr-1" />
             Attention needed
           </span>
         )}
