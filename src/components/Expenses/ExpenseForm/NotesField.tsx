@@ -7,6 +7,7 @@ import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { cn } from '@/lib/utils';
 import TruncatedText from '@/components/ui/truncated-text';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface NotesFieldProps extends FieldGroupProps {
   activeField?: string | null;
@@ -25,18 +26,32 @@ const NotesField: React.FC<NotesFieldProps> = ({
   
   return (
     <div className="mb-6">
-      <Label htmlFor="notes" className={cn(
-        "text-xs font-medium text-gray-700",
-        isHighlighted && "text-amber-700 font-semibold"
-      )}>
-        Additional Notes
-        {isHighlighted && (
-          <span className="ml-2 text-amber-500 text-xs">
-            <AlertTriangle className="h-3.5 w-3.5 inline mr-1" />
-            Attention needed
-          </span>
+      <div className="flex items-center justify-between mb-1">
+        <Label htmlFor="notes" className={cn(
+          "text-xs font-medium text-gray-700",
+          isHighlighted && "text-amber-700 font-semibold"
+        )}>
+          Additional Notes
+        </Label>
+        
+        {(isHighlighted || llmSuggestions.notes) && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center text-amber-500 text-xs">
+                  <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                  Attention needed
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-sm max-w-xs">
+                  {llmSuggestions.notes || "This field requires your attention"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
-      </Label>
+      </div>
       <div className="relative">
         <Textarea
           id="notes"

@@ -6,6 +6,7 @@ import { FileDigit, AlertCircle, AlertTriangle } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface GlAccountFieldProps extends FieldGroupProps {
   error?: string | null;
@@ -24,21 +25,44 @@ const GlAccountField: React.FC<GlAccountFieldProps> = ({
 
   return (
     <div className="mb-4">
-      <Label 
-        htmlFor="glAccount" 
-        className={cn(
-          "text-xs font-medium text-gray-700 flex items-center",
-          isHighlighted && "text-amber-700 font-semibold"
+      <div className="flex items-center justify-between mb-1">
+        <Label 
+          htmlFor="glAccount" 
+          className={cn(
+            "text-xs font-medium text-gray-700",
+            isHighlighted && "text-amber-700 font-semibold"
+          )}
+        >
+          GL Account <span className="text-red-500 ml-1">*</span>
+        </Label>
+        
+        {(isHighlighted || llmSuggestion || error) && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="flex items-center text-xs">
+                  {error ? (
+                    <span className="text-red-500 flex items-center">
+                      <AlertCircle className="h-3.5 w-3.5 mr-1" />
+                      Error
+                    </span>
+                  ) : (
+                    <span className="text-amber-500 flex items-center">
+                      <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                      Warning
+                    </span>
+                  )}
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-sm max-w-xs">
+                  {error || llmSuggestion || "This field requires your attention"}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
-      >
-        GL Account <span className="text-red-500 ml-1">*</span>
-        {isHighlighted && (
-          <span className="ml-2 text-amber-500 text-xs flex items-center">
-            <AlertTriangle className="h-3.5 w-3.5 mr-1" />
-            Attention needed
-          </span>
-        )}
-      </Label>
+      </div>
       <div className="relative">
         <Input
           id="glAccount"
