@@ -24,7 +24,6 @@ const TruncatedText: React.FC<TruncatedTextProps> = ({
   useEffect(() => {
     const checkTruncation = () => {
       if (textRef.current) {
-        const element = textRef.current;
         setIsTruncated(text.length > maxLength);
       }
     };
@@ -51,7 +50,7 @@ const TruncatedText: React.FC<TruncatedTextProps> = ({
         <TooltipTrigger asChild>
           <p ref={textRef} className={`${className} cursor-help`}>{truncatedText}</p>
         </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-md p-4 text-sm">
+        <TooltipContent side="top" className="max-w-md p-4 text-sm whitespace-pre-wrap">
           {text}
         </TooltipContent>
       </Tooltip>
