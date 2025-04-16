@@ -2,6 +2,7 @@
 import React from 'react';
 import { ArrowRight, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import TruncatedText from '@/components/ui/truncated-text';
 
 interface ExpenseFooterProps {
   onCancel: () => void;
@@ -20,18 +21,24 @@ Comments section should be used for the documenting any differences between rece
   return (
     <div className="border-t bg-white sticky bottom-0 p-4">
       <div className="flex flex-col space-y-4">
-        <p className="text-xs text-gray-600 whitespace-pre-wrap">{policyText}</p>
+        <div className="flex items-center gap-2">
+          <input 
+            type="checkbox" 
+            id="terms" 
+            className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500" 
+          />
+          <label htmlFor="terms" className="text-xs text-gray-600">
+            By submitting, I confirm this is a valid business expense in accordance with company policy.
+          </label>
+        </div>
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <input 
-              type="checkbox" 
-              id="terms" 
-              className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-500" 
+        <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between">
+          <div className="md:max-w-2xl">
+            <TruncatedText 
+              text={policyText} 
+              maxLength={150} 
+              className="text-xs text-gray-600"
             />
-            <label htmlFor="terms" className="text-xs text-gray-600">
-              By submitting, I confirm this is a valid business expense in accordance with company policy.
-            </label>
           </div>
           
           <div className="flex items-center gap-3">
