@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem from '@/components/Expenses/ExpenseLineItem';
-import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
 import ExpenseHeader from '@/components/Expenses/ExpenseHeader';
 import LineItemsSection from '@/components/Expenses/LineItemsSection';
 import DocumentsNotesSection from '@/components/Expenses/DocumentsNotesSection';
@@ -221,7 +221,7 @@ const NewExpenseContent: React.FC = () => {
           activeField={activeField === 'Receipt' ? 'receipt' : undefined}
         />
         
-        <ExpenseApproval />
+        {/* ExpenseApproval component has been removed */}
       </div>
       
       <ExpenseActions 
