@@ -92,10 +92,10 @@ const DocumentsNotesSection: React.FC<DocumentsNotesSectionProps> = ({
       <NotesSection 
         notes={notes} 
         setNotes={setNotes} 
+        showPolicyText={true}
       />
     </div>
   );
 };
 
 export default DocumentsNotesSection;
-
