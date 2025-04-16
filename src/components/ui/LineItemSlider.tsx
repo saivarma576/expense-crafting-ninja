@@ -66,7 +66,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
           </button>
         </div>
         <ScrollArea className="flex-1 h-[calc(100vh-65px)] overflow-x-hidden relative">
-          <div className="relative">
+          <div className="relative p-4">
             {children}
           </div>
         </ScrollArea>

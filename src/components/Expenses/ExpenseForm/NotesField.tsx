@@ -29,7 +29,8 @@ const NotesField: React.FC<NotesFieldProps> = ({
       <div className="flex items-center justify-between mb-1">
         <Label htmlFor="notes" className={cn(
           "text-xs font-medium text-gray-700",
-          isHighlighted && "text-amber-700 font-semibold"
+          isHighlighted && "text-amber-700 font-semibold",
+          llmSuggestions.notes && "text-amber-700"
         )}>
           Additional Notes
         </Label>

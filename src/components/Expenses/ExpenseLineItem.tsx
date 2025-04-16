@@ -473,7 +473,12 @@ const ExpenseLineItem: React.FC<FormProps> = ({
               llmSuggestions={llmSuggestions}
             />
 
-            <FormActions onCancel={onCancel} onSave={handleSave} />
+            <FormActions 
+              onCancel={onCancel} 
+              onSave={handleSave} 
+              programmaticErrors={validationWarnings.programmaticErrors}
+              llmWarnings={validationWarnings.llmWarnings}
+            />
           </div>
         </ScrollArea>
       </div>
