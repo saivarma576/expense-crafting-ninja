@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import NotesSection from '@/components/Expenses/NotesSection';
 import { ExpenseDocument } from '@/types/expense';
 import { cn } from '@/lib/utils';
+import TruncatedText from '@/components/ui/truncated-text';
 
 interface DocumentsNotesSectionProps {
   uploadedDocuments: ExpenseDocument[];
@@ -26,6 +27,9 @@ const DocumentsNotesSection: React.FC<DocumentsNotesSectionProps> = ({
   const handleRemoveDocument = (index: number) => {
     setUploadedDocuments(prev => prev.filter((_, i) => i !== index));
   };
+
+  const policyText = `With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts.
+Comments section should be used for documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual click here.`;
 
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -77,6 +81,14 @@ const DocumentsNotesSection: React.FC<DocumentsNotesSectionProps> = ({
           )}
         </div>
         
+        <div className="mb-4">
+          <TruncatedText 
+            text={policyText} 
+            maxLength={150} 
+            className="text-xs text-gray-500"
+          />
+        </div>
+        
         <div>
           <Button 
             variant="outline" 
@@ -98,3 +110,4 @@ const DocumentsNotesSection: React.FC<DocumentsNotesSectionProps> = ({
 };
 
 export default DocumentsNotesSection;
+
