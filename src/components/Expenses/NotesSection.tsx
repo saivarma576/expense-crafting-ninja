@@ -18,7 +18,20 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   showPolicyText = false,
   policyTextMaxLength = 150
 }) => {
-  const policyText = "With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts. Comments section should be used for documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual click here.";
+  const handleTravelProceduresClick = () => {
+    window.open('/travel-procedures', '_blank');
+  };
+
+  const policyText = (
+    <>
+      With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts. Comments section should be used for documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual <span 
+        onClick={handleTravelProceduresClick} 
+        className="text-blue-600 cursor-pointer hover:underline"
+      >
+        click here
+      </span>.
+    </>
+  );
 
   return (
     <div>
