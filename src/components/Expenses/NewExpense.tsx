@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -23,6 +22,7 @@ import AIChatDrawer from './AIChatDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import { ValidationProvider, useValidation } from '@/contexts/ValidationContext';
 import { TravelInfoProvider, useTravelInfo } from '@/contexts/TravelInfoContext';
+import { ApprovalSelection } from './ApprovalSelection';
 
 const initialLineItems = [
   {
@@ -221,7 +221,7 @@ const NewExpenseContent: React.FC = () => {
           activeField={activeField === 'Receipt' ? 'receipt' : undefined}
         />
         
-        {/* ExpenseApproval component has been removed */}
+        <ApprovalSelection />
       </div>
       
       <ExpenseActions 
