@@ -2,6 +2,7 @@
 import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import TruncatedText from '@/components/ui/truncated-text';
+import { ExternalLink } from 'lucide-react';
 
 interface NotesSectionProps {
   notes: string;
@@ -18,20 +19,37 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   showPolicyText = false,
   policyTextMaxLength = 150
 }) => {
-  const handleTravelProceduresClick = () => {
-    window.open('/travel-procedures', '_blank');
+  const policyText = "With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts. Comments section should be used for documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual click here.";
+  
+  const handleTravelProceduresClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent tooltip from closing immediately
+    window.open('https://dev-upgrade.ptcvendorportal.com/assets/documents/TravelProceduresManual.pdf', '_blank');
   };
 
-  const policyText = (
-    <>
-      With the exception of mileage and per diem amounts for meals and incidental expenses, itemized receipts should be submitted for ALL reimbursement requests. There is no minimum threshold for receipts. Comments section should be used for documenting any differences between receipts and amounts requested for reimbursement. This includes deductions for 'cash back', hotel points, airline 'frequent flyer' miles, or other rewards received by or due the employee in connection with PTC business travel (as required by the Ethics Act, statewide employee gift ban and the PTC Code of Conduct). For Travel procedures manual <span 
-        onClick={handleTravelProceduresClick} 
-        className="text-blue-600 cursor-pointer hover:underline"
-      >
-        click here
-      </span>.
-    </>
-  );
+  // Custom renderer for the tooltip content to include the clickable link
+  const renderTooltipContent = () => {
+    // Find the position of "click here" in the policy text
+    const clickHereIndex = policyText.indexOf("click here");
+    if (clickHereIndex === -1) return policyText;
+
+    // Split the text into three parts: before link, the link text, and after link
+    const beforeLink = policyText.substring(0, clickHereIndex);
+    const afterLink = policyText.substring(clickHereIndex + "click here".length);
+
+    return (
+      <>
+        {beforeLink}
+        <span 
+          onClick={handleTravelProceduresClick}
+          className="text-blue-600 cursor-pointer hover:underline inline-flex items-center"
+        >
+          click here
+          <ExternalLink className="h-3 w-3 ml-0.5" />
+        </span>
+        {afterLink}
+      </>
+    );
+  };
 
   return (
     <div>
@@ -47,7 +65,8 @@ const NotesSection: React.FC<NotesSectionProps> = ({
         <div className="mt-4 border-t pt-3 text-xs text-gray-500">
           <TruncatedText 
             text={policyText} 
-            maxLength={policyTextMaxLength} 
+            maxLength={policyTextMaxLength}
+            tooltipContent={renderTooltipContent()}
           />
         </div>
       )}

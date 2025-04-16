@@ -11,12 +11,14 @@ interface TruncatedTextProps {
   text: string;
   maxLength?: number;
   className?: string;
+  tooltipContent?: React.ReactNode;
 }
 
 const TruncatedText: React.FC<TruncatedTextProps> = ({ 
   text, 
   maxLength = 150,
-  className = "" 
+  className = "",
+  tooltipContent
 }) => {
   const [isTruncated, setIsTruncated] = useState(false);
   const textRef = useRef<HTMLParagraphElement>(null);
@@ -51,7 +53,7 @@ const TruncatedText: React.FC<TruncatedTextProps> = ({
           <p ref={textRef} className={`${className} cursor-help`}>{truncatedText}</p>
         </TooltipTrigger>
         <TooltipContent side="top" className="max-w-md p-4 text-sm whitespace-pre-wrap">
-          {text}
+          {tooltipContent || text}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
