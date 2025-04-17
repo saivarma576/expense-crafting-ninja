@@ -5,10 +5,9 @@ import { useExpenseForm } from '@/hooks/useExpenseForm';
 import { useExpenseValidation } from '@/hooks/useExpenseValidation';
 import ExpenseFormLayout from './ExpenseForm/ExpenseFormLayout';
 import ReceiptPreview from './ReceiptPreview';
-import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import { FormProps } from './ExpenseForm/types';
 import { Button } from '@/components/ui/button';
-import { XCircle, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const ExpenseLineItem: React.FC<FormProps> = ({ 
   onSave, 
@@ -24,9 +23,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     handleFieldChange,
     handleReceiptChange,
     handleOcrDataExtracted,
-    dataMismatches,
-    showMismatchDialog,
-    setShowMismatchDialog,
     receiptUrl,
     receiptName,
   } = useExpenseForm({
@@ -37,9 +33,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   });
 
   const {
-    validationWarnings,
-    showValidationWarnings,
-    setShowValidationWarnings,
     fieldErrors,
     validateForm
   } = useExpenseValidation(formValues);
@@ -67,9 +60,9 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-6 min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {/* Main Form Content */}
-      <div className="flex-1">
+      <div className="flex-1 p-6">
         <div className="flex flex-col md:flex-row gap-6">
           <ExpenseFormLayout 
             formValues={formValues}
@@ -78,7 +71,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
             llmSuggestions={llmSuggestions}
           />
 
-          <div className="md:w-[35%] h-[500px]">
+          <div className="md:w-[35%]">
             <ReceiptPreview 
               receiptUrl={receiptUrl}
               receiptName={receiptName}
@@ -95,39 +88,22 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         </div>
       </div>
 
-      {/* Validation Warnings Section */}
-      {showValidationWarnings && (
-        <div className="mt-auto border-t pt-4 bg-white">
-          <ValidationWarnings 
-            programmaticErrors={validationWarnings.programmaticErrors}
-            llmWarnings={validationWarnings.llmWarnings}
-            onClose={() => setShowValidationWarnings(false)}
-            onProceed={() => {
-              setShowValidationWarnings(false);
-              handleSave();
-            }}
-            open={showValidationWarnings}
-          />
-        </div>
-      )}
-
-      {/* Action Buttons - Now sticky at bottom */}
-      <div className="sticky bottom-0 bg-white border-t py-4 mt-auto">
-        <div className="flex justify-end gap-3 px-6">
+      {/* Action Buttons - Sticky Footer */}
+      <div className="border-t bg-white py-4 px-6">
+        <div className="max-w-[1200px] mx-auto flex justify-end gap-3">
           <Button
             variant="outline"
             onClick={onCancel}
-            className="flex items-center"
+            className="px-6"
           >
-            <XCircle className="mr-2 h-4 w-4" />
             Cancel
           </Button>
           <Button
             onClick={handleSave}
-            className="flex items-center"
+            className="px-6 flex items-center gap-2"
           >
             Save
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
