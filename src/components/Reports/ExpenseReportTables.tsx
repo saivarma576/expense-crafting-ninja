@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Table, 
@@ -25,7 +24,6 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Calendar, 
   FileSpreadsheet, 
@@ -43,28 +41,6 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-// Format date to "26 Apr, 2025" pattern
-const formatDate = (dateString: string) => {
-  try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    }).replace(/\s/g, ' ');
-  } catch (e) {
-    return dateString; // Return original string if parsing fails
-  }
-};
-
-// Format currency consistently
-const formatCurrency = (amount: number) => {
-  return amount.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-};
 
 // Mock expense summary data
 const expenseSummaryData = [
@@ -110,7 +86,7 @@ const mileageReimbursementData = [
   { employee: 'J. Brown', date: '10/25/2023', miles: 120, rateUsed: 0.65, total: 78, notes: '⚠️ Different rate used' },
 ];
 
-const ExpenseReportTables: React.FC = () => {
+const ExpenseReportDetail: React.FC = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all');
   const [dateRange, setDateRange] = useState('current-month');
@@ -122,83 +98,93 @@ const ExpenseReportTables: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Only show back button on the report detail page, not on the v2 dashboard */}
-      {window.location.pathname.includes('/reports/') && (
-        <Button 
-          variant="outline" 
-          className="flex items-center gap-1.5 mb-4" 
-          onClick={handleBackToReports}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back to Reports
-        </Button>
-      )}
+    <div className="space-y-8">
+      <Button 
+        variant="outline" 
+        className="flex items-center gap-1.5 mb-4" 
+        onClick={handleBackToReports}
+      >
+        <ChevronLeft className="h-4 w-4" />
+        Back to Reports
+      </Button>
       
-      <div className="flex flex-wrap gap-3 mb-6">
-        <div className="flex items-center gap-2">
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-[180px] h-9">
-              <Calendar className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Date range" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="current-month">Current Month</SelectItem>
-              <SelectItem value="previous-month">Previous Month</SelectItem>
-              <SelectItem value="current-quarter">Current Quarter</SelectItem>
-              <SelectItem value="year-to-date">Year to Date</SelectItem>
-              <SelectItem value="custom">Custom Range</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Select value={department} onValueChange={setDepartment}>
-            <SelectTrigger className="w-[180px] h-9">
-              <MapPin className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Department/Cost Center" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Departments</SelectItem>
-              <SelectItem value="sales">Sales</SelectItem>
-              <SelectItem value="marketing">Marketing</SelectItem>
-              <SelectItem value="engineering">Engineering</SelectItem>
-              <SelectItem value="finance">Finance</SelectItem>
-              <SelectItem value="hr">Human Resources</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Select value={activeFilter} onValueChange={setActiveFilter}>
-            <SelectTrigger className="w-[180px] h-9">
-              <Filter className="h-4 w-4 mr-2" />
-              <SelectValue placeholder="Filter Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Expenses</SelectItem>
-              <SelectItem value="compliant">Compliant Only</SelectItem>
-              <SelectItem value="non-compliant">Non-Compliant Only</SelectItem>
-              <SelectItem value="needs-review">Needs Review</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <Button variant="outline" size="sm" className="h-9 flex items-center gap-1.5">
-          <Flag className="h-4 w-4" />
-          Flag Non-Compliant
-        </Button>
-      </div>
-      
-      <Tabs defaultValue={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 w-full max-w-md mb-6">
-          <TabsTrigger value="expense-summary">Summary</TabsTrigger>
-          <TabsTrigger value="lodging">Lodging</TabsTrigger>
-          <TabsTrigger value="meals">Meals</TabsTrigger>
-          <TabsTrigger value="transportation">Transportation</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="expense-summary">
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-2xl font-bold">Monthly Expense Summary</CardTitle>
+              <CardDescription>
+                Comprehensive expense analytics and compliance reports
+              </CardDescription>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                <FileSpreadsheet className="h-4 w-4" />
+                Export Excel
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+                <FileText className="h-4 w-4" />
+                Export PDF
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3 mb-6">
+            <div className="flex items-center gap-2">
+              <Select value={dateRange} onValueChange={setDateRange}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Date range" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="current-month">Current Month</SelectItem>
+                  <SelectItem value="previous-month">Previous Month</SelectItem>
+                  <SelectItem value="current-quarter">Current Quarter</SelectItem>
+                  <SelectItem value="year-to-date">Year to Date</SelectItem>
+                  <SelectItem value="custom">Custom Range</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Select value={department} onValueChange={setDepartment}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Department/Cost Center" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Departments</SelectItem>
+                  <SelectItem value="sales">Sales</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
+                  <SelectItem value="engineering">Engineering</SelectItem>
+                  <SelectItem value="finance">Finance</SelectItem>
+                  <SelectItem value="hr">Human Resources</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <Select value={activeFilter} onValueChange={setActiveFilter}>
+                <SelectTrigger className="w-[180px] h-9">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Filter Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Expenses</SelectItem>
+                  <SelectItem value="compliant">Compliant Only</SelectItem>
+                  <SelectItem value="non-compliant">Non-Compliant Only</SelectItem>
+                  <SelectItem value="needs-review">Needs Review</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <Button variant="outline" size="sm" className="h-9 flex items-center gap-1.5">
+              <Flag className="h-4 w-4" />
+              Flag Non-Compliant
+            </Button>
+          </div>
+          
           <div className="space-y-4">
             <div className="font-medium text-lg mb-2">Expense Summary by Type and Amount</div>
             <Table>
@@ -219,15 +205,15 @@ const ExpenseReportTables: React.FC = () => {
                       </div>
                       {item.type}
                     </TableCell>
-                    <TableCell className="text-right font-semibold">${formatCurrency(item.amount)}</TableCell>
+                    <TableCell className="text-right font-semibold">${item.amount.toFixed(2)}</TableCell>
                     <TableCell className="text-right">{item.claims}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.avgAmount)}</TableCell>
+                    <TableCell className="text-right">${item.avgAmount.toFixed(2)}</TableCell>
                   </TableRow>
                 ))}
                 <TableRow className="bg-muted/50">
                   <TableCell className="font-bold">Total</TableCell>
                   <TableCell className="text-right font-bold">
-                    ${formatCurrency(expenseSummaryData.reduce((sum, item) => sum + item.amount, 0))}
+                    ${expenseSummaryData.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
                   </TableCell>
                   <TableCell className="text-right font-semibold">
                     {expenseSummaryData.reduce((sum, item) => sum + item.claims, 0)}
@@ -237,154 +223,20 @@ const ExpenseReportTables: React.FC = () => {
               </TableBody>
             </Table>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="lodging">
-          <div className="space-y-4">
-            <div className="font-medium text-lg mb-2">Hotel/Lodging Compliance Report</div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Employee</TableHead>
-                  <TableHead>City</TableHead>
-                  <TableHead className="text-right">Hotel Rate ($)</TableHead>
-                  <TableHead className="text-right">CONUS Rate ($)</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Explanation</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lodgingReportData.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.employee}</TableCell>
-                    <TableCell>{item.city}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.hotelRate)}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.conusRate)}</TableCell>
-                    <TableCell>
-                      {item.overLimit ? (
-                        <Badge variant="destructive" className="flex items-center gap-1 w-fit">
-                          <AlertTriangle className="h-3 w-3" />
-                          Over Limit
-                        </Badge>
-                      ) : (
-                        <Badge variant="success" className="flex items-center gap-1 w-fit">
-                          <Check className="h-3 w-3" />
-                          Compliant
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {item.explanation && item.overLimit ? (
-                        <Badge variant="outline">Provided</Badge>
-                      ) : item.overLimit ? (
-                        <Badge variant="destructive">Missing</Badge>
-                      ) : (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          
+          <div className="flex justify-between items-center mt-6 pt-4 border-t">
+            <div className="text-sm text-gray-500">
+              Showing data for April 2025
+            </div>
+            <Button className="flex items-center gap-1.5">
+              <Download className="h-4 w-4" />
+              Download Full Report
+            </Button>
           </div>
-        </TabsContent>
-        
-        <TabsContent value="meals">
-          <div className="space-y-4">
-            <div className="font-medium text-lg mb-2">Meals Per Diem Compliance</div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Employee</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>City</TableHead>
-                  <TableHead className="text-right">Amount ($)</TableHead>
-                  <TableHead className="text-right">Per Diem ($)</TableHead>
-                  <TableHead className="text-right">Variance ($)</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mealsPerDiemData.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.employee}</TableCell>
-                    <TableCell>{formatDate(item.date)}</TableCell>
-                    <TableCell>{item.city}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.amount)}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.perDiemRate)}</TableCell>
-                    <TableCell className="text-right">
-                      {item.variance > 0 ? `+$${formatCurrency(item.variance)}` : `$${formatCurrency(item.variance)}`}
-                    </TableCell>
-                    <TableCell>
-                      {item.variance > 0 ? (
-                        <Badge variant={item.explanation ? "warning" : "destructive"} className="flex items-center gap-1 w-fit">
-                          {item.explanation ? "Explained" : "Over Limit"}
-                        </Badge>
-                      ) : (
-                        <Badge variant="success" className="flex items-center gap-1 w-fit">
-                          <Check className="h-3 w-3" />
-                          Compliant
-                        </Badge>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="transportation">
-          <div className="space-y-4">
-            <div className="font-medium text-lg mb-2">Mileage Reimbursement Analysis</div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Employee</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Miles</TableHead>
-                  <TableHead className="text-right">Rate ($/mile)</TableHead>
-                  <TableHead className="text-right">Total ($)</TableHead>
-                  <TableHead>Notes</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mileageReimbursementData.map((item, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{item.employee}</TableCell>
-                    <TableCell>{formatDate(item.date)}</TableCell>
-                    <TableCell className="text-right">{item.miles}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.rateUsed)}</TableCell>
-                    <TableCell className="text-right">${formatCurrency(item.total)}</TableCell>
-                    <TableCell>
-                      {item.notes === 'OK' ? (
-                        <Badge variant="success" className="flex items-center gap-1 w-fit">
-                          <Check className="h-3 w-3" />
-                          Compliant
-                        </Badge>
-                      ) : (
-                        <Badge variant="warning" className="w-fit">{item.notes}</Badge>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </TabsContent>
-      </Tabs>
-      
-      <div className="flex justify-between items-center mt-6 pt-4 border-t">
-        <div className="text-sm text-gray-500">
-          Showing data for April 2025
-        </div>
-        <Button className="flex items-center gap-1.5">
-          <Download className="h-4 w-4" />
-          Download Full Report
-        </Button>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default ExpenseReportTables;
+export default ExpenseReportDetail;

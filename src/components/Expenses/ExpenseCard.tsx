@@ -1,10 +1,8 @@
 
 import React from 'react';
-import { Edit, Trash2, Paperclip, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Edit, Trash2, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useValidation } from '@/contexts/ValidationContext';
 
 interface ExpenseItem {
   id: string;
@@ -27,14 +25,6 @@ interface ExpenseCardProps {
 }
 
 const ExpenseCard: React.FC<ExpenseCardProps> = ({ item, onEdit, onDelete }) => {
-  const { policyViolations } = useValidation();
-  
-  // Find any policy violations related to this item
-  const itemViolations = policyViolations.filter(violation => 
-    violation.lineNumber.toString() === item.id || 
-    violation.id.includes(item.id)
-  );
-
   return (
     <div className="py-3">
       <div className="grid grid-cols-12 gap-2 items-center text-xs">
@@ -101,41 +91,6 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({ item, onEdit, onDelete }) => 
           </Button>
         </div>
       </div>
-      
-      {/* Policy violation warnings - display below the item details */}
-      {itemViolations.length > 0 && (
-        <div className="mt-2 grid grid-cols-12">
-          <div className="col-span-12">
-            {itemViolations.map((violation, index) => (
-              <TooltipProvider key={`${violation.id}-${index}`}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className={cn(
-                      "py-2 px-3 text-xs rounded-md flex items-start gap-2 mb-1",
-                      violation.violationType === 'error' 
-                        ? "bg-red-50 text-red-700 border border-red-100" 
-                        : "bg-amber-50 text-amber-700 border border-amber-100"
-                    )}>
-                      {violation.violationType === 'error' ? (
-                        <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                      ) : (
-                        <AlertTriangle className="h-4 w-4 flex-shrink-0 mt-0.5" />
-                      )}
-                      <span>{violation.message}</span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{violation.category}: {violation.message}</p>
-                    {violation.violationType === 'warning' && (
-                      <p className="text-xs mt-1">Click to edit and resolve this warning</p>
-                    )}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

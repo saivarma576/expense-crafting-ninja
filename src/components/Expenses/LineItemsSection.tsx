@@ -4,7 +4,6 @@ import { PlusCircle, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
 import { Separator } from '@/components/ui/separator';
-import { useValidation } from '@/contexts/ValidationContext';
 
 interface ExpenseLineItem {
   id: string;
@@ -35,8 +34,6 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
   handleDeleteLineItem,
   totalAmount
 }) => {
-  const { policyViolations } = useValidation();
-  
   return (
     <div className="mb-8 w-full">
       <div className="flex items-center justify-between mb-4">

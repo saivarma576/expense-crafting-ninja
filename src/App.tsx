@@ -12,8 +12,6 @@ import NewExpense from "./components/Expenses/NewExpense";
 import Receipts from "./components/Receipts";
 import Reports from "./components/Reports";
 import ReportDetail from "./components/Reports/ReportDetail";
-import ReportV2 from "./components/Reports/ReportV2";
-import AIConversationReport from "./components/Reports/AIConversationReport";
 import Admin from "./components/Admin";
 import Profile from "./components/Profile";
 import NotFound from "./pages/NotFound";
@@ -37,8 +35,6 @@ const App = () => (
             <Route path="receipts" element={<Receipts />} />
             <Route path="reports" element={<Reports />} />
             <Route path="reports/:reportId" element={<ReportDetail />} />
-            <Route path="reports-v2" element={<ReportV2 />} />
-            <Route path="reports/ai-conversations" element={<AIConversationReport />} />
             <Route path="admin" element={<Admin />} />
             <Route path="profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
