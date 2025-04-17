@@ -8,7 +8,6 @@ import ReceiptPreview from './ReceiptPreview';
 import { FormProps } from './ExpenseForm/types';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
-import ExpenseTypeTabs from './ExpenseForm/ExpenseTypeTabs';
 import FormActions from './ExpenseForm/FormActions';
 
 const ExpenseLineItem: React.FC<FormProps> = ({ 
@@ -75,16 +74,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         <h1 className="text-lg font-medium">{pageTitle}</h1>
       </div>
 
-      {/* Expense Type Tabs */}
-      <div className="bg-white border-b">
-        <div className="max-w-[1200px] mx-auto px-6 py-3">
-          <ExpenseTypeTabs
-            selectedType={formValues.type}
-            onTypeChange={(type) => handleFieldChange('type', type)}
-          />
-        </div>
-      </div>
-
       {/* Main Form Content */}
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-[1200px] mx-auto">
@@ -147,24 +136,12 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       </div>
 
       {/* Action Buttons - Sticky Footer */}
-      <div className="border-t bg-white py-4 px-6">
-        <div className="max-w-[1200px] mx-auto flex justify-end gap-3">
-          <Button
-            variant="outline"
-            onClick={onCancel}
-            className="px-6"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSave}
-            className="px-6 flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
-          >
-            Save
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+      <FormActions 
+        onCancel={onCancel} 
+        onSave={handleSave} 
+        programmaticErrors={validationWarnings.programmaticErrors}
+        llmWarnings={validationWarnings.llmWarnings}
+      />
     </div>
   );
 };
