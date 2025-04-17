@@ -40,7 +40,7 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
   return (
     <div className="mb-5">
       <label className="text-sm font-medium text-gray-700 block mb-3">Expense Type</label>
-      <div className="grid grid-cols-6 gap-2 mb-3">
+      <div className="grid grid-cols-6 gap-2.5 mb-3">
         {expenseTypes.slice(0, 12).map((expType) => (
           <button
             key={expType.value}

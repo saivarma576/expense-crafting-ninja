@@ -23,7 +23,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
     <div className="mb-5">
       <h3 className="text-sm font-medium text-gray-700 mb-3">Additional Details</h3>
       
-      <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+      <div className="grid grid-cols-3 gap-x-5 gap-y-4">
         {fields.map((field) => (
           <div key={field.id}>
             <label htmlFor={field.id} className="text-sm font-medium text-gray-700 block mb-1.5">

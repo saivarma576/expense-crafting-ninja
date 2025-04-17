@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { ExpenseType } from '@/types/expense';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Zap, FileCheck, AlertCircle, MessageSquare } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 
@@ -31,13 +30,15 @@ import {
   extractDataFromReceipt, 
   detectDataMismatch 
 } from '@/utils/ocrUtils';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export type { ExpenseLineItemFormData as ExpenseLineItemType };
 
 const ExpenseLineItem: React.FC<FormProps> = ({ 
   onSave, 
   onCancel,
-  editingItem
+  editingItem,
+  activeField
 }) => {
   const [type, setType] = useState<ExpenseType>(editingItem?.type || 'other');
   const [amount, setAmount] = useState(editingItem?.amount || 0);
@@ -415,75 +416,71 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   }, []);
 
   return (
-    <div className="flex h-full">
-      <div className="w-3/5 h-full px-4 py-3 relative">
-        <ScrollArea className="h-[calc(100vh-140px)]">
-          <div className="pr-4">
-            <ExpenseTypeSelector 
-              selectedType={type} 
-              onTypeChange={setType} 
-            />
+    <div className="flex">
+      <div className="w-2/3 pr-6">
+        <ExpenseTypeSelector 
+          selectedType={type} 
+          onTypeChange={setType} 
+        />
 
-            <CommonFields
-              type={type}
-              values={formValues}
-              onChange={handleFieldChange}
-              isAmountDisabled={type === 'mileage'}
-              fieldErrors={fieldErrors}
-              llmSuggestions={llmSuggestions}
-            />
+        <CommonFields
+          type={type}
+          values={formValues}
+          onChange={handleFieldChange}
+          isAmountDisabled={type === 'mileage'}
+          fieldErrors={fieldErrors}
+          llmSuggestions={llmSuggestions}
+        />
 
-            {needsGlAccount && (
-              <GlAccountField 
-                values={formValues} 
-                onChange={handleFieldChange} 
-                error={fieldErrors.glAccount}
-                llmSuggestion={llmSuggestions.glAccount}
-              />
-            )}
-            
-            {isHotelOrLodging && (
-              <HotelFields 
-                values={formValues} 
-                onChange={handleFieldChange}
-                llmSuggestions={llmSuggestions}
-              />
-            )}
-            
-            {isMeals && (
-              <MealsFields 
-                values={formValues} 
-                onChange={handleFieldChange}
-                llmSuggestions={llmSuggestions}
-              />
-            )}
-            
-            {isMileage && (
-              <MileageFields 
-                values={formValues} 
-                onChange={handleFieldChange} 
-                error={fieldErrors.miles}
-                llmSuggestions={llmSuggestions}
-              />
-            )}
+        {needsGlAccount && (
+          <GlAccountField 
+            values={formValues} 
+            onChange={handleFieldChange} 
+            error={fieldErrors.glAccount}
+            llmSuggestion={llmSuggestions.glAccount}
+          />
+        )}
+        
+        {isHotelOrLodging && (
+          <HotelFields 
+            values={formValues} 
+            onChange={handleFieldChange}
+            llmSuggestions={llmSuggestions}
+          />
+        )}
+        
+        {isMeals && (
+          <MealsFields 
+            values={formValues} 
+            onChange={handleFieldChange}
+            llmSuggestions={llmSuggestions}
+          />
+        )}
+        
+        {isMileage && (
+          <MileageFields 
+            values={formValues} 
+            onChange={handleFieldChange} 
+            error={fieldErrors.miles}
+            llmSuggestions={llmSuggestions}
+          />
+        )}
 
-            <NotesField 
-              values={formValues} 
-              onChange={handleFieldChange}
-              llmSuggestions={llmSuggestions}
-            />
+        <NotesField 
+          values={formValues} 
+          onChange={handleFieldChange}
+          llmSuggestions={llmSuggestions}
+        />
 
-            <FormActions 
-              onCancel={onCancel} 
-              onSave={handleSave} 
-              programmaticErrors={validationWarnings.programmaticErrors}
-              llmWarnings={validationWarnings.llmWarnings}
-            />
-          </div>
-        </ScrollArea>
+        <FormActions 
+          onCancel={onCancel} 
+          onSave={handleSave} 
+          programmaticErrors={validationWarnings.programmaticErrors}
+          llmWarnings={validationWarnings.llmWarnings}
+        />
       </div>
 
-      <div className="w-2/5">
+      <div className="w-1/3">
         <ReceiptPreview 
           receiptUrl={receiptUrl}
           receiptName={receiptName}
