@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { 
   Droplet, Hotel, UtensilsCrossed, Milestone, FileBox, FileQuestion, 
   ParkingCircle, Package, Briefcase, ClipboardCheck, Car, Plane,
-  ReceiptText, Luggage, Coffee, BookOpen, MoreHorizontal, Audit, Fuel
+  ReceiptText, Luggage, Coffee, BookOpen, MoreHorizontal, FileCheck, Fuel
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ExpenseType } from '@/types/expense';
@@ -35,7 +35,7 @@ const primaryExpenseTypes = [
 // All expense types for the dropdown
 const allExpenseTypes = [
   ...primaryExpenseTypes,
-  { value: 'auditing', label: 'Auditing Serv Fees', icon: <Audit className="h-4 w-4" /> },
+  { value: 'auditing', label: 'Auditing Serv Fees', icon: <FileCheck className="h-4 w-4" /> },
   { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
   { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
   { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-4 w-4" /> },
