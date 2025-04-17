@@ -77,10 +77,10 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
 
   return (
     <div className="w-full bg-gray-50 flex flex-col border-l border-gray-200 h-full">
-      <h3 className="text-xs font-semibold text-gray-700 p-3 border-b border-gray-200">Receipt Preview</h3>
+      <h3 className="text-sm font-semibold text-gray-700 p-4 border-b border-gray-200">Receipt Preview</h3>
       
       <div 
-        className="flex-1 p-4 flex flex-col items-center justify-center"
+        className="flex-1 p-6 flex flex-col items-center justify-center"
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
@@ -93,19 +93,19 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
               alt="Receipt" 
               className="max-w-full max-h-[90%] object-contain rounded-md shadow-sm" 
             />
-            <div className="mt-2 flex items-center gap-2">
-              <span className="text-xs text-gray-600 font-medium">
+            <div className="mt-3 flex items-center gap-2">
+              <span className="text-sm text-gray-600 font-medium">
                 {receiptName}
               </span>
               {isProcessing && (
                 <div className="flex items-center text-blue-500">
-                  <Loader className="w-3.5 h-3.5 animate-spin" />
+                  <Loader className="w-4 h-4 animate-spin" />
                   <span className="text-xs ml-1">Processing...</span>
                 </div>
               )}
               {ocrComplete && !isProcessing && (
                 <div className="flex items-center text-green-500">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <CheckCircle2 className="w-4 h-4" />
                   <span className="text-xs ml-1">Data extracted</span>
                 </div>
               )}
@@ -114,13 +114,13 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
         ) : (
           <div 
             className={cn(
-              "flex flex-col items-center justify-center bg-white rounded-md border border-dashed p-8 w-full h-full transition-colors",
+              "flex flex-col items-center justify-center bg-white rounded-md border border-dashed p-10 w-full h-full transition-colors",
               dragActive ? "border-blue-400 bg-blue-50" : "border-gray-300"
             )}
           >
-            <FileImage className="h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-700 text-center font-medium mb-1">Upload Receipt</p>
-            <p className="text-gray-500 text-xs text-center mb-4">
+            <FileImage className="h-16 w-16 text-gray-300 mb-4" />
+            <p className="text-gray-700 text-center font-medium mb-2">Upload Receipt</p>
+            <p className="text-gray-500 text-sm text-center mb-6">
               Drag and drop your receipt image or PDF here
             </p>
             
@@ -131,14 +131,14 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
                 accept="image/*,.pdf"
                 onChange={handleFileInput}
               />
-              <div className="px-3 py-2 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors flex items-center">
-                <Upload className="h-3.5 w-3.5 mr-1.5" />
-                <span className="text-xs font-medium">Browse Files</span>
+              <div className="px-4 py-2.5 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors flex items-center">
+                <Upload className="h-4 w-4 mr-2" />
+                <span className="text-sm font-medium">Browse Files</span>
               </div>
             </label>
             
-            <div className="mt-4 flex items-center text-amber-600 text-xs">
-              <AlertCircle className="w-3 h-3 mr-1" />
+            <div className="mt-6 flex items-center text-amber-600 text-xs">
+              <AlertCircle className="w-3.5 h-3.5 mr-1.5" />
               <span>Supported formats: JPEG, PNG, PDF</span>
             </div>
           </div>

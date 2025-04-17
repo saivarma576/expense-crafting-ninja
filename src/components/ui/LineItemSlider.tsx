@@ -51,7 +51,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
     )}>
       <div 
         className={cn(
-          "fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-lg flex flex-col h-full",
+          "fixed inset-y-0 right-0 w-full max-w-[600px] bg-white shadow-lg flex flex-col h-full",
           "transform transition-transform duration-300 ease-in-out rounded-l-2xl",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
