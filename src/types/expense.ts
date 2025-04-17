@@ -1,4 +1,3 @@
-
 export interface ExpenseLineItem {
   id: string;
   title: string;
@@ -73,3 +72,30 @@ export type ExpenseType =
   | 'registration'
   | 'rental';
 
+export interface ExpenseLineItemFormData extends ExpenseLineItem {
+  id: string;
+  type: ExpenseType;
+  amount: number;
+  date: string;
+  description?: string;
+  receiptUrl?: string;
+  receiptName?: string;
+  merchantName?: string;
+  account?: string;
+  accountName?: string;
+  costCenter: string;
+  costCenterName?: string;
+  wbs?: string;
+  notes?: string;
+  glAccount?: string;
+  zipCode?: string;
+  city?: string;
+  mealsRate?: number;
+  hotelRate?: number;
+  throughDate?: string;
+  perDiemExplanation?: string;
+  departureTime?: string;
+  returnTime?: string;
+  miles?: number;
+  mileageRate?: number;
+}
