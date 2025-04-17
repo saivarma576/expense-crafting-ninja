@@ -17,18 +17,23 @@ export const useExpenseValidation = (formValues: ExpenseLineItemFormData) => {
       programmaticErrors: validations.programmaticErrors,
       llmWarnings: validations.llmWarnings
     });
+    
+    // Update field-level errors
+    const newFieldErrors: Record<string, string | null> = {};
+    validations.programmaticErrors.forEach(error => {
+      // Convert field names to camelCase for matching with form fields
+      const fieldName = error.field.toLowerCase().replace(/ /g, '');
+      newFieldErrors[fieldName] = error.error;
+    });
+    setFieldErrors(newFieldErrors);
+    
     return !validations.hasErrors;
   };
 
   const validateForm = (): boolean => {
     const isValid = runValidation();
-    
-    if (validationWarnings.programmaticErrors.length > 0 || validationWarnings.llmWarnings.length > 0) {
-      setShowValidationWarnings(true);
-      return isValid;
-    }
-    
-    return true;
+    setShowValidationWarnings(true);
+    return isValid;
   };
 
   useEffect(() => {
