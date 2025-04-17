@@ -9,7 +9,7 @@ import {
   ParkingCircle, 
   Briefcase, 
   MoreHorizontal,
-  GasPump,
+  Fuel,
   Luggage,
   Coffee,
   ScrollText,
@@ -38,7 +38,7 @@ const mainTypes: Array<{type: ExpenseType, label: string, icon: React.ReactNode}
 ];
 
 const otherTypes: Array<{type: ExpenseType, label: string, icon: React.ReactNode}> = [
-  { type: 'gasoline', label: 'Gasoline', icon: <GasPump className="h-4 w-4" /> },
+  { type: 'gasoline', label: 'Gasoline', icon: <Fuel className="h-4 w-4" /> },
   { type: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
   { type: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
   { type: 'subscriptions', label: 'Subscriptions', icon: <ScrollText className="h-4 w-4" /> },
