@@ -50,9 +50,9 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
     )}>
       <div 
         className={cn(
-          "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] max-h-[90vh] bg-white shadow-lg flex flex-col",
-          "transform transition-all duration-300 ease-in-out rounded-xl",
-          isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
+          "fixed right-0 top-0 h-full w-[650px] max-w-[90vw] bg-white shadow-lg flex flex-col",
+          "transform transition-all duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -65,8 +65,8 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <div className="flex-1 overflow-auto relative">
-          <div className="relative p-6">
+        <div className="flex-1 overflow-auto">
+          <div className="p-6">
             {children}
           </div>
         </div>
