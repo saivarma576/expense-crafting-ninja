@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,19 @@ type Message = {
   timestamp: Date;
 };
 
+type ConversationData = {
+  id: string;
+  userId: string;
+  userName: string;
+  department: string;
+  topic: string;
+  context: string;
+  messages: Message[];
+  startTime: Date;
+  endTime: Date | null;
+  policyReferences: number;
+};
+
 interface AIChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -29,6 +41,13 @@ const suggestedQuestions = [
   "What types of transportation expenses are covered?",
   "Are entertainment expenses allowed with clients?"
 ];
+
+// Mock user data - in a real app this would come from auth context
+const currentUser = {
+  id: "user-123",
+  name: "Sarah Johnson",
+  department: "Finance"
+};
 
 const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ 
   isOpen, 
@@ -59,10 +78,141 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
+  
+  // Save conversation data for reporting
+  const saveConversationData = (newMessages: Message[]) => {
+    try {
+      // Get existing conversations from localStorage
+      const savedConversations = localStorage.getItem('ai-conversations-data');
+      let conversations: ConversationData[] = [];
+      
+      if (savedConversations) {
+        conversations = JSON.parse(savedConversations);
+      }
+      
+      // If this is a new conversation (only has the welcome message)
+      if (newMessages.length <= 1 && newMessages[0].id === "welcome") {
+        // Don't save anything yet - wait for user input
+        return;
+      }
+      
+      // Check if we're in an existing conversation
+      if (!currentConversationId) {
+        // Create a new conversation
+        const newConversationId = `conv-${Date.now()}`;
+        setCurrentConversationId(newConversationId);
+        
+        const newConversation: ConversationData = {
+          id: newConversationId,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          department: currentUser.department,
+          topic: detectTopic(newMessages),
+          context: context || "general-inquiry",
+          messages: newMessages,
+          startTime: new Date(),
+          endTime: null,
+          policyReferences: countPolicyReferences(newMessages)
+        };
+        
+        conversations.push(newConversation);
+      } else {
+        // Update existing conversation
+        const conversationIndex = conversations.findIndex(c => c.id === currentConversationId);
+        if (conversationIndex >= 0) {
+          conversations[conversationIndex] = {
+            ...conversations[conversationIndex],
+            messages: newMessages,
+            topic: detectTopic(newMessages),
+            policyReferences: countPolicyReferences(newMessages)
+          };
+        }
+      }
+      
+      // Save updated conversations to localStorage
+      localStorage.setItem('ai-conversations-data', JSON.stringify(conversations));
+    } catch (error) {
+      console.error("Error saving conversation data:", error);
+    }
+  };
+  
+  // Helper function to detect topic from messages (simplified)
+  const detectTopic = (messages: Message[]): string => {
+    // Use the first user message as a basis for topic detection
+    const firstUserMessage = messages.find(m => !m.isAI && m.id !== "welcome");
+    if (!firstUserMessage) return "General Inquiry";
+    
+    const content = firstUserMessage.content.toLowerCase();
+    
+    if (content.includes("meal") || content.includes("food") || content.includes("per diem")) {
+      return "Meal Allowances";
+    } else if (content.includes("travel") || content.includes("trip") || content.includes("flight")) {
+      return "Travel Expenses";
+    } else if (content.includes("client") || content.includes("entertainment")) {
+      return "Client Entertainment";
+    } else if (content.includes("approval") || content.includes("manager")) {
+      return "Approval Workflow";
+    } else if (content.includes("receipt") || content.includes("document")) {
+      return "Receipt Requirements";
+    }
+    
+    return "General Inquiry";
+  };
+  
+  // Helper function to count policy references (simplified)
+  const countPolicyReferences = (messages: Message[]): number => {
+    // Count AI messages that likely reference policy
+    let count = 0;
+    messages.forEach(message => {
+      if (message.isAI) {
+        const content = message.content.toLowerCase();
+        if (
+          content.includes("policy") || 
+          content.includes("guideline") || 
+          content.includes("regulation") ||
+          content.includes("requirement") ||
+          content.includes("limit") ||
+          content.includes("approval")
+        ) {
+          count++;
+        }
+      }
+    });
+    return count;
+  };
+  
+  // End conversation when drawer closes
+  useEffect(() => {
+    if (!isOpen && currentConversationId) {
+      try {
+        const savedConversations = localStorage.getItem('ai-conversations-data');
+        if (savedConversations) {
+          let conversations: ConversationData[] = JSON.parse(savedConversations);
+          const conversationIndex = conversations.findIndex(c => c.id === currentConversationId);
+          
+          if (conversationIndex >= 0) {
+            conversations[conversationIndex].endTime = new Date();
+            localStorage.setItem('ai-conversations-data', JSON.stringify(conversations));
+          }
+        }
+        
+        // Reset conversation ID for next session
+        setCurrentConversationId(null);
+      } catch (error) {
+        console.error("Error ending conversation:", error);
+      }
+    }
+  }, [isOpen, currentConversationId]);
   
   // Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('policy-ai-chat-history', JSON.stringify(messages));
+    
+    // Also save to conversation data for reporting
+    if (messages.length > 1 || (messages.length === 1 && messages[0].id !== "welcome")) {
+      saveConversationData(messages);
+    }
   }, [messages]);
   
   useEffect(() => {
@@ -119,6 +269,9 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     
     setMessages([welcomeMessage]);
     localStorage.removeItem('policy-ai-chat-history');
+    
+    // Reset conversation ID for next session
+    setCurrentConversationId(null);
   };
 
   return (

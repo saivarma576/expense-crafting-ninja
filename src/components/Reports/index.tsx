@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -34,6 +33,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import AIConversationReportLink from './AIConversationReportLink';
 
 const ExpenseSpendReports = [
   {
@@ -218,6 +218,7 @@ const Reports: React.FC = () => {
                 <Badge variant="secondary" className="ml-2 text-xs">New</Badge>
               </Button>
             </Link>
+            <AIConversationReportLink />
           </div>
         </div>
         <div className="flex items-center gap-2">
