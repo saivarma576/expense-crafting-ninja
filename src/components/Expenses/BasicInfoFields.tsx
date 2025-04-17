@@ -34,7 +34,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
 }) => {
   return (
     <>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-3 mb-4">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-5">
         {/* Amount */}
         <div>
           <label htmlFor="amount" className="text-sm font-medium text-gray-700 block mb-1.5">Amount</label>
@@ -48,7 +48,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
               step="0.01"
               value={amount}
               onChange={(e) => onAmountChange(parseFloat(e.target.value) || 0)}
-              className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-9 w-full h-11 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
               placeholder="0.00"
             />
           </div>
@@ -66,7 +66,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
               type="date"
               value={date}
               onChange={(e) => onDateChange(e.target.value)}
-              className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-9 w-full h-11 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
@@ -82,7 +82,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
               id="account"
               value={account}
               onChange={(e) => onAccountChange(e.target.value)}
-              className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-9 w-full h-11 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select GL Account</option>
               {glAccounts.map((acc) => (
@@ -105,7 +105,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
               id="costCenter"
               value={costCenter}
               onChange={(e) => onCostCenterChange(e.target.value)}
-              className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-9 w-full h-11 rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Select Cost Center</option>
               {costCenters.map((cc) => (
@@ -119,7 +119,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
       </div>
 
       {/* Description */}
-      <div className="mb-4">
+      <div className="mb-5">
         <label htmlFor="description" className="text-sm font-medium text-gray-700 block mb-1.5">Description</label>
         <div className="relative">
           <div className="absolute left-3 top-3 text-gray-500">
@@ -129,7 +129,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
             id="description"
             value={description}
             onChange={(e) => onDescriptionChange(e.target.value)}
-            className="pl-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[60px] max-h-[100px] resize-none"
+            className="pl-9 w-full rounded-md border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 min-h-[70px] max-h-[120px] resize-none"
             placeholder="Enter description"
           />
         </div>

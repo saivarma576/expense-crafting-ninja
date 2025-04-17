@@ -14,7 +14,7 @@ const ExpenseAIDrawer: React.FC<ExpenseAIDrawerProps> = ({
   return (
     <AIChatDrawer 
       {...props}
-      className={isLineItemSliderOpen ? "mr-[600px] transition-all duration-300" : ""}
+      className={isLineItemSliderOpen ? "mr-[700px] transition-all duration-300" : ""}
     />
   );
 };
