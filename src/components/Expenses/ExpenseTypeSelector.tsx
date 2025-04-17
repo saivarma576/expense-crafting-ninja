@@ -13,24 +13,24 @@ interface ExpenseTypeSelectorProps {
   onTypeChange: (type: ExpenseType) => void;
 }
 
-// Reordered expense types based on priority
+// Reordered expense types to move "other" to the end
 const expenseTypes = [
-  { value: 'mileage', label: 'Mileage', icon: <Milestone className="h-4 w-4" /> },
-  { value: 'meals', label: 'Meals', icon: <UtensilsCrossed className="h-4 w-4" /> },
-  { value: 'other', label: 'Others', icon: <FileQuestion className="h-4 w-4" /> },
-  { value: 'professional_fees', label: 'Professional Fees', icon: <Briefcase className="h-4 w-4" /> },
-  { value: 'hotel', label: 'Hotel/Lodging', icon: <Hotel className="h-4 w-4" /> },
-  { value: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-4 w-4" /> },
-  { value: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-4 w-4" /> },
-  { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
-  { value: 'registration', label: 'Registration Fees', icon: <ClipboardCheck className="h-4 w-4" /> },
-  { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
-  { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-4 w-4" /> },
-  { value: 'postage', label: 'Postage & Freight', icon: <Package className="h-4 w-4" /> },
   { value: 'gasoline', label: 'Gasoline', icon: <Droplet className="h-4 w-4" /> },
+  { value: 'hotel', label: 'Hotel/Lodging', icon: <Hotel className="h-4 w-4" /> },
+  { value: 'meals', label: 'Meals', icon: <UtensilsCrossed className="h-4 w-4" /> },
+  { value: 'mileage', label: 'Mileage', icon: <Milestone className="h-4 w-4" /> },
   { value: 'office_supplies', label: 'Office Supplies', icon: <FileBox className="h-4 w-4" /> },
+  { value: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-4 w-4" /> },
+  { value: 'postage', label: 'Postage & Freight', icon: <Package className="h-4 w-4" /> },
+  { value: 'professional_fees', label: 'Professional Fees', icon: <Briefcase className="h-4 w-4" /> },
+  { value: 'registration', label: 'Registration Fees', icon: <ClipboardCheck className="h-4 w-4" /> },
   { value: 'rental', label: 'Rental Car', icon: <Car className="h-4 w-4" /> },
-  { value: 'auditing', label: 'Auditing Serv Fees', icon: <ReceiptText className="h-4 w-4" /> }
+  { value: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-4 w-4" /> },
+  { value: 'auditing', label: 'Auditing Serv Fees', icon: <ReceiptText className="h-4 w-4" /> },
+  { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
+  { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
+  { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-4 w-4" /> },
+  { value: 'other', label: 'Others', icon: <FileQuestion className="h-4 w-4" /> } // Moved to the end
 ];
 
 const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({ 
@@ -56,7 +56,7 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
             <div className={cn(
               "rounded-full",
               selectedType === expType.value 
-                ? "text-blue-600" 
+                ? "text-blue-600" // Changed to a more vibrant blue when selected
                 : "text-gray-500"
             )}>
               {expType.icon}

@@ -9,7 +9,6 @@ export interface FormValues {
   fromDate?: Date;
   toDate?: Date;
   travelPurpose?: TravelPurpose;
-  travelComments?: string;
   mealsProvided: string;
   meals: Meal[];
   expenseTitle: string;

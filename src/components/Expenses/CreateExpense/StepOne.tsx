@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { X, ArrowRight, Plane, Briefcase } from 'lucide-react';
+import { Briefcase, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues } from './types';
 import BusinessTravelSection from './BusinessTravelSection';
+import ProgressIndicator from './ProgressIndicator';
 
 import {
   FormField,
@@ -12,92 +13,93 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Button } from '@/components/ui/button';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface StepOneProps {
   onNext: () => void;
   onCancel: () => void;
-  onProceedToExpense: () => void;
 }
 
-const StepOne: React.FC<StepOneProps> = ({ onNext, onCancel, onProceedToExpense }) => {
-  const { control, watch, setValue } = useFormContext<FormValues>();
+const StepOne: React.FC<StepOneProps> = ({ onNext, onCancel }) => {
+  const { control, watch } = useFormContext<FormValues>();
   const watchIsBusinessTravel = watch('isBusinessTravel');
-
-  const handleToggleChange = (value: string) => {
-    if (value) setValue('isBusinessTravel', value);
-    
-    // If the user selects "no", proceed directly to expense creation
-    if (value === 'no') {
-      onProceedToExpense();
-    }
-  };
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="space-y-4">
+      <ProgressIndicator step={1} />
+      
+      <div className="flex flex-col space-y-6">
         <FormField
           control={control}
           name="isBusinessTravel"
           render={({ field }) => (
             <FormItem className="space-y-5">
-              <FormLabel className="text-base font-medium">
+              <FormLabel className="text-lg flex items-center gap-2 mb-2">
+                <Briefcase className="h-5 w-5 text-primary" />
                 Is this a business travel expense?
               </FormLabel>
               <FormControl>
-                <ToggleGroup 
-                  type="single" 
-                  onValueChange={handleToggleChange}
-                  value={field.value}
-                  className="flex w-full gap-4"
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-3"
                 >
-                  <ToggleGroupItem 
-                    value="yes" 
-                    className="flex-1 h-16 data-[state=on]:bg-primary/10 data-[state=on]:border-primary border-2 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Plane className="h-5 w-5" />
-                    <span className="font-medium">Yes</span>
-                  </ToggleGroupItem>
-                  <ToggleGroupItem 
-                    value="no" 
-                    className="flex-1 h-16 data-[state=on]:bg-primary/10 data-[state=on]:border-primary border-2 rounded-lg transition-all flex items-center justify-center gap-2"
-                  >
-                    <Briefcase className="h-5 w-5" />
-                    <span className="font-medium">No</span>
-                  </ToggleGroupItem>
-                </ToggleGroup>
+                  <FormItem className="flex flex-col space-y-0 rounded-lg border p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <FormControl>
+                          <RadioGroupItem value="yes" />
+                        </FormControl>
+                        <FormLabel className="font-normal text-base cursor-pointer flex-1">Yes</FormLabel>
+                      </div>
+                      <CheckCircle2 className={`h-5 w-5 ${field.value === 'yes' ? 'text-primary' : 'text-muted-foreground/30'}`} />
+                    </div>
+                    {field.value === 'yes' && (
+                      <div className="mt-2 pl-7 text-sm text-gray-500">
+                        Select this if your expense is related to business travel
+                      </div>
+                    )}
+                  </FormItem>
+                  
+                  <FormItem className="flex flex-col space-y-0 rounded-lg border p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <FormControl>
+                          <RadioGroupItem value="no" />
+                        </FormControl>
+                        <FormLabel className="font-normal text-base cursor-pointer flex-1">No</FormLabel>
+                      </div>
+                      <CheckCircle2 className={`h-5 w-5 ${field.value === 'no' ? 'text-primary' : 'text-muted-foreground/30'}`} />
+                    </div>
+                    {field.value === 'no' && (
+                      <div className="mt-2 pl-7 text-sm text-gray-500">
+                        Select this for non-travel related expenses
+                      </div>
+                    )}
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         
-        {watchIsBusinessTravel === 'yes' && (
-          <div className="pt-4 animate-fade-in">
-            <BusinessTravelSection />
-          </div>
-        )}
+        {watchIsBusinessTravel === 'yes' && <BusinessTravelSection />}
       </div>
       
-      <div className="flex justify-between pt-2">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={onCancel}
-          size="sm"
-        >
-          <X className="mr-2 h-4 w-4" />
+      <div className="flex justify-between pt-4">
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         <Button 
           type="button" 
           onClick={onNext}
-          size="sm"
-          disabled={watchIsBusinessTravel !== 'yes'}
+          className="group"
+          disabled={!watchIsBusinessTravel}
         >
-          Continue
-          <ArrowRight className="ml-2 h-4 w-4" />
+          Next
+          <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
         </Button>
       </div>
     </div>

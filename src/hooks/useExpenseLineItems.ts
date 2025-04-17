@@ -29,22 +29,8 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
         accountName: item.accountName,
         costCenter: item.costCenter,
         costCenterName: item.costCenterName,
-        // Include other fields from the item
-        merchantName: item.merchantName,
-        wbs: item.wbs,
-        notes: item.notes,
-        glAccount: item.glAccount,
-        zipCode: item.zipCode,
-        city: item.city,
-        mealsRate: item.mealsRate,
-        hotelRate: item.hotelRate,
-        throughDate: item.throughDate,
-        perDiemExplanation: item.perDiemExplanation,
-        departureTime: item.departureTime,
-        returnTime: item.returnTime,
-        miles: item.miles,
-        mileageRate: item.mileageRate,
-        receiptName: item.receiptName
+        // Add any other fields that might have been added
+        merchantName: item.title
       });
       setIsAddingItem(true);
     }
@@ -70,21 +56,7 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
                 accountName: lineItem.accountName || item.accountName,
                 costCenter: lineItem.costCenter || item.costCenter,
                 costCenterName: lineItem.costCenterName || item.costCenterName,
-                receiptName: lineItem.receiptName || item.receiptName,
-                merchantName: lineItem.merchantName,
-                wbs: lineItem.wbs,
-                notes: lineItem.notes,
-                glAccount: lineItem.glAccount,
-                zipCode: lineItem.zipCode,
-                city: lineItem.city,
-                mealsRate: lineItem.mealsRate,
-                hotelRate: lineItem.hotelRate,
-                throughDate: lineItem.throughDate,
-                perDiemExplanation: lineItem.perDiemExplanation,
-                departureTime: lineItem.departureTime,
-                returnTime: lineItem.returnTime,
-                miles: lineItem.miles,
-                mileageRate: lineItem.mileageRate
+                receiptName: lineItem.receiptName || item.receiptName
               }
             : item
         )
@@ -103,21 +75,7 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
           accountName: lineItem.accountName || 'GL Account',
           costCenter: lineItem.costCenter || '1200- Cost Center Name',
           costCenterName: lineItem.costCenterName || 'Cost Center',
-          receiptName: lineItem.receiptName || 'Receipt Pending',
-          merchantName: lineItem.merchantName,
-          wbs: lineItem.wbs,
-          notes: lineItem.notes,
-          glAccount: lineItem.glAccount,
-          zipCode: lineItem.zipCode,
-          city: lineItem.city,
-          mealsRate: lineItem.mealsRate,
-          hotelRate: lineItem.hotelRate,
-          throughDate: lineItem.throughDate,
-          perDiemExplanation: lineItem.perDiemExplanation,
-          departureTime: lineItem.departureTime,
-          returnTime: lineItem.returnTime,
-          miles: lineItem.miles,
-          mileageRate: lineItem.mileageRate
+          receiptName: lineItem.receiptName || 'Receipt Pending'
         }
       ]);
     }

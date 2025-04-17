@@ -1,309 +1,117 @@
+
 import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ExpenseType } from '@/types/expense';
-import { format } from 'date-fns';
-import { toast } from 'sonner';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Zap, FileCheck, AlertCircle, MessageSquare } from 'lucide-react';
-import { Input } from "@/components/ui/input";
+import { ExpenseType } from '@/types/expense';
 
+// Import refactored components
 import ExpenseTypeSelector from './ExpenseTypeSelector';
+import BasicInfoFields from './BasicInfoFields';
+import DynamicFields from './DynamicFields';
+import ReceiptUpload from './ReceiptUpload';
 import ReceiptPreview from './ReceiptPreview';
-import { ExpenseLineItemFormData, FormProps } from './ExpenseForm/types';
-import CommonFields from './ExpenseForm/CommonFields';
-import HotelFields from './ExpenseForm/HotelFields';
-import MealsFields from './ExpenseForm/MealsFields';
-import MileageFields from './ExpenseForm/MileageFields';
-import GlAccountField from './ExpenseForm/GlAccountField';
-import NotesField from './ExpenseForm/NotesField';
-import FormActions from './ExpenseForm/FormActions';
-import ValidationWarnings from './ExpenseForm/ValidationWarnings';
-import ValidationSummaryPanel from './ExpenseForm/ValidationSummaryPanel';
-import DataMismatchAlert from './ExpenseForm/DataMismatchAlert';
-import { STANDARD_RATES } from './ExpenseFieldUtils';
-import { 
-  validateField, 
-  performLLMValidation, 
-  showFieldError,
-  getAllValidations
-} from '@/utils/validationUtils';
-import { 
-  extractDataFromReceipt, 
-  detectDataMismatch 
-} from '@/utils/ocrUtils';
+import { generateTypeSpecificFields, glAccounts, costCenters } from './ExpenseFieldUtils';
 
-export type { ExpenseLineItemFormData as ExpenseLineItemType };
+interface ExpenseLineItemProps {
+  onSave: (lineItem: ExpenseLineItemType) => void;
+  onCancel: () => void;
+  editingItem?: ExpenseLineItemType;
+}
 
-const ExpenseLineItem: React.FC<FormProps> = ({ 
+export interface ExpenseLineItemType {
+  id: string;
+  type: ExpenseType;
+  amount: number;
+  date: string;
+  description: string;
+  receiptUrl?: string;
+  receiptName?: string;
+  account?: string;
+  accountName?: string;
+  costCenter?: string;
+  costCenterName?: string;
+  // Dynamic fields based on expense type
+  merchantName?: string;
+  location?: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  numberOfNights?: number;
+  cityName?: string;
+  zipCode?: string;
+}
+
+const ExpenseLineItem: React.FC<ExpenseLineItemProps> = ({ 
   onSave, 
   onCancel,
   editingItem
 }) => {
+  // State for basic fields
   const [type, setType] = useState<ExpenseType>(editingItem?.type || 'other');
   const [amount, setAmount] = useState(editingItem?.amount || 0);
-  const [date, setDate] = useState(editingItem?.date || format(new Date(), 'yyyy-MM-dd'));
+  const [date, setDate] = useState(editingItem?.date || new Date().toISOString().split('T')[0]);
   const [description, setDescription] = useState(editingItem?.description || '');
   const [account, setAccount] = useState(editingItem?.account || '');
   const [accountName, setAccountName] = useState(editingItem?.accountName || '');
   const [costCenter, setCostCenter] = useState(editingItem?.costCenter || '');
   const [costCenterName, setCostCenterName] = useState(editingItem?.costCenterName || '');
-  const [wbs, setWbs] = useState(editingItem?.wbs || '');
-  const [notes, setNotes] = useState(editingItem?.notes || '');
-  const [merchantName, setMerchantName] = useState(editingItem?.merchantName || '');
   
+  // State for receipt
   const [receiptUrl, setReceiptUrl] = useState(editingItem?.receiptUrl || '');
   const [receiptName, setReceiptName] = useState(editingItem?.receiptName || '');
   const [showReceiptDialog, setShowReceiptDialog] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   
-  const [ocrData, setOcrData] = useState<any>(null);
-  const [showMismatchDialog, setShowMismatchDialog] = useState(false);
-  const [dataMismatches, setDataMismatches] = useState<any[] | null>(null);
-  
-  const [glAccount, setGlAccount] = useState(editingItem?.glAccount || '');
-  const [zipCode, setZipCode] = useState(editingItem?.zipCode || '');
-  const [city, setCity] = useState(editingItem?.city || '');
-  const [mealsRate, setMealsRate] = useState(editingItem?.mealsRate || STANDARD_RATES.MEALS_RATE);
-  const [hotelRate, setHotelRate] = useState(editingItem?.hotelRate || STANDARD_RATES.HOTEL_RATE);
-  const [throughDate, setThroughDate] = useState(editingItem?.throughDate || '');
-  const [perDiemExplanation, setPerDiemExplanation] = useState(editingItem?.perDiemExplanation || '');
-  const [departureTime, setDepartureTime] = useState(editingItem?.departureTime || '');
-  const [returnTime, setReturnTime] = useState(editingItem?.returnTime || '');
-  const [miles, setMiles] = useState(editingItem?.miles || 0);
-  const [mileageRate, setMileageRate] = useState(editingItem?.mileageRate || STANDARD_RATES.MILEAGE_RATE);
+  // State for dynamic fields
+  const [dynamicFields, setDynamicFields] = useState<Record<string, any>>({
+    merchantName: editingItem?.merchantName || '',
+    location: editingItem?.location || '',
+    checkInDate: editingItem?.checkInDate || '',
+    checkOutDate: editingItem?.checkOutDate || '',
+    numberOfNights: editingItem?.numberOfNights || 1,
+    cityName: editingItem?.cityName || '',
+    zipCode: editingItem?.zipCode || '',
+  });
 
-  const [validationWarnings, setValidationWarnings] = useState<{
-    programmaticErrors: {field: string, error: string}[],
-    llmWarnings: string[]
-  }>({ programmaticErrors: [], llmWarnings: [] });
-  const [showValidationWarnings, setShowValidationWarnings] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
-  const [llmSuggestions, setLlmSuggestions] = useState<Record<string, string | null>>({});
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  // State for type-specific fields
+  const [typeSpecificFields, setTypeSpecificFields] = useState(generateTypeSpecificFields(type));
 
-  const formId = editingItem?.id || `item-${Date.now()}`;
+  // Update type-specific fields when type changes
+  useEffect(() => {
+    setTypeSpecificFields(generateTypeSpecificFields(type));
+  }, [type]);
 
-  const formValues: ExpenseLineItemFormData = {
-    id: formId,
-    type, 
-    amount, 
-    date, 
-    description, 
-    account, 
-    accountName, 
-    costCenter, 
-    costCenterName,
-    wbs, 
-    notes, 
-    merchantName, 
-    glAccount, 
-    zipCode, 
-    city, 
-    mealsRate, 
-    hotelRate, 
-    throughDate,
-    perDiemExplanation, 
-    departureTime, 
-    returnTime, 
-    miles, 
-    mileageRate, 
-    receiptUrl, 
-    receiptName
+  // Handlers
+  const handleTypeChange = (newType: ExpenseType) => {
+    setType(newType);
   };
 
-  useEffect(() => {
-    if (type === 'mileage' && miles > 0) {
-      setAmount(parseFloat((miles * mileageRate).toFixed(2)));
-    }
-  }, [miles, mileageRate, type]);
-
-  useEffect(() => {
-    if (zipCode && zipCode.length === 5) {
-      setCity('New York');
-      toast.success(`City updated based on zip code: ${zipCode}`);
-    }
-  }, [zipCode]);
-
-  const validateAndSetFieldError = (field: string, value: any) => {
-    const error = validateField(field, value);
-    setFieldErrors(prev => ({ ...prev, [field]: error }));
-    return error;
+  const handleDynamicFieldChange = (id: string, value: any) => {
+    setDynamicFields(prev => ({
+      ...prev,
+      [id]: value
+    }));
   };
 
-  const needsGlAccount = ['transport', 'auditing', 'baggage', 'business_meals', 
-                         'subscriptions', 'gasoline', 'office_supplies', 'other', 
-                         'parking', 'postage', 'professional_fees', 'registration', 'rental'].includes(type);
-  
-  const isHotelOrLodging = type === 'hotel';
-  const isMeals = type === 'meals';
-  const isMileage = type === 'mileage';
-
-  useEffect(() => {
-    const suggestions: Record<string, string | null> = {};
-    
-    if (type === 'hotel' && amount > STANDARD_RATES.HOTEL_RATE) {
-      suggestions.amount = `Hotel expense exceeds the standard rate of $${STANDARD_RATES.HOTEL_RATE}. Consider explaining the reason.`;
-    } else if (type === 'meals' && amount > STANDARD_RATES.MEALS_RATE) {
-      suggestions.amount = `Meal expense exceeds the standard rate of $${STANDARD_RATES.MEALS_RATE}. Note if alcohol was included.`;
+  const handleAccountChange = (value: string) => {
+    const selected = glAccounts.find(acc => acc.code === value);
+    if (selected) {
+      setAccount(selected.code);
+      setAccountName(selected.name);
     }
-    
-    const expenseDate = new Date(date);
-    const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
-    
-    if (expenseDate < thirtyDaysAgo) {
-      suggestions.date = `This expense is over 30 days old. Submit promptly to comply with the 60-day rule.`;
-    }
-    
-    if (merchantName && merchantName.toLowerCase().includes('amazon')) {
-      suggestions.merchantName = `For Amazon purchases, please specify what was purchased in the description.`;
-    }
-    
-    if (type === 'meals' && glAccount && glAccount !== '420100') {
-      suggestions.glAccount = `For meals, the preferred GL Account is 420100 (Meals & Entertainment).`;
-    } else if (type === 'hotel' && glAccount && glAccount !== '420200') {
-      suggestions.glAccount = `For lodging, the preferred GL Account is 420200 (Lodging Expenses).`;
-    }
-    
-    if (description && description.length < 15) {
-      suggestions.description = `Please provide a more detailed description for better expense tracking.`;
-    }
-    
-    if (type === 'meals' && amount > 100 && (!notes || notes.length < 20)) {
-      suggestions.notes = `For high-value meal expenses, please specify attendees and business purpose.`;
-    }
-    
-    setLlmSuggestions(suggestions);
-  }, [type, amount, date, merchantName, glAccount, description, notes]);
-
-  const handleFieldChange = (id: string, value: any) => {
-    switch (id) {
-      case 'type': setType(value); break;
-      case 'amount': 
-        setAmount(value); 
-        validateAndSetFieldError('amount', value);
-        break;
-      case 'date': 
-        setDate(value); 
-        validateAndSetFieldError('date', value);
-        break;
-      case 'description': setDescription(value); break;
-      case 'account': setAccount(value); break;
-      case 'accountName': setAccountName(value); break;
-      case 'costCenter': setCostCenter(value); break;
-      case 'costCenterName': setCostCenterName(value); break;
-      case 'wbs': setWbs(value); break;
-      case 'notes': setNotes(value); break;
-      case 'merchantName': 
-        setMerchantName(value); 
-        validateAndSetFieldError('merchantName', value);
-        break;
-      case 'glAccount': 
-        setGlAccount(value); 
-        validateAndSetFieldError('glAccount', value);
-        break;
-      case 'zipCode': setZipCode(value); break;
-      case 'city': setCity(value); break;
-      case 'mealsRate': setMealsRate(value); break;
-      case 'hotelRate': setHotelRate(value); break;
-      case 'throughDate': setThroughDate(value); break;
-      case 'perDiemExplanation': setPerDiemExplanation(value); break;
-      case 'departureTime': setDepartureTime(value); break;
-      case 'returnTime': setReturnTime(value); break;
-      case 'miles': 
-        setMiles(value); 
-        validateAndSetFieldError('miles', value);
-        break;
-      case 'mileageRate': setMileageRate(value); break;
-      default: break;
-    }
-    
-    if (ocrData && ['merchantName', 'amount', 'date', 'type'].includes(id)) {
-      const userData = {
-        merchantName,
-        amount,
-        date,
-        type,
-        [id]: value
-      };
-      
-      const mismatches = detectDataMismatch(ocrData, userData);
-      setDataMismatches(mismatches);
-      
-      if (mismatches && !showMismatchDialog) {
-        setShowMismatchDialog(true);
-      }
-    }
-    
-    runValidation();
   };
 
-  const handleReceiptChange = async (name: string, url: string) => {
+  const handleCostCenterChange = (value: string) => {
+    const selected = costCenters.find(cc => cc.code === value);
+    if (selected) {
+      setCostCenter(selected.code);
+      setCostCenterName(selected.name);
+    }
+  };
+
+  const handleReceiptChange = (name: string, url: string) => {
     setReceiptName(name);
     setReceiptUrl(url);
-    toast.success(`Receipt ${name} uploaded successfully`);
-    
-    try {
-      toast.loading('Extracting data from receipt...');
-      const extractedData = await extractDataFromReceipt(url);
-      setOcrData(extractedData);
-      toast.dismiss();
-      toast.success('Receipt data extracted');
-      
-      const userData = {
-        merchantName,
-        amount,
-        date,
-        type
-      };
-      
-      const mismatches = detectDataMismatch(extractedData, userData);
-      setDataMismatches(mismatches);
-      
-      if (mismatches) {
-        setShowMismatchDialog(true);
-      } else {
-        handleOcrDataExtracted(extractedData);
-      }
-    } catch (error) {
-      toast.dismiss();
-      toast.error('Failed to extract data from receipt');
-      console.error('OCR extraction error:', error);
-    }
-    
-    runValidation();
-  };
-
-  const handleOcrDataExtracted = (data: any) => {
-    if (data.merchantName && (!merchantName || merchantName === '')) {
-      setMerchantName(data.merchantName);
-    }
-    
-    if (data.amount && amount === 0) {
-      setAmount(data.amount);
-    }
-    
-    if (data.date && (!date || date === format(new Date(), 'yyyy-MM-dd'))) {
-      setDate(data.date);
-    }
-    
-    if (data.type && type === 'other') {
-      setType(data.type);
-    }
-  };
-
-  const handleAcceptOcrData = (field: string, value: any) => {
-    handleFieldChange(field, value);
-    
-    if (dataMismatches) {
-      const updatedMismatches = dataMismatches.filter(mismatch => mismatch.field !== field);
-      setDataMismatches(updatedMismatches.length > 0 ? updatedMismatches : null);
-      
-      if (updatedMismatches.length === 0) {
-        setShowMismatchDialog(false);
-      }
-    }
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -323,66 +131,14 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      handleReceiptChange(file.name, `receipt-${Date.now()}`);
+      setReceiptName(file.name);
+      setReceiptUrl(`receipt-${Date.now()}`);
     }
-  };
-
-  const runValidation = () => {
-    const expense: ExpenseLineItemFormData = {
-      id: formId,
-      type,
-      amount,
-      date,
-      description,
-      receiptUrl,
-      receiptName,
-      merchantName,
-      account,
-      accountName,
-      costCenter,
-      costCenterName,
-      wbs,
-      notes,
-      glAccount: needsGlAccount ? glAccount : undefined,
-      zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
-      city: (isHotelOrLodging || isMeals) ? city : undefined,
-      mealsRate: (isMeals) ? mealsRate : undefined,
-      hotelRate: isHotelOrLodging ? hotelRate : undefined,
-      throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
-      perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
-      departureTime: isMeals ? departureTime : undefined,
-      returnTime: isMeals ? returnTime : undefined,
-      miles: isMileage ? miles : undefined,
-      mileageRate: isMileage ? mileageRate : undefined,
-    };
-    
-    const validations = getAllValidations(expense);
-    
-    setValidationWarnings({
-      programmaticErrors: validations.programmaticErrors,
-      llmWarnings: validations.llmWarnings
-    });
-    
-    return !validations.hasErrors;
-  };
-
-  const validateForm = (): boolean => {
-    const isValid = runValidation();
-    
-    if (validationWarnings.programmaticErrors.length > 0 || validationWarnings.llmWarnings.length > 0) {
-      setShowValidationWarnings(true);
-      
-      return isValid;
-    }
-    
-    return true;
   };
 
   const handleSave = () => {
-    if (!validateForm()) return;
-    
     onSave({
-      id: formId,
+      id: editingItem?.id || `item-${Date.now()}`,
       type,
       amount,
       date,
@@ -393,91 +149,75 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       accountName,
       costCenter,
       costCenterName,
-      wbs,
-      notes,
-      merchantName,
-      glAccount: needsGlAccount ? glAccount : undefined,
-      zipCode: (isHotelOrLodging || isMeals) ? zipCode : undefined,
-      city: (isHotelOrLodging || isMeals) ? city : undefined,
-      mealsRate: (isMeals) ? mealsRate : undefined,
-      hotelRate: isHotelOrLodging ? hotelRate : undefined,
-      throughDate: (isHotelOrLodging || isMileage) ? throughDate : undefined,
-      perDiemExplanation: (isHotelOrLodging || isMeals) && amount !== (isHotelOrLodging ? hotelRate : mealsRate) ? perDiemExplanation : undefined,
-      departureTime: isMeals ? departureTime : undefined,
-      returnTime: isMeals ? returnTime : undefined,
-      miles: isMileage ? miles : undefined,
-      mileageRate: isMileage ? mileageRate : undefined,
+      ...dynamicFields
     });
   };
 
-  useEffect(() => {
-    runValidation();
-  }, []);
-
   return (
     <div className="flex h-full">
-      <div className="w-3/5 h-full px-4 py-3 relative">
+      {/* Left side - Form */}
+      <div className="w-3/5 h-full px-4 py-3">
         <ScrollArea className="h-[calc(100vh-140px)]">
           <div className="pr-4">
+            {/* Expense Type Selector */}
             <ExpenseTypeSelector 
               selectedType={type} 
-              onTypeChange={setType} 
+              onTypeChange={handleTypeChange} 
             />
 
-            <CommonFields
-              type={type}
-              values={formValues}
-              onChange={handleFieldChange}
-              isAmountDisabled={type === 'mileage'}
-              fieldErrors={fieldErrors}
-              llmSuggestions={llmSuggestions}
+            {/* Basic Fields (Amount, Date, GL Account, Cost Center, Description) */}
+            <BasicInfoFields 
+              amount={amount}
+              date={date}
+              description={description}
+              account={account}
+              costCenter={costCenter}
+              onAmountChange={setAmount}
+              onDateChange={setDate}
+              onDescriptionChange={setDescription}
+              onAccountChange={handleAccountChange}
+              onCostCenterChange={handleCostCenterChange}
+              glAccounts={glAccounts}
+              costCenters={costCenters}
+            />
+            
+            {/* Dynamic Fields based on expense type */}
+            <DynamicFields 
+              fields={typeSpecificFields}
+              values={dynamicFields}
+              onChange={handleDynamicFieldChange}
             />
 
-            {needsGlAccount && (
-              <GlAccountField 
-                values={formValues} 
-                onChange={handleFieldChange} 
-                error={fieldErrors.glAccount}
-                llmSuggestion={llmSuggestions.glAccount}
-              />
-            )}
-            
-            {isHotelOrLodging && (
-              <HotelFields 
-                values={formValues} 
-                onChange={handleFieldChange}
-                llmSuggestions={llmSuggestions}
-              />
-            )}
-            
-            {isMeals && (
-              <MealsFields 
-                values={formValues} 
-                onChange={handleFieldChange}
-                llmSuggestions={llmSuggestions}
-              />
-            )}
-            
-            {isMileage && (
-              <MileageFields 
-                values={formValues} 
-                onChange={handleFieldChange} 
-                error={fieldErrors.miles}
-                llmSuggestions={llmSuggestions}
-              />
-            )}
-
-            <NotesField 
-              values={formValues} 
-              onChange={handleFieldChange}
-              llmSuggestions={llmSuggestions}
+            {/* Receipt Upload */}
+            <ReceiptUpload 
+              receiptName={receiptName}
+              receiptUrl={receiptUrl}
+              onReceiptChange={handleReceiptChange}
             />
 
-            <FormActions onCancel={onCancel} onSave={handleSave} />
+            {/* Action buttons */}
+            <div className="flex items-center gap-3 mt-auto pt-1">
+              <button
+                type="button"
+                onClick={onCancel}
+                className="flex-1 px-4 py-1.5 rounded-md border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="flex-1 px-4 py-1.5 rounded-md bg-blue-500 text-white text-sm hover:bg-blue-600 transition-colors flex items-center justify-center"
+              >
+                <span>Save</span>
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </button>
+            </div>
           </div>
         </ScrollArea>
       </div>
 
+      {/* Right side - Receipt Preview */}
       <div className="w-2/5">
         <ReceiptPreview 
           receiptUrl={receiptUrl}
@@ -487,24 +227,31 @@ const ExpenseLineItem: React.FC<FormProps> = ({
           onDragOver={handleDrag}
           onDrop={handleDrop}
           dragActive={dragActive}
-          onReceiptChange={handleReceiptChange}
-          onOcrDataExtracted={handleOcrDataExtracted}
-          currentValues={formValues}
         />
       </div>
 
-      {showValidationWarnings && (
-        <ValidationWarnings 
-          programmaticErrors={validationWarnings.programmaticErrors}
-          llmWarnings={validationWarnings.llmWarnings}
-          onClose={() => setShowValidationWarnings(false)}
-          onProceed={() => {
-            setShowValidationWarnings(false);
-            handleSave();
-          }}
-          open={showValidationWarnings}
-        />
-      )}
+      {/* Receipt Dialog */}
+      <Dialog open={showReceiptDialog} onOpenChange={setShowReceiptDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Receipt Preview</DialogTitle>
+            <DialogDescription>
+              {receiptName}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center items-center min-h-[300px] bg-gray-100 rounded-md">
+            {receiptUrl ? (
+              <img 
+                src={`/public/lovable-uploads/fc953625-155a-4230-9515-5801b4d67e6f.png`} 
+                alt="Receipt" 
+                className="max-w-full max-h-[400px] object-contain" 
+              />
+            ) : (
+              <div className="text-gray-500">No receipt available</div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
