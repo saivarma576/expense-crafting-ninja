@@ -32,6 +32,7 @@ interface AIChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   context?: string;
+  className?: string;
 }
 
 const suggestedQuestions = [
@@ -42,7 +43,6 @@ const suggestedQuestions = [
   "Are entertainment expenses allowed with clients?"
 ];
 
-// Mock user data - in a real app this would come from auth context
 const currentUser = {
   id: "user-123",
   name: "Sarah Johnson",
@@ -52,9 +52,9 @@ const currentUser = {
 const AIChatDrawer: React.FC<AIChatDrawerProps> = ({ 
   isOpen, 
   onClose,
-  context
+  context,
+  className
 }) => {
-  // Get saved messages from localStorage if they exist
   const getSavedMessages = (): Message[] => {
     const savedMessages = localStorage.getItem('policy-ai-chat-history');
     if (savedMessages) {
@@ -65,7 +65,6 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
       }
     }
     
-    // Default welcome message if no history
     return [{
       id: "welcome",
       content: "Hello! I'm your Policy AI assistant. Ask me anything about expense policies or guidelines.",
@@ -80,10 +79,8 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   
-  // Save conversation data for reporting
   const saveConversationData = (newMessages: Message[]) => {
     try {
-      // Get existing conversations from localStorage
       const savedConversations = localStorage.getItem('ai-conversations-data');
       let conversations: ConversationData[] = [];
       
@@ -91,15 +88,11 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
         conversations = JSON.parse(savedConversations);
       }
       
-      // If this is a new conversation (only has the welcome message)
       if (newMessages.length <= 1 && newMessages[0].id === "welcome") {
-        // Don't save anything yet - wait for user input
         return;
       }
       
-      // Check if we're in an existing conversation
       if (!currentConversationId) {
-        // Create a new conversation
         const newConversationId = `conv-${Date.now()}`;
         setCurrentConversationId(newConversationId);
         
@@ -118,7 +111,6 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
         
         conversations.push(newConversation);
       } else {
-        // Update existing conversation
         const conversationIndex = conversations.findIndex(c => c.id === currentConversationId);
         if (conversationIndex >= 0) {
           conversations[conversationIndex] = {
@@ -130,16 +122,13 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
         }
       }
       
-      // Save updated conversations to localStorage
       localStorage.setItem('ai-conversations-data', JSON.stringify(conversations));
     } catch (error) {
       console.error("Error saving conversation data:", error);
     }
   };
   
-  // Helper function to detect topic from messages (simplified)
   const detectTopic = (messages: Message[]): string => {
-    // Use the first user message as a basis for topic detection
     const firstUserMessage = messages.find(m => !m.isAI && m.id !== "welcome");
     if (!firstUserMessage) return "General Inquiry";
     
@@ -160,9 +149,7 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     return "General Inquiry";
   };
   
-  // Helper function to count policy references (simplified)
   const countPolicyReferences = (messages: Message[]): number => {
-    // Count AI messages that likely reference policy
     let count = 0;
     messages.forEach(message => {
       if (message.isAI) {
@@ -182,7 +169,6 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     return count;
   };
   
-  // End conversation when drawer closes
   useEffect(() => {
     if (!isOpen && currentConversationId) {
       try {
@@ -197,7 +183,6 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
           }
         }
         
-        // Reset conversation ID for next session
         setCurrentConversationId(null);
       } catch (error) {
         console.error("Error ending conversation:", error);
@@ -205,11 +190,9 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     }
   }, [isOpen, currentConversationId]);
   
-  // Save messages to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('policy-ai-chat-history', JSON.stringify(messages));
     
-    // Also save to conversation data for reporting
     if (messages.length > 1 || (messages.length === 1 && messages[0].id !== "welcome")) {
       saveConversationData(messages);
     }
@@ -225,7 +208,6 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     const messageToSend = text || inputValue;
     if (!messageToSend.trim()) return;
     
-    // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       content: messageToSend,
@@ -237,7 +219,6 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     setInputValue("");
     setIsLoading(true);
     
-    // Simulate AI response (would be replaced with actual API call)
     setTimeout(() => {
       const aiResponses = [
         "Based on our expense policy, meal expenses exceeding $75 per day require manager approval and itemized receipts.",
@@ -270,14 +251,16 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
     setMessages([welcomeMessage]);
     localStorage.removeItem('policy-ai-chat-history');
     
-    // Reset conversation ID for next session
     setCurrentConversationId(null);
   };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent 
-        className="w-full sm:max-w-md p-0 border-l shadow-xl overflow-hidden" 
+        className={cn(
+          "w-full sm:max-w-md p-0 border-l shadow-xl overflow-hidden",
+          className
+        )} 
         side="right"
       >
         <div 

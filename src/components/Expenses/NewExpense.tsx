@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -18,7 +19,7 @@ import TravelExpenseDetails from './TravelExpenseDetails';
 import { Button } from '@/components/ui/button';
 import TravelExpenseDialog from './TravelExpenseDialog';
 import ValidationWarningsModal from './ValidationWarningsModal';
-import AIChatDrawer from './AIChatDrawer';
+import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import { ValidationProvider, useValidation } from '@/contexts/ValidationContext';
 import { TravelInfoProvider, useTravelInfo } from '@/contexts/TravelInfoContext';
@@ -250,10 +251,11 @@ const NewExpenseContent: React.FC = () => {
       
       <ValidationWarningsModal onReviewItem={handleReviewItem} />
       
-      <AIChatDrawer
+      <ExpenseAIDrawer
         isOpen={showAIChat}
         onClose={() => setShowAIChat(false)}
         context="Expense report for business travel with meal expenses and hotel stays."
+        isLineItemSliderOpen={isAddingItem}
       />
     </div>
   );

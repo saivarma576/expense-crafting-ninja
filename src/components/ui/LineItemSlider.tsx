@@ -51,10 +51,14 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
     )}>
       <div 
         className={cn(
-          "fixed inset-y-0 right-0 w-full max-w-6xl bg-white shadow-lg flex flex-col h-full",
-          "transform transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 right-0 w-full max-w-md bg-white shadow-lg flex flex-col h-full",
+          "transform transition-transform duration-300 ease-in-out rounded-l-2xl",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
+        style={{
+          backgroundImage: "linear-gradient(to bottom, rgba(255,255,255,1), rgba(249,250,251,0.8))",
+          backgroundSize: "cover"
+        }}
       >
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-base font-medium text-gray-800">{title}</h2>

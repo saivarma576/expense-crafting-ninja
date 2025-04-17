@@ -2,9 +2,21 @@
 import React from 'react';
 import AIChatDrawer from './AIChatDrawer';
 
-// Simple wrapper that redirects to AIChatDrawer - kept for backwards compatibility
-const ExpenseAIDrawer: React.FC<React.ComponentProps<typeof AIChatDrawer>> = (props) => {
-  return <AIChatDrawer {...props} />;
+interface ExpenseAIDrawerProps extends React.ComponentProps<typeof AIChatDrawer> {
+  isLineItemSliderOpen?: boolean;
+}
+
+// Policy AI drawer that adjusts its positioning when the LineItemSlider is open
+const ExpenseAIDrawer: React.FC<ExpenseAIDrawerProps> = ({ 
+  isLineItemSliderOpen,
+  ...props 
+}) => {
+  return (
+    <AIChatDrawer 
+      {...props}
+      className={isLineItemSliderOpen ? "mr-[calc(100%-500px)] transition-all duration-300" : ""}
+    />
+  );
 };
 
 export default ExpenseAIDrawer;
