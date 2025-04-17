@@ -12,6 +12,20 @@ export interface ExpenseLineItem {
   costCenterName: string;
   receiptName?: string;
   receiptUrl?: string;
+  wbs?: string;
+  notes?: string;
+  glAccount?: string;
+  zipCode?: string;
+  city?: string;
+  mealsRate?: number;
+  hotelRate?: number;
+  throughDate?: string;
+  perDiemExplanation?: string;
+  departureTime?: string;
+  returnTime?: string;
+  miles?: number;
+  mileageRate?: number;
+  merchantName?: string;
 }
 
 export interface ExpenseDocument {
@@ -42,19 +56,19 @@ export interface DynamicField {
 }
 
 export type ExpenseType = 
-  | 'gasoline'
-  | 'hotel'
-  | 'meals'
   | 'mileage'
-  | 'office_supplies'
+  | 'meals'
   | 'other'
-  | 'parking'
-  | 'postage'
   | 'professional_fees'
-  | 'registration'
-  | 'rental'
+  | 'hotel'
+  | 'parking'
   | 'transport'
-  | 'auditing'
-  | 'baggage'
   | 'business_meals'
-  | 'subscriptions';
+  | 'registration'
+  | 'baggage'
+  | 'subscriptions'
+  | 'postage'
+  | 'gasoline'
+  | 'office_supplies'
+  | 'rental'
+  | 'auditing';

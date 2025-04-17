@@ -11,6 +11,7 @@ import Expenses from "./components/Expenses";
 import NewExpense from "./components/Expenses/NewExpense";
 import Receipts from "./components/Receipts";
 import Reports from "./components/Reports";
+import ReportDetail from "./components/Reports/ReportDetail";
 import Admin from "./components/Admin";
 import Profile from "./components/Profile";
 import NotFound from "./pages/NotFound";
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="expenses/new" element={<NewExpense />} />
             <Route path="receipts" element={<Receipts />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="reports/:reportId" element={<ReportDetail />} />
             <Route path="admin" element={<Admin />} />
             <Route path="profile" element={<Profile />} />
             <Route path="*" element={<NotFound />} />
