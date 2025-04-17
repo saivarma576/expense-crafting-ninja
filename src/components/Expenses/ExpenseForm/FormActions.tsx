@@ -21,19 +21,19 @@ const FormActions: React.FC<FormActionsProps> = ({
   
   return (
     <div className="border-t bg-white py-4 px-6 sticky bottom-0 z-10">
-      <div className="max-w-[1200px] mx-auto flex justify-between gap-3">
+      <div className="max-w-[1200px] mx-auto flex justify-end gap-3">
         <Button
           variant="outline"
           onClick={onCancel}
-          className="px-6"
+          className="min-w-[100px]"
         >
           Cancel
         </Button>
         <Button
           onClick={onSave}
           className={cn(
-            "px-6 flex items-center gap-2",
-            hasErrors ? "bg-gray-400 hover:bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+            "min-w-[100px] flex items-center gap-2 bg-blue-500 hover:bg-blue-600",
+            hasErrors ? "bg-gray-400 hover:bg-gray-500" : ""
           )}
           disabled={hasErrors}
         >
