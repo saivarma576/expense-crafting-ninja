@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, MessageSquare, ArrowRight, BarChart, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, AlertTriangle, AlertCircle, Zap, ChevronLeft, ChevronRight, RotateCw, BarChart, ChevronDown, ChevronUp } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { cn } from '@/lib/utils';
@@ -196,7 +196,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
                               onClick={() => handleHighlightField(error.field)}
                               className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5 ml-1"
                             >
-                              <ArrowRight className="h-3 w-3" />
+                              <ChevronRight className="h-3 w-3" />
                               Show
                             </button>
                           </div>
@@ -230,7 +230,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
                                 onClick={() => handleHighlightField("Receipt")}
                                 className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5 ml-1"
                               >
-                                <ArrowRight className="h-3 w-3" />
+                                <ChevronRight className="h-3 w-3" />
                                 Show
                               </button>
                             )}
@@ -239,7 +239,7 @@ const ValidationSummaryPanel: React.FC<ValidationPanelProps> = ({
                                 onClick={() => handleHighlightField("Amount")}
                                 className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-0.5 ml-1"
                               >
-                                <ArrowRight className="h-3 w-3" />
+                                <ChevronRight className="h-3 w-3" />
                                 Show
                               </button>
                             )}

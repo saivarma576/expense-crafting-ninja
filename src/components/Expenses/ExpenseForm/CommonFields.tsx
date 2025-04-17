@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Calendar, DollarSign, Store, FileText } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
+import { format } from 'date-fns';
 
 interface CommonFieldsProps extends FieldGroupProps {
   type: string;
@@ -20,9 +21,19 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
   fieldErrors = {},
   llmSuggestions = {}
 }) => {
+  // Set default date to today if empty
+  useEffect(() => {
+    if (!values.date) {
+      onChange('date', format(new Date(), 'yyyy-MM-dd'));
+    }
+  }, [values.date, onChange]);
+
   return (
-    <div className="mb-4 space-y-4">
-      <h3 className="text-sm font-medium text-gray-700">{type === 'mileage' ? 'Mileage Information' : 'Expense Information'}</h3>
+    <div className="mb-3 space-y-3">
+      <h3 className="text-sm font-medium text-gray-700 flex items-center">
+        <FileText className="w-4 h-4 mr-1.5 text-gray-500" />
+        {type === 'mileage' ? 'Mileage Information' : 'Expense Information'}
+      </h3>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
         <div>

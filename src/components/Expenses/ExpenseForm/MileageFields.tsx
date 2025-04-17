@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Calendar, Route } from 'lucide-react';
+import { Calendar, Route, Calculator } from 'lucide-react';
 import { MileageFieldsProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
+import { format } from 'date-fns';
 
 const MileageFields: React.FC<MileageFieldsProps> = ({ 
   values, 
@@ -12,9 +13,27 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
   error,
   llmSuggestions = {}
 }) => {
+  // Auto-calculate amount when miles change
+  useEffect(() => {
+    if (values.miles && values.mileageRate) {
+      const calculatedAmount = parseFloat((values.miles * values.mileageRate).toFixed(2));
+      onChange('amount', calculatedAmount);
+    }
+  }, [values.miles, values.mileageRate, onChange]);
+
+  // Set default return date to today if empty
+  useEffect(() => {
+    if (!values.throughDate) {
+      onChange('throughDate', format(new Date(), 'yyyy-MM-dd'));
+    }
+  }, [values.throughDate, onChange]);
+
   return (
-    <div className="mb-4 space-y-4">
-      <h3 className="text-sm font-medium text-gray-700">Mileage Details</h3>
+    <div className="mb-3 space-y-3">
+      <h3 className="text-sm font-medium text-gray-700 flex items-center">
+        <Route className="w-4 h-4 mr-1.5 text-gray-500" />
+        Mileage Details
+      </h3>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
         <div>
@@ -58,6 +77,7 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
               disabled
             />
             <span className="absolute left-2 top-2 text-gray-400 text-sm">$</span>
+            <Calculator className="w-4 h-4 absolute right-2 top-2 text-gray-400" title="Amount auto-calculated" />
           </div>
           <p className="mt-1 text-xs text-gray-500">Standard mileage rate</p>
         </div>

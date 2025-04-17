@@ -24,15 +24,16 @@ const GlAccountField: React.FC<GlAccountFieldProps> = ({
   const isHighlighted = activeField === 'glAccount';
 
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       <div className="flex items-center justify-between mb-1">
         <Label 
           htmlFor="glAccount" 
           className={cn(
-            "text-xs font-medium text-gray-700",
+            "text-xs font-medium text-gray-700 flex items-center",
             isHighlighted && "text-amber-700 font-semibold"
           )}
         >
+          <FileDigit className="w-4 h-4 mr-1.5 text-gray-500" />
           GL Account <span className="text-red-500 ml-1">*</span>
         </Label>
         
