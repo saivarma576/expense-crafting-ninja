@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Sparkles, UserCircle2, Brain, Zap, X, MessageSquare, ArrowRight } from "lucide-react";
+import { Send, Sparkles, UserCircle2, LightbulbIcon, X, MessageSquare, ArrowRight, BookOpen } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -123,14 +123,22 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-md p-0 border-l shadow-xl bg-gradient-to-br from-slate-50 to-blue-50" side="right">
-        <div className="flex flex-col h-full">
-          <SheetHeader className="border-b p-4 bg-white">
+      <SheetContent 
+        className="w-full sm:max-w-md p-0 border-l shadow-xl overflow-hidden" 
+        side="right"
+      >
+        <div 
+          className="flex flex-col h-full" 
+          style={{
+            backgroundImage: "linear-gradient(to bottom right, #f9fafb, #e5f0ff, #f0f7ff)",
+            backgroundSize: "cover"
+          }}
+        >
+          <SheetHeader className="border-b p-4 bg-white/80 backdrop-blur-sm">
             <div className="flex justify-between items-center">
-              <SheetTitle className="flex items-center">
-                <div className="relative mr-2">
-                  <Brain className="h-5 w-5 text-blue-500" />
-                  <Zap className="h-3 w-3 text-amber-400 absolute -top-1 -right-1" />
+              <SheetTitle className="flex items-center text-blue-600">
+                <div className="bg-blue-50 p-1.5 rounded-full mr-2 shadow-sm">
+                  <Sparkles className="h-5 w-5 text-blue-500" />
                 </div>
                 Policy AI Assistant
               </SheetTitle>
@@ -140,7 +148,7 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
             </div>
           </SheetHeader>
           
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="flex-1 px-4 py-3">
             <div className="space-y-4">
               {messages.map((message, index) => (
                 <motion.div 
@@ -150,18 +158,18 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
                   transition={{ duration: 0.2, delay: index * 0.05 }}
                   className={`flex ${message.isAI ? 'justify-start' : 'justify-end'}`}
                 >
-                  <div className={`flex max-w-[85%] ${message.isAI ? 'items-start' : 'items-end'}`}>
+                  <div className={`flex max-w-[85%] ${message.isAI ? 'items-start' : 'items-end'} relative`}>
                     {message.isAI && (
-                      <div className="bg-blue-500 rounded-full p-2 mr-2 flex-shrink-0">
-                        <Brain className="h-4 w-4 text-white" />
+                      <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full p-2 mr-2 flex-shrink-0 shadow-sm">
+                        <Sparkles className="h-4 w-4 text-white" />
                       </div>
                     )}
                     <div 
                       className={cn(
-                        "rounded-lg p-3 shadow-sm", 
+                        "rounded-2xl p-3 shadow-sm", 
                         message.isAI 
-                          ? "bg-white border border-blue-100 text-blue-900 rounded-tl-none" 
-                          : "bg-blue-500 text-white rounded-br-none"
+                          ? "bg-white/90 backdrop-blur-sm border border-blue-100/50 text-gray-800 rounded-tl-none" 
+                          : "bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-none"
                       )}
                     >
                       <p className="text-sm">{message.content}</p>
@@ -170,7 +178,7 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
                       </p>
                     </div>
                     {!message.isAI && (
-                      <div className="bg-gray-200 rounded-full p-2 ml-2 flex-shrink-0">
+                      <div className="bg-gray-200 rounded-full p-2 ml-2 flex-shrink-0 shadow-sm">
                         <UserCircle2 className="h-4 w-4 text-gray-600" />
                       </div>
                     )}
@@ -185,10 +193,10 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
                   className="flex justify-start"
                 >
                   <div className="flex items-start">
-                    <div className="bg-blue-500 rounded-full p-2 mr-2 flex-shrink-0">
-                      <Brain className="h-4 w-4 text-white animate-pulse" />
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full p-2 mr-2 flex-shrink-0 shadow-sm">
+                      <Sparkles className="h-4 w-4 text-white animate-pulse" />
                     </div>
-                    <div className="bg-white border border-blue-100 rounded-lg p-4 max-w-[85%] rounded-tl-none shadow-sm">
+                    <div className="bg-white/90 backdrop-blur-sm border border-blue-100/50 rounded-2xl p-4 max-w-[85%] rounded-tl-none shadow-sm">
                       <div className="flex gap-2 items-center">
                         <div className="w-6 h-6 relative">
                           <div className="absolute inset-0 flex items-center justify-center">
@@ -196,8 +204,8 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
                           </div>
                         </div>
                         <div className="flex flex-col gap-2">
-                          <Skeleton className="h-3 w-40 bg-blue-100" />
-                          <Skeleton className="h-3 w-28 bg-blue-100" />
+                          <Skeleton className="h-3 w-40 bg-blue-100/70" />
+                          <Skeleton className="h-3 w-28 bg-blue-100/70" />
                         </div>
                       </div>
                     </div>
@@ -209,13 +217,16 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
             
             {messages.length === 1 && (
               <div className="mt-6">
-                <h4 className="text-sm font-medium mb-3 text-blue-800">Suggested Questions</h4>
+                <div className="flex items-center gap-2 mb-3">
+                  <BookOpen className="h-4 w-4 text-blue-500" />
+                  <h4 className="text-sm font-medium text-blue-800">Suggested Questions</h4>
+                </div>
                 <div className="grid gap-2">
                   {suggestedQuestions.map((question) => (
                     <motion.button
                       key={question}
-                      whileHover={{ scale: 1.01, backgroundColor: "#EFF6FF" }}
-                      className="text-left p-3 bg-white rounded-lg border border-blue-100 text-sm text-blue-900 hover:border-blue-300 transition-colors flex justify-between items-center shadow-sm"
+                      whileHover={{ scale: 1.01 }}
+                      className="text-left p-3 bg-white/80 backdrop-blur-sm rounded-xl border border-blue-100/50 text-sm text-gray-700 hover:bg-blue-50/80 hover:border-blue-200 transition-all duration-200 flex justify-between items-center shadow-sm"
                       onClick={() => handleSendMessage(question)}
                     >
                       <div className="flex items-center gap-2">
@@ -230,14 +241,15 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
             )}
           </ScrollArea>
           
-          <div className="p-4 border-t mt-auto bg-white">
+          <div className="p-4 border-t bg-white/80 backdrop-blur-sm mt-auto">
             <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-white rounded-xl shadow-sm border border-gray-100 pl-3 transition-shadow focus-within:ring-1 focus-within:ring-blue-300 focus-within:border-blue-300">
+                <LightbulbIcon className="h-4 w-4 text-blue-400" />
                 <Textarea
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Ask about expense policies..."
-                  className="resize-none text-sm min-h-[60px] py-3 flex-1"
+                  className="resize-none text-sm min-h-[50px] py-2 border-none focus-visible:ring-0 shadow-none flex-1"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -246,12 +258,13 @@ const AIChatDrawer: React.FC<AIChatDrawerProps> = ({
                   }}
                 />
                 <Button 
-                  size="icon" 
-                  className="h-10 w-10"
+                  size="sm" 
+                  className="m-1"
                   onClick={() => handleSendMessage()}
                   disabled={!inputValue.trim() || isLoading}
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-4 w-4 mr-1" />
+                  <span>Send</span>
                 </Button>
               </div>
               
