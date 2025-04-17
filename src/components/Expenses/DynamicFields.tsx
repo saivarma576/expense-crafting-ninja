@@ -24,7 +24,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
     <div className="mb-4">
       <h3 className="text-sm font-medium text-gray-700 mb-2">Additional Details</h3>
       
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
         {fields.map((field) => (
           <div key={field.id} className="mb-1">
             <Label htmlFor={field.id} className="text-xs font-medium text-gray-700 block mb-1">
@@ -54,7 +54,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
                 id={field.id}
                 type="number"
                 value={values[field.id] || ''}
-                onChange={(e) => onChange(field.id, parseInt(e.target.value) || 0)}
+                onChange={(e) => onChange(field.id, parseFloat(e.target.value) || 0)}
                 className="h-8 px-3 py-1 text-sm w-full"
               />
             )}

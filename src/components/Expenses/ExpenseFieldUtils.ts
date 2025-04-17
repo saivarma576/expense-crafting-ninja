@@ -16,9 +16,7 @@ export const generateTypeSpecificFields = (type: ExpenseType): DynamicField[] =>
         { id: 'zipCode', label: 'Zip Code', type: 'text', placeholder: 'Enter zip code', required: true },
         { id: 'city', label: 'City', type: 'text', required: true },
         { id: 'hotelRate', label: 'Hotel Rate', type: 'number', required: true },
-        { id: 'checkInDate', label: 'Check-in Date', type: 'date', required: true },
-        { id: 'checkOutDate', label: 'Check-out Date', type: 'date', required: true },
-        { id: 'numberOfNights', label: 'Number of Nights', type: 'number', required: true },
+        { id: 'throughDate', label: 'Through Date', type: 'date', required: true },
       );
       break;
     case 'meals':
@@ -37,16 +35,9 @@ export const generateTypeSpecificFields = (type: ExpenseType): DynamicField[] =>
         { id: 'throughDate', label: 'Through Date', type: 'date', required: true },
       );
       break;
-    case 'transport':
-      fields.push(
-        { id: 'glAccount', label: 'GL Account', type: 'text', required: true },
-        { id: 'location', label: 'Departure Location', type: 'text', required: true },
-        { id: 'cityName', label: 'Destination', type: 'text', required: true },
-      );
-      break;
     default:
       // For all other expense types that require GL Account
-      if (['auditing', 'baggage', 'business_meals', 'subscriptions', 'gasoline', 
+      if (['transport', 'auditing', 'baggage', 'business_meals', 'subscriptions', 'gasoline', 
            'office_supplies', 'other', 'parking', 'postage', 'professional_fees', 
            'registration', 'rental'].includes(type)) {
         fields.push(
@@ -87,18 +78,40 @@ export const STANDARD_RATES = {
 export const EXPENSE_TYPE_DISPLAY = {
   mileage: 'Mileage',
   meals: 'Meals',
-  other: 'Others',
-  professional_fees: 'Professional Fees',
   hotel: 'Hotel/Lodging',
-  parking: 'Parking/Tolls',
   transport: 'Air/Taxi/Uber',
-  business_meals: 'Business Meals',
-  registration: 'Registration Fees',
+  auditing: 'Auditing Serv Fees',
   baggage: 'Baggage Fees',
+  business_meals: 'Business Meals',
   subscriptions: 'Dues Subscriptions',
-  postage: 'Postage & Freight',
   gasoline: 'Gasoline',
   office_supplies: 'Office Supplies',
+  other: 'Others',
+  parking: 'Parking/Tolls',
+  postage: 'Postage & Freight',
+  professional_fees: 'Professional Fees',
+  registration: 'Registration Fees',
   rental: 'Rental Car',
-  auditing: 'Auditing Serv Fees',
 };
+
+// Group expense types by their field requirements
+export const GL_ACCOUNT_REQUIRED_TYPES = [
+  'transport',
+  'auditing',
+  'baggage',
+  'business_meals',
+  'subscriptions',
+  'gasoline',
+  'office_supplies',
+  'other',
+  'parking',
+  'postage',
+  'professional_fees',
+  'registration',
+  'rental'
+];
+
+export const HOTEL_LODGING_TYPES = ['hotel'];
+export const MEALS_TYPES = ['meals', 'business_meals'];
+export const MILEAGE_TYPES = ['mileage'];
+

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { ExpenseLineItem } from '@/types/expense';
 import { ExpenseLineItemType } from '@/components/Expenses/ExpenseLineItem';
+import { EXPENSE_TYPE_DISPLAY } from '@/components/Expenses/ExpenseFieldUtils';
 
 export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
   const [lineItems, setLineItems] = useState<ExpenseLineItem[]>(initialItems);
@@ -20,19 +21,19 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
       // Map ExpenseLineItem to ExpenseLineItemType for editing
       setEditingItem({
         id: item.id,
-        type: item.type.toLowerCase().replace(' ', '') as any,
+        type: item.type.toLowerCase().replace(' ', '_') as any,
         amount: item.amount,
         date: item.date,
         description: item.title,
-        receiptUrl: item.receiptName,
+        receiptUrl: item.receiptUrl || '',
         account: item.account,
         accountName: item.accountName,
         costCenter: item.costCenter,
         costCenterName: item.costCenterName,
         // Include other fields from the item
-        merchantName: item.merchantName,
-        wbs: item.wbs,
-        notes: item.notes,
+        merchantName: item.merchantName || '',
+        wbs: item.wbs || '',
+        notes: item.notes || '',
         glAccount: item.glAccount,
         zipCode: item.zipCode,
         city: item.city,
@@ -44,7 +45,7 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
         returnTime: item.returnTime,
         miles: item.miles,
         mileageRate: item.mileageRate,
-        receiptName: item.receiptName
+        receiptName: item.receiptName || ''
       });
       setIsAddingItem(true);
     }
@@ -65,12 +66,13 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
                 title: lineItem.description,
                 amount: lineItem.amount,
                 date: lineItem.date,
-                type: lineItem.type,
+                type: EXPENSE_TYPE_DISPLAY[lineItem.type] || 'Other Expense',
                 account: lineItem.account || item.account,
                 accountName: lineItem.accountName || item.accountName,
                 costCenter: lineItem.costCenter || item.costCenter,
                 costCenterName: lineItem.costCenterName || item.costCenterName,
                 receiptName: lineItem.receiptName || item.receiptName,
+                receiptUrl: lineItem.receiptUrl || item.receiptUrl,
                 merchantName: lineItem.merchantName,
                 wbs: lineItem.wbs,
                 notes: lineItem.notes,
@@ -95,7 +97,7 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
         {
           id: lineItem.id,
           title: lineItem.description,
-          type: getCategoryTypeLabel(lineItem.type),
+          type: EXPENSE_TYPE_DISPLAY[lineItem.type] || 'Other Expense',
           category: getEmojiForType(lineItem.type),
           date: lineItem.date,
           amount: lineItem.amount,
@@ -104,6 +106,7 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
           costCenter: lineItem.costCenter || '1200- Cost Center Name',
           costCenterName: lineItem.costCenterName || 'Cost Center',
           receiptName: lineItem.receiptName || 'Receipt Pending',
+          receiptUrl: lineItem.receiptUrl,
           merchantName: lineItem.merchantName,
           wbs: lineItem.wbs,
           notes: lineItem.notes,
@@ -129,26 +132,24 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
 
   const getEmojiForType = (type: string) => {
     const emojiMap: Record<string, string> = {
-      'airfare': '✈️',
+      'transport': '✈️',
       'hotel': '🏨',
       'meals': '🍔',
-      'rental': '🚗',
-      'transport': '🚕',
-      'other': '📋'
+      'business_meals': '☕',
+      'mileage': '🚗',
+      'rental': '🚙',
+      'parking': '🅿️',
+      'gasoline': '⛽',
+      'baggage': '🧳',
+      'subscriptions': '📚',
+      'registration': '📋',
+      'professional_fees': '👔',
+      'auditing': '📊',
+      'office_supplies': '📎',
+      'postage': '📦',
+      'other': '📝'
     };
-    return emojiMap[type.toLowerCase()] || '📋';
-  };
-
-  const getCategoryTypeLabel = (type: string) => {
-    const labelMap: Record<string, string> = {
-      'airfare': 'Airfare',
-      'hotel': 'Hotel/Lodging',
-      'meals': 'Business Meals',
-      'rental': 'Car Rental',
-      'transport': 'Transport',
-      'other': 'Other Expense'
-    };
-    return labelMap[type.toLowerCase()] || 'Other Expense';
+    return emojiMap[type.toLowerCase()] || '📝';
   };
 
   const getTotalAmount = () => {

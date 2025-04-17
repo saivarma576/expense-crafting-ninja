@@ -56,19 +56,20 @@ export interface DynamicField {
 }
 
 export type ExpenseType = 
-  | 'mileage'
-  | 'meals'
-  | 'other'
-  | 'professional_fees'
-  | 'hotel'
-  | 'parking'
   | 'transport'
-  | 'business_meals'
-  | 'registration'
+  | 'auditing'
   | 'baggage'
+  | 'business_meals'
   | 'subscriptions'
-  | 'postage'
   | 'gasoline'
+  | 'hotel'
+  | 'meals'
+  | 'mileage'
   | 'office_supplies'
-  | 'rental'
-  | 'auditing';
+  | 'other'
+  | 'parking'
+  | 'postage'
+  | 'professional_fees'
+  | 'registration'
+  | 'rental';
+

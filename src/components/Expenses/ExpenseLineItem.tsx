@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseType } from '@/types/expense';
@@ -20,7 +19,13 @@ import FormActions from './ExpenseForm/FormActions';
 import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import ValidationSummaryPanel from './ExpenseForm/ValidationSummaryPanel';
 import DataMismatchAlert from './ExpenseForm/DataMismatchAlert';
-import { STANDARD_RATES } from './ExpenseFieldUtils';
+import { 
+  STANDARD_RATES, 
+  GL_ACCOUNT_REQUIRED_TYPES,
+  HOTEL_LODGING_TYPES,
+  MEALS_TYPES,
+  MILEAGE_TYPES
+} from './ExpenseFieldUtils';
 import { 
   validateField, 
   performLLMValidation, 
@@ -132,13 +137,10 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     return error;
   };
 
-  const needsGlAccount = ['transport', 'auditing', 'baggage', 'business_meals', 
-                         'subscriptions', 'gasoline', 'office_supplies', 'other', 
-                         'parking', 'postage', 'professional_fees', 'registration', 'rental'].includes(type);
-  
-  const isHotelOrLodging = type === 'hotel';
-  const isMeals = type === 'meals';
-  const isMileage = type === 'mileage';
+  const needsGlAccount = GL_ACCOUNT_REQUIRED_TYPES.includes(type);
+  const isHotelOrLodging = HOTEL_LODGING_TYPES.includes(type);
+  const isMeals = MEALS_TYPES.includes(type);
+  const isMileage = MILEAGE_TYPES.includes(type);
 
   useEffect(() => {
     const suggestions: Record<string, string | null> = {};
