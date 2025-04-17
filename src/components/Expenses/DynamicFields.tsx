@@ -3,6 +3,7 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DynamicField } from '@/types/expense';
+import { Label } from '@/components/ui/label';
 
 interface DynamicFieldsProps {
   fields: DynamicField[];
@@ -23,12 +24,12 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
     <div className="mb-4">
       <h3 className="text-sm font-medium text-gray-700 mb-2">Additional Details</h3>
       
-      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-2">
         {fields.map((field) => (
-          <div key={field.id}>
-            <label htmlFor={field.id} className="text-sm font-medium text-gray-700 block mb-1">
+          <div key={field.id} className="mb-1">
+            <Label htmlFor={field.id} className="text-xs font-medium text-gray-700 block mb-1">
               {field.label} {field.required && <span className="text-red-500">*</span>}
-            </label>
+            </Label>
             {field.type === 'text' && (
               <Input
                 id={field.id}
@@ -36,7 +37,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
                 value={values[field.id] || ''}
                 onChange={(e) => onChange(field.id, e.target.value)}
                 placeholder={field.placeholder}
-                className="h-9 px-3 py-1 text-sm w-full"
+                className="h-8 px-3 py-1 text-sm w-full"
               />
             )}
             {field.type === 'date' && (
@@ -45,7 +46,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
                 type="date"
                 value={values[field.id] || ''}
                 onChange={(e) => onChange(field.id, e.target.value)}
-                className="h-9 px-3 py-1 text-sm w-full"
+                className="h-8 px-3 py-1 text-sm w-full"
               />
             )}
             {field.type === 'number' && (
@@ -54,7 +55,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
                 type="number"
                 value={values[field.id] || ''}
                 onChange={(e) => onChange(field.id, parseInt(e.target.value) || 0)}
-                className="h-9 px-3 py-1 text-sm w-full"
+                className="h-8 px-3 py-1 text-sm w-full"
               />
             )}
             {field.type === 'select' && field.options && (
@@ -62,7 +63,7 @@ const DynamicFields: React.FC<DynamicFieldsProps> = ({
                 value={values[field.id] || ''} 
                 onValueChange={(value) => onChange(field.id, value)}
               >
-                <SelectTrigger className="h-9 text-sm w-full">
+                <SelectTrigger className="h-8 text-sm w-full">
                   <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
                 </SelectTrigger>
                 <SelectContent>

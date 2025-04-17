@@ -34,46 +34,33 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
   onTypeChange 
 }) => {
   return (
-    <div className="mb-4">
-      <label className="text-sm font-medium text-gray-700 block mb-2">Expense Type</label>
-      <div className="grid grid-cols-6 gap-2 mb-2">
-        {expenseTypes.slice(0, 12).map((expType) => (
+    <div className="mb-3">
+      <label className="text-sm font-medium text-gray-700 block mb-1.5">Expense Type</label>
+      <div className="grid grid-cols-6 md:grid-cols-12 gap-1.5 mb-2">
+        {expenseTypes.map((expType) => (
           <button
             key={expType.value}
             type="button"
             onClick={() => onTypeChange(expType.value as ExpenseType)}
             className={cn(
-              "flex flex-col items-center justify-center py-2 px-1 rounded-lg border transition-all text-xs",
+              "flex flex-col items-center justify-center py-1.5 px-0.5 rounded-md border transition-all text-xs",
               selectedType === expType.value 
                 ? "border-blue-500 bg-blue-50" 
                 : "border-gray-200 hover:border-gray-300"
             )}
           >
             <div className={cn(
-              "rounded-full mb-1",
+              "rounded-full mb-0.5",
               selectedType === expType.value 
                 ? "text-blue-600" 
                 : "text-gray-500"
             )}>
               {expType.icon}
             </div>
-            <span className="text-xs text-center leading-tight truncate w-full px-1">{expType.label}</span>
+            <span className="text-[10px] leading-tight truncate w-full px-0.5">{expType.label}</span>
           </button>
         ))}
       </div>
-      
-      <select 
-        className="w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        value={selectedType}
-        onChange={(e) => onTypeChange(e.target.value as ExpenseType)}
-      >
-        <option value="" disabled>Select expense type...</option>
-        {expenseTypes.map((expType) => (
-          <option key={expType.value} value={expType.value}>
-            {expType.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 };

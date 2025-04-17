@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseType } from '@/types/expense';
@@ -416,56 +417,62 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   }, []);
 
   return (
-    <div className="flex">
-      <div className="w-2/3 pr-6">
+    <div className="flex flex-col md:flex-row gap-6">
+      <div className="md:w-[65%]">
         <ExpenseTypeSelector 
           selectedType={type} 
           onTypeChange={setType} 
         />
 
-        <CommonFields
-          type={type}
-          values={formValues}
-          onChange={handleFieldChange}
-          isAmountDisabled={type === 'mileage'}
-          fieldErrors={fieldErrors}
-          llmSuggestions={llmSuggestions}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <CommonFields
+              type={type}
+              values={formValues}
+              onChange={handleFieldChange}
+              isAmountDisabled={type === 'mileage'}
+              fieldErrors={fieldErrors}
+              llmSuggestions={llmSuggestions}
+            />
 
-        {needsGlAccount && (
-          <GlAccountField 
-            values={formValues} 
-            onChange={handleFieldChange} 
-            error={fieldErrors.glAccount}
-            llmSuggestion={llmSuggestions.glAccount}
-          />
-        )}
+            {needsGlAccount && (
+              <GlAccountField 
+                values={formValues} 
+                onChange={handleFieldChange} 
+                error={fieldErrors.glAccount}
+                llmSuggestion={llmSuggestions.glAccount}
+              />
+            )}
+          </div>
+          
+          <div>
+            {isHotelOrLodging && (
+              <HotelFields 
+                values={formValues} 
+                onChange={handleFieldChange}
+                llmSuggestions={llmSuggestions}
+              />
+            )}
+            
+            {isMeals && (
+              <MealsFields 
+                values={formValues} 
+                onChange={handleFieldChange}
+                llmSuggestions={llmSuggestions}
+              />
+            )}
+            
+            {isMileage && (
+              <MileageFields 
+                values={formValues} 
+                onChange={handleFieldChange} 
+                error={fieldErrors.miles}
+                llmSuggestions={llmSuggestions}
+              />
+            )}
+          </div>
+        </div>
         
-        {isHotelOrLodging && (
-          <HotelFields 
-            values={formValues} 
-            onChange={handleFieldChange}
-            llmSuggestions={llmSuggestions}
-          />
-        )}
-        
-        {isMeals && (
-          <MealsFields 
-            values={formValues} 
-            onChange={handleFieldChange}
-            llmSuggestions={llmSuggestions}
-          />
-        )}
-        
-        {isMileage && (
-          <MileageFields 
-            values={formValues} 
-            onChange={handleFieldChange} 
-            error={fieldErrors.miles}
-            llmSuggestions={llmSuggestions}
-          />
-        )}
-
         <NotesField 
           values={formValues} 
           onChange={handleFieldChange}
@@ -480,7 +487,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
         />
       </div>
 
-      <div className="w-1/3">
+      <div className="md:w-[35%] h-[500px]">
         <ReceiptPreview 
           receiptUrl={receiptUrl}
           receiptName={receiptName}
