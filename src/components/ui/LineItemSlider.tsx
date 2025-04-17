@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface LineItemSliderProps {
   isOpen: boolean;
@@ -51,9 +50,9 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
     )}>
       <div 
         className={cn(
-          "fixed inset-y-0 right-0 w-full max-w-[1000px] bg-white shadow-lg flex flex-col h-full",
-          "transform transition-transform duration-300 ease-in-out rounded-l-2xl",
-          isOpen ? "translate-x-0" : "translate-x-full"
+          "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] max-h-[90vh] bg-white shadow-lg flex flex-col",
+          "transform transition-all duration-300 ease-in-out rounded-xl",
+          isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         )}
       >
         <div className="flex items-center justify-between p-4 border-b">
@@ -66,7 +65,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
             <X className="h-5 w-5 text-gray-500" />
           </button>
         </div>
-        <div className="flex-1 h-[calc(100vh-65px)] overflow-x-hidden relative">
+        <div className="flex-1 overflow-auto relative">
           <div className="relative p-6">
             {children}
           </div>

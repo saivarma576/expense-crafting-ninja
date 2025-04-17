@@ -18,7 +18,6 @@ import TravelExpenseDetails from './TravelExpenseDetails';
 import { Button } from '@/components/ui/button';
 import TravelExpenseDialog from './TravelExpenseDialog';
 import ValidationWarningsModal from './ValidationWarningsModal';
-import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import { ValidationProvider, useValidation } from '@/contexts/ValidationContext';
 import { TravelInfoProvider, useTravelInfo } from '@/contexts/TravelInfoContext';
@@ -111,7 +110,6 @@ const NewExpenseContent: React.FC = () => {
   } = useExpenseLineItems(initialLineItems);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showAIChat, setShowAIChat] = useState<boolean>(false);
 
   const handleRevalidate = () => {
     toast.info("Validating expense report...");
@@ -147,10 +145,6 @@ const NewExpenseContent: React.FC = () => {
       setIsSubmitting(false);
       setShowValidationWarnings(true);
     }, 2000);
-  };
-
-  const handleAskAI = () => {
-    setShowAIChat(!showAIChat);
   };
 
   const handleReviewItem = (violationId: string) => {
@@ -227,7 +221,7 @@ const NewExpenseContent: React.FC = () => {
       <ExpenseActions 
         totalAmount={totalAmount} 
         onSubmit={handleSubmit}
-        onAskAI={handleAskAI}
+        onAskAI={() => {}}
         onSaveAsDraft={() => toast.info("Expense saved as draft")}
         onDiscard={() => navigate('/expenses')}
         submitting={isSubmitting}
@@ -249,13 +243,6 @@ const NewExpenseContent: React.FC = () => {
       <TravelExpenseDialog />
       
       <ValidationWarningsModal onReviewItem={handleReviewItem} />
-      
-      <ExpenseAIDrawer
-        isOpen={showAIChat}
-        onClose={() => setShowAIChat(false)}
-        context="Expense report for business travel with meal expenses and hotel stays."
-        isLineItemSliderOpen={isAddingItem}
-      />
     </div>
   );
 };

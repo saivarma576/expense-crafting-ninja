@@ -36,7 +36,7 @@ const BasicInfoFields: React.FC<BasicInfoFieldsProps> = ({
     <>
       <div className="mb-5">
         <h3 className="text-sm font-medium text-gray-700 block mb-3">Expense Information</h3>
-        <div className="grid grid-cols-2 gap-x-5 gap-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
           {/* Date */}
           <div>
             <label htmlFor="date" className="text-sm font-medium text-gray-700 block mb-1.5">Date <span className="text-red-500">*</span></label>
