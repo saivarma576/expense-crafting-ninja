@@ -1,6 +1,5 @@
 
 import React from 'react';
-import ExpenseTypeSelector from '../ExpenseTypeSelector';
 import CommonFields from './CommonFields';
 import HotelFields from './HotelFields';
 import MealsFields from './MealsFields';
@@ -34,67 +33,62 @@ const ExpenseFormLayout: React.FC<ExpenseFormLayoutProps> = ({
   const isMileage = MILEAGE_TYPES.includes(formValues.type);
 
   return (
-    <div className="md:w-[65%]">
-      <ExpenseTypeSelector 
-        selectedType={formValues.type} 
-        onTypeChange={(type) => onChange('type', type)} 
-      />
+    <>
+      <div className="space-y-6">
+        <CommonFields
+          type={formValues.type}
+          values={formValues}
+          onChange={onChange}
+          isAmountDisabled={formValues.type === 'mileage'}
+          fieldErrors={fieldErrors}
+          llmSuggestions={llmSuggestions}
+        />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <CommonFields
-            type={formValues.type}
-            values={formValues}
-            onChange={onChange}
-            isAmountDisabled={formValues.type === 'mileage'}
-            fieldErrors={fieldErrors}
-            llmSuggestions={llmSuggestions}
+        {needsGlAccount && (
+          <GlAccountField 
+            values={formValues} 
+            onChange={onChange} 
+            error={fieldErrors.glAccount}
+            llmSuggestion={llmSuggestions.glAccount}
           />
-
-          {needsGlAccount && (
-            <GlAccountField 
-              values={formValues} 
-              onChange={onChange} 
-              error={fieldErrors.glAccount}
-              llmSuggestion={llmSuggestions.glAccount}
-            />
-          )}
-        </div>
-        
-        <div>
-          {isHotelOrLodging && (
-            <HotelFields 
-              values={formValues} 
-              onChange={onChange}
-              llmSuggestions={llmSuggestions}
-            />
-          )}
-          
-          {isMeals && (
-            <MealsFields 
-              values={formValues} 
-              onChange={onChange}
-              llmSuggestions={llmSuggestions}
-            />
-          )}
-          
-          {isMileage && (
-            <MileageFields 
-              values={formValues} 
-              onChange={onChange} 
-              error={fieldErrors.miles}
-              llmSuggestions={llmSuggestions}
-            />
-          )}
-        </div>
+        )}
       </div>
       
-      <NotesField 
-        values={formValues} 
-        onChange={onChange}
-        llmSuggestions={llmSuggestions}
-      />
-    </div>
+      <div className="space-y-6">
+        {isHotelOrLodging && (
+          <HotelFields 
+            values={formValues} 
+            onChange={onChange}
+            llmSuggestions={llmSuggestions}
+          />
+        )}
+        
+        {isMeals && (
+          <MealsFields 
+            values={formValues} 
+            onChange={onChange}
+            llmSuggestions={llmSuggestions}
+          />
+        )}
+        
+        {isMileage && (
+          <MileageFields 
+            values={formValues} 
+            onChange={onChange} 
+            error={fieldErrors.miles}
+            llmSuggestions={llmSuggestions}
+          />
+        )}
+      </div>
+      
+      <div className="col-span-2 mt-6">
+        <NotesField 
+          values={formValues} 
+          onChange={onChange}
+          llmSuggestions={llmSuggestions}
+        />
+      </div>
+    </>
   );
 };
 

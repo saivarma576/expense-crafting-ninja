@@ -5,6 +5,12 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { extractDataFromReceipt, detectDataMismatch } from '@/utils/ocrUtils';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface ReceiptPreviewProps {
   receiptUrl: string;
@@ -82,24 +88,30 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
   };
 
   return (
-    <div className={cn(
-      "bg-gray-50 flex flex-col border border-gray-200 rounded-md h-full transition-all duration-300",
-      expanded ? "w-full" : "w-full"
-    )}>
-      <div className="flex justify-between items-center p-3 border-b border-gray-200 bg-gray-50">
+    <div className="bg-white border border-gray-200 rounded-md h-full">
+      <div className="flex justify-between items-center p-3 border-b border-gray-200">
         <h3 className="text-sm font-semibold text-gray-700">Receipt Preview</h3>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-7 w-7 p-0" 
-          onClick={toggleExpanded}
-        >
-          {expanded ? <MinimizeIcon className="h-4 w-4" /> : <MaximizeIcon className="h-4 w-4" />}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 w-7 p-0" 
+                onClick={toggleExpanded}
+              >
+                {expanded ? <MinimizeIcon className="h-4 w-4" /> : <MaximizeIcon className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{expanded ? "Minimize" : "Maximize"}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       
       <div 
-        className="flex-1 p-4 flex flex-col items-center justify-center"
+        className="p-4 flex flex-col items-center justify-center min-h-[300px]"
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
@@ -133,13 +145,13 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
         ) : (
           <div 
             className={cn(
-              "flex flex-col items-center justify-center bg-white rounded-md border border-dashed p-6 w-full h-full transition-colors",
+              "flex flex-col items-center justify-center rounded-md border border-dashed p-6 w-full h-full transition-colors",
               dragActive ? "border-blue-400 bg-blue-50" : "border-gray-300"
             )}
           >
-            <FileImage className="h-12 w-12 text-gray-300 mb-3" />
-            <p className="text-gray-700 text-center font-medium mb-2">Upload Receipt</p>
-            <p className="text-gray-500 text-sm text-center mb-4">
+            <FileImage className="h-16 w-16 text-gray-300 mb-4" />
+            <p className="text-base text-center font-medium mb-2">Upload Receipt</p>
+            <p className="text-gray-500 text-sm text-center mb-6">
               Drag and drop your receipt image or PDF here
             </p>
             
@@ -150,13 +162,13 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
                 accept="image/*,.pdf"
                 onChange={handleFileInput}
               />
-              <div className="px-4 py-2 rounded-md bg-blue-50 hover:bg-blue-100 text-blue-600 transition-colors flex items-center">
+              <div className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-colors flex items-center">
                 <Upload className="h-4 w-4 mr-2" />
                 <span className="text-sm font-medium">Browse Files</span>
               </div>
             </label>
             
-            <div className="mt-4 flex items-center text-amber-600 text-xs">
+            <div className="mt-6 flex items-center text-amber-600 text-xs">
               <AlertCircle className="w-3.5 h-3.5 mr-1.5" />
               <span>Supported formats: JPEG, PNG, PDF</span>
             </div>

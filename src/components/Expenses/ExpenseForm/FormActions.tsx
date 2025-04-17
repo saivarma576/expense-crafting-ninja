@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, AlertTriangle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -17,11 +17,11 @@ const FormActions: React.FC<FormActionsProps> = ({
   programmaticErrors = [],
   llmWarnings = []
 }) => {
-  const hasWarnings = programmaticErrors.length > 0 || llmWarnings.length > 0;
+  const hasErrors = programmaticErrors.length > 0;
   
   return (
-    <div className="border-t bg-white py-4 px-6">
-      <div className="max-w-[1200px] mx-auto flex justify-end gap-3">
+    <div className="border-t bg-white py-4 px-6 sticky bottom-0 z-10">
+      <div className="max-w-[1200px] mx-auto flex justify-between gap-3">
         <Button
           variant="outline"
           onClick={onCancel}
@@ -31,7 +31,11 @@ const FormActions: React.FC<FormActionsProps> = ({
         </Button>
         <Button
           onClick={onSave}
-          className="px-6 flex items-center gap-2 bg-blue-500 hover:bg-blue-600"
+          className={cn(
+            "px-6 flex items-center gap-2",
+            hasErrors ? "bg-gray-400 hover:bg-gray-500" : "bg-blue-500 hover:bg-blue-600"
+          )}
+          disabled={hasErrors}
         >
           Save
           <ArrowRight className="h-4 w-4" />

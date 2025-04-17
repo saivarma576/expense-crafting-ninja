@@ -29,13 +29,8 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
   }, [values.date, onChange]);
 
   return (
-    <div className="mb-3 space-y-3">
-      <h3 className="text-sm font-medium text-gray-700 flex items-center">
-        <FileText className="w-4 h-4 mr-1.5 text-gray-500" />
-        {type === 'mileage' ? 'Mileage Information' : 'Expense Information'}
-      </h3>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="date" className="text-xs font-medium text-gray-700 flex items-center">
             Date <span className="text-red-500 ml-1">*</span>
@@ -46,10 +41,10 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
               type="date"
               value={values.date || ''}
               onChange={(e) => onChange('date', e.target.value)}
-              className={`h-8 px-2 py-1 text-sm pl-7 ${fieldErrors.date ? 'border-red-500 pr-8' : llmSuggestions.date ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-10 px-3 py-2 text-sm pl-9 ${fieldErrors.date ? 'border-red-500 pr-8' : llmSuggestions.date ? 'border-amber-300 pr-8' : ''}`}
               required
             />
-            <Calendar className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
+            <Calendar className="w-4 h-4 absolute left-3 top-3 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator 
               programmaticError={fieldErrors.date} 
               llmSuggestion={llmSuggestions.date} 
@@ -65,6 +60,9 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
             Amount <span className="text-red-500 ml-1">*</span>
           </Label>
           <div className="relative">
+            <div className="absolute left-0 top-0 flex items-center h-full pl-3">
+              <span className="text-gray-500">$</span>
+            </div>
             <Input
               id="amount"
               type="number"
@@ -72,11 +70,10 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
               value={values.amount || ''}
               onChange={(e) => onChange('amount', parseFloat(e.target.value) || 0)}
               placeholder="0.00"
-              className={`h-8 px-2 py-1 text-sm pl-7 ${fieldErrors.amount ? 'border-red-500 pr-8' : llmSuggestions.amount ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-10 px-3 py-2 text-sm pl-9 ${fieldErrors.amount ? 'border-red-500 pr-8' : llmSuggestions.amount ? 'border-amber-300 pr-8' : ''}`}
               disabled={isAmountDisabled}
               required
             />
-            <span className="absolute left-2 top-2 text-gray-400 text-sm">$</span>
             <FieldValidationIndicator 
               programmaticError={fieldErrors.amount} 
               llmSuggestion={llmSuggestions.amount} 
@@ -97,10 +94,10 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
               value={values.merchantName || ''}
               onChange={(e) => onChange('merchantName', e.target.value)}
               placeholder="E.g., Office Depot"
-              className={`h-8 px-2 py-1 text-sm pl-7 ${fieldErrors.merchantName ? 'border-red-500 pr-8' : llmSuggestions.merchantName ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-10 px-3 py-2 text-sm pl-9 ${fieldErrors.merchantName ? 'border-red-500 pr-8' : llmSuggestions.merchantName ? 'border-amber-300 pr-8' : ''}`}
               required
             />
-            <Store className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
+            <Store className="w-4 h-4 absolute left-3 top-3 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator 
               programmaticError={fieldErrors.merchantName} 
               llmSuggestion={llmSuggestions.merchantName} 
@@ -121,14 +118,17 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
               value={values.description || ''}
               onChange={(e) => onChange('description', e.target.value)}
               placeholder="Brief description"
-              className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.description ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-10 px-3 py-2 text-sm pl-9 ${llmSuggestions.description ? 'border-amber-300 pr-8' : ''}`}
               required
             />
-            <FileText className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
+            <FileText className="w-4 h-4 absolute left-3 top-3 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator 
               llmSuggestion={llmSuggestions.description} 
             />
           </div>
+          {fieldErrors.description && (
+            <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
+          )}
         </div>
       </div>
     </div>
