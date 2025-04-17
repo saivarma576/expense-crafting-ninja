@@ -1,14 +1,12 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ExpenseLineItem } from '@/types/expense';
-import { ExpenseLineItemType } from '@/components/Expenses/ExpenseLineItem';
+import { ExpenseLineItem, ExpenseLineItemFormData, ExpenseType } from '@/types/expense';
 import { EXPENSE_TYPE_DISPLAY } from '@/components/Expenses/ExpenseFieldUtils';
 
 export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
   const [lineItems, setLineItems] = useState<ExpenseLineItem[]>(initialItems);
   const [isAddingItem, setIsAddingItem] = useState(false);
-  const [editingItem, setEditingItem] = useState<ExpenseLineItemType | undefined>(undefined);
+  const [editingItem, setEditingItem] = useState<ExpenseLineItemFormData | undefined>(undefined);
 
   const handleAddLineItem = () => {
     setEditingItem(undefined);
@@ -18,10 +16,10 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
   const handleEditLineItem = (id: string) => {
     const item = lineItems.find(item => item.id === id);
     if (item) {
-      // Map ExpenseLineItem to ExpenseLineItemType for editing
+      // Map ExpenseLineItem to ExpenseLineItemFormData for editing
       setEditingItem({
         id: item.id,
-        type: item.type.toLowerCase().replace(' ', '_') as any,
+        type: item.type.toLowerCase().replace(' ', '_') as ExpenseType,
         amount: item.amount,
         date: item.date,
         description: item.title,
@@ -56,7 +54,7 @@ export const useExpenseLineItems = (initialItems: ExpenseLineItem[] = []) => {
     toast.success("Item removed successfully");
   };
 
-  const handleLineItemSave = (lineItem: ExpenseLineItemType) => {
+  const handleLineItemSave = (lineItem: ExpenseLineItemFormData) => {
     if (editingItem?.id) {
       setLineItems(prevItems => 
         prevItems.map(item => 

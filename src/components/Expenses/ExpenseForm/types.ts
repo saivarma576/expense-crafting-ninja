@@ -36,3 +36,6 @@ export interface ValidationResult {
   hasErrors: boolean;
   hasWarnings: boolean;
 }
+
+// Re-export the ExpenseLineItemFormData type for other files to use
+export type { ExpenseLineItemFormData };
