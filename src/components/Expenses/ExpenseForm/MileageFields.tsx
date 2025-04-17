@@ -6,6 +6,7 @@ import { Calendar, MapPin, Calculator } from 'lucide-react';
 import { MileageFieldsProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { STANDARD_RATES } from '../ExpenseFieldUtils';
+import { cn } from '@/lib/utils';
 
 const MileageFields: React.FC<MileageFieldsProps> = ({ 
   values, 

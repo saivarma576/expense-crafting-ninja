@@ -1,6 +1,6 @@
 
 import React, { useCallback, useState } from 'react';
-import { Upload, FileImage, AlertCircle, Loader, CheckCircle2, MaximizeIcon, MinimizeIcon } from 'lucide-react';
+import { Upload, FileImage, AlertCircle, Loader, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { extractDataFromReceipt, detectDataMismatch } from '@/utils/ocrUtils';
@@ -23,6 +23,7 @@ interface ReceiptPreviewProps {
   onReceiptChange: (name: string, url: string) => void;
   onOcrDataExtracted?: (data: any) => void;
   currentValues?: Record<string, any>;
+  expanded?: boolean;
 }
 
 const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
@@ -35,11 +36,11 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
   dragActive,
   onReceiptChange,
   onOcrDataExtracted,
-  currentValues
+  currentValues,
+  expanded = false
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [ocrComplete, setOcrComplete] = useState(false);
-  const [expanded, setExpanded] = useState(false);
 
   const handleFileInput = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -83,35 +84,18 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
     }
   }, [onReceiptChange, onOcrDataExtracted, currentValues]);
 
-  const toggleExpanded = () => {
-    setExpanded(!expanded);
-  };
-
   return (
-    <div className="bg-white border border-gray-200 rounded-md h-full">
-      <div className="flex justify-between items-center p-3 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700">Receipt Preview</h3>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 w-7 p-0" 
-                onClick={toggleExpanded}
-              >
-                {expanded ? <MinimizeIcon className="h-4 w-4" /> : <MaximizeIcon className="h-4 w-4" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{expanded ? "Minimize" : "Maximize"}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      
+    <div 
+      className={cn(
+        "bg-white border-gray-200 h-full",
+        expanded ? "fixed inset-0 z-50 bg-white" : ""
+      )}
+    >      
       <div 
-        className="p-4 flex flex-col items-center justify-center min-h-[300px]"
+        className={cn(
+          "p-4 flex flex-col items-center justify-center",
+          expanded ? "h-full" : "min-h-[300px]"
+        )}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
@@ -122,7 +106,10 @@ const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({
             <img 
               src={`/public/lovable-uploads/fc953625-155a-4230-9515-5801b4d67e6f.png`} 
               alt="Receipt" 
-              className="max-w-full max-h-[300px] object-contain rounded-md shadow-sm" 
+              className={cn(
+                "object-contain rounded-md shadow-sm",
+                expanded ? "max-h-[80vh]" : "max-w-full max-h-[300px]"
+              )}
             />
             <div className="mt-3 flex items-center gap-2">
               <span className="text-sm text-gray-600 font-medium">

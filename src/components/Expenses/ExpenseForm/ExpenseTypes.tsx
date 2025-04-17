@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Car, UtensilsCrossed, Building2, PlaneTakeoff, Parking, Building, HelpCircle } from 'lucide-react';
+import { Car, UtensilsCrossed, Building2, PlaneTakeoff, CircleParking, Building, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ExpenseType } from '@/types/expense';
 
@@ -36,7 +36,7 @@ const ExpenseTypes: React.FC<ExpenseTypesProps> = ({ selectedType, onTypeChange 
     { id: 'meals', icon: <UtensilsCrossed />, label: 'Meals' },
     { id: 'hotel', icon: <Building2 />, label: 'Hotel/Lodging' },
     { id: 'transport', icon: <PlaneTakeoff />, label: 'Air/Taxi/Uber' },
-    { id: 'parking', icon: <Parking />, label: 'Parking/Tolls' },
+    { id: 'parking', icon: <CircleParking />, label: 'Parking/Tolls' },
     { id: 'professional_fees', icon: <Building />, label: 'Professional' },
     { id: 'other', icon: <HelpCircle />, label: 'Others' },
   ];

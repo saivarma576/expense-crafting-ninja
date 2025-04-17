@@ -5,6 +5,7 @@ import { useExpenseValidation } from '@/hooks/useExpenseValidation';
 import { FormProps } from './ExpenseForm/types';
 import { Button } from '@/components/ui/button';
 import { X, Maximize2, Minimize2 } from 'lucide-react';
+import { toast } from 'sonner';
 import FormActions from './ExpenseForm/FormActions';
 import ExpenseTypes from './ExpenseForm/ExpenseTypes';
 import ExpenseFormLayout from './ExpenseForm/ExpenseFormLayout';
@@ -117,7 +118,6 @@ const ExpenseLineItem: React.FC<FormProps> = ({
                     onReceiptChange={handleReceiptChange}
                     onOcrDataExtracted={handleOcrDataExtracted}
                     currentValues={formValues}
-                    expanded={isPreviewExpanded}
                   />
                 </div>
               </div>
