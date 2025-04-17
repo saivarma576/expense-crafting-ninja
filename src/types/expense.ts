@@ -25,6 +25,7 @@ export interface ExpenseLineItem {
   miles?: number;
   mileageRate?: number;
   merchantName?: string;
+  description?: string;
 }
 
 export interface ExpenseDocument {
@@ -72,7 +73,7 @@ export type ExpenseType =
   | 'registration'
   | 'rental';
 
-export interface ExpenseLineItemFormData extends ExpenseLineItem {
+export interface ExpenseLineItemFormData {
   id: string;
   type: ExpenseType;
   amount: number;
@@ -98,4 +99,6 @@ export interface ExpenseLineItemFormData extends ExpenseLineItem {
   returnTime?: string;
   miles?: number;
   mileageRate?: number;
+  title?: string;
+  category?: string;
 }

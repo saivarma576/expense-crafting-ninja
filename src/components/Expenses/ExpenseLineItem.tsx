@@ -67,34 +67,37 @@ const ExpenseLineItem: React.FC<FormProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col md:flex-row gap-6">
-        <ExpenseFormLayout 
-          formValues={formValues}
-          onChange={handleFieldChange}
-          fieldErrors={fieldErrors}
-          llmSuggestions={llmSuggestions}
-        />
-
-        <div className="md:w-[35%] h-[500px]">
-          <ReceiptPreview 
-            receiptUrl={receiptUrl}
-            receiptName={receiptName}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            dragActive={dragActive}
-            onReceiptChange={handleReceiptChange}
-            onOcrDataExtracted={handleOcrDataExtracted}
-            currentValues={formValues}
+    <div className="flex flex-col gap-6 min-h-screen">
+      {/* Main Form Content */}
+      <div className="flex-1">
+        <div className="flex flex-col md:flex-row gap-6">
+          <ExpenseFormLayout 
+            formValues={formValues}
+            onChange={handleFieldChange}
+            fieldErrors={fieldErrors}
+            llmSuggestions={llmSuggestions}
           />
+
+          <div className="md:w-[35%] h-[500px]">
+            <ReceiptPreview 
+              receiptUrl={receiptUrl}
+              receiptName={receiptName}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              dragActive={dragActive}
+              onReceiptChange={handleReceiptChange}
+              onOcrDataExtracted={handleOcrDataExtracted}
+              currentValues={formValues}
+            />
+          </div>
         </div>
       </div>
 
       {/* Validation Warnings Section */}
       {showValidationWarnings && (
-        <div className="mt-4 border rounded-lg overflow-hidden">
+        <div className="mt-auto border-t pt-4 bg-white">
           <ValidationWarnings 
             programmaticErrors={validationWarnings.programmaticErrors}
             llmWarnings={validationWarnings.llmWarnings}
@@ -110,7 +113,7 @@ const ExpenseLineItem: React.FC<FormProps> = ({
 
       {/* Action Buttons - Now sticky at bottom */}
       <div className="sticky bottom-0 bg-white border-t py-4 mt-auto">
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-end gap-3 px-6">
           <Button
             variant="outline"
             onClick={onCancel}
