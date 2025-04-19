@@ -428,6 +428,18 @@ const ExpenseLineItem: React.FC<FormProps> = ({
       <div className="w-3/5 h-full px-4 py-3 relative">
         <ScrollArea className="h-[calc(100vh-140px)]">
           <div className="pr-4">
+            {policyViolations.length > 0 && (
+              <div className="mb-4 flex items-center space-x-2">
+                <PolicyTooltip 
+                  violations={policyViolations} 
+                  className="mr-2" 
+                />
+                <span className="text-sm font-medium">
+                  {policyViolations.length} Policy {policyViolations.length === 1 ? 'Violation' : 'Violations'}
+                </span>
+              </div>
+            )}
+
             <ExpenseTypeSelector 
               selectedType={type} 
               onTypeChange={setType} 

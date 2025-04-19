@@ -20,10 +20,10 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({ violations, className }) 
   const hasErrors = violations.some(v => v.severity === 'error');
 
   return (
-    <TooltipProvider>
-      <Tooltip>
+    <TooltipProvider delayDuration={0}>
+      <Tooltip defaultOpen={true}>
         <TooltipTrigger asChild>
-          <button className={className}>
+          <button className={`${className} flex items-center`}>
             {hasErrors ? (
               <AlertCircle className="h-4 w-4 text-red-500" />
             ) : (
@@ -31,8 +31,8 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({ violations, className }) 
             )}
           </button>
         </TooltipTrigger>
-        <TooltipContent className="w-64 p-0">
-          <div className="p-2 space-y-2">
+        <TooltipContent className="w-64 p-0 z-50">
+          <div className="p-2 space-y-2 bg-white border rounded-md shadow-lg">
             {violations.map((violation) => (
               <div 
                 key={violation.id} 

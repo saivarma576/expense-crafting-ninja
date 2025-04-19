@@ -25,6 +25,8 @@ import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
 import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
+import { validateExpensePolicy, PolicyViolation } from '@/utils/policyValidations';
+import PolicyTooltip from './ExpenseForm/PolicyTooltip';
 
 const initialLineItems = [
   {
@@ -331,6 +333,21 @@ const NewExpense: React.FC = () => {
     }))
   ];
 
+  const getLineItemPolicyViolations = (item: ExpenseLineItem): PolicyViolation[] => {
+    const formData: ExpenseLineItemFormData = {
+      id: item.id,
+      type: item.type.toLowerCase().replace(' ', '') as ExpenseType,
+      amount: item.amount,
+      date: item.date,
+      description: item.title,
+      receiptUrl: item.receiptName,
+      merchantName: item.merchantName,
+      // ... add other necessary fields
+    };
+    
+    return validateExpensePolicy(formData);
+  };
+
   return (
     <div className="max-w-5xl mx-auto bg-white shadow-sm">
       <div className="bg-white border-b sticky top-0 z-10 px-6 py-4 flex items-center">
@@ -368,7 +385,10 @@ const NewExpense: React.FC = () => {
         />
 
         <LineItemsSection 
-          lineItems={lineItems}
+          lineItems={lineItems.map(item => ({
+            ...item,
+            policyViolations: getLineItemPolicyViolations(item)
+          }))}
           handleAddLineItem={handleAddLineItem}
           handleEditLineItem={handleEditLineItem}
           handleDeleteLineItem={handleDeleteLineItem}
