@@ -1,7 +1,7 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import TotalSummaryCard from './PerDiem/TotalSummaryCard';
 import ActionButtons from './PerDiem/ActionButtons';
@@ -20,8 +20,7 @@ import { Switch } from '@/components/ui/switch';
 import { Meal } from '@/components/Expenses/CreateExpense/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { CalendarDays, Clock, Download, Info, MapPin } from 'lucide-react';
+import { CalendarDays, Clock, Download, Info, MapPin, RefreshCw } from 'lucide-react';
 import MealCalculationTable from './MealCalculationTable';
 import { cn } from '@/lib/utils';
 
