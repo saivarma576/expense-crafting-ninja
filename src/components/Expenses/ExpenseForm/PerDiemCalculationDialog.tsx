@@ -1,15 +1,14 @@
-
 import React, { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import TotalSummaryCard from './PerDiem/TotalSummaryCard';
+import ActionButtons from './PerDiem/ActionButtons';
 import { format, addDays, differenceInHours } from 'date-fns';
 import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription,
-  DialogFooter
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+  Button 
+} from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
@@ -91,15 +90,13 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
   const [perDiemRate, setPerDiemRate] = useState(initialValues?.mealsRate || DEFAULT_RATES.mealsRate);
   const [justification, setJustification] = useState('');
   const [isLocationOpen, setIsLocationOpen] = useState(true);
-  const [isTimeOpen, setIsTimeOpen] = useState(true);
-  const [isMealOpen, setIsMealOpen] = useState(true);
-  
-  // Initialize daily meal data
+  const [isTimeOpen, setIsTimeOpen] = useState(false);
+  const [isMealOpen, setIsMealOpen] = useState(false);
+
   const [dailyMeals, setDailyMeals] = useState<DailyMealData[]>(() => {
     const result: DailyMealData[] = [];
     const initialMeals = initialValues?.meals || [];
     
-    // Generate dates between check-in and check-out
     let currentDate = new Date(checkInDate);
     const endDate = new Date(checkOutDate);
     
@@ -123,13 +120,12 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
     const value = e.target.value;
     setZipCode(value);
     
-    // Fetch city information based on zip code (simulated)
     if (value.length === 5) {
-      setCity('Chicago'); // Simulated city lookup
-      setPerDiemRate(74); // Simulated per diem rate lookup
+      setCity('Chicago');
+      setPerDiemRate(74);
     }
   };
-  
+
   const handleMealToggle = (index: number, meal: 'breakfast' | 'lunch' | 'dinner') => {
     setDailyMeals(prev => {
       const updated = [...prev];
@@ -142,7 +138,6 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
   };
 
   const handleSave = () => {
-    // Convert the daily meals to the format expected by the parent component
     const providedMeals: Record<string, Meal[]> = {};
     
     dailyMeals.forEach(day => {
@@ -171,7 +166,7 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
     
     onClose();
   };
-  
+
   const generateDateRange = (): Date[] => {
     const dates: Date[] = [];
     let currentDate = new Date(checkInDate);
@@ -183,10 +178,17 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
     
     return dates;
   };
-  
+
   const handleDownloadPDF = () => {
-    // Implementation would connect to a PDF generation service
     alert('PDF download functionality would be implemented here');
+  };
+
+  const calculateTotal = () => {
+    // Calculate total per diem based on daily meals and rates
+    return dailyMeals.reduce((total, day) => {
+      const rate = DEFAULT_RATES;
+      return total + (day.breakfast ? rate.breakfast : 0) + (day.lunch ? rate.lunch : 0) + (day.dinner ? rate.dinner : 0);
+    }, 0);
   };
 
   return (
@@ -196,19 +198,27 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
           <DialogTitle className="text-xl flex items-center gap-2">
             <span>🧾</span> Per Diem Calculation Summary
           </DialogTitle>
-          <DialogDescription>
-            Enter travel details to automatically calculate your per diem reimbursement
-          </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 py-4">
-          {/* Step 1: Input Section */}
-          <Collapsible open={isLocationOpen} onOpenChange={setIsLocationOpen}>
-            <CollapsibleTrigger className="flex w-full items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <span className="text-base font-medium">✅ Step 1: Location Information</span>
+          <TotalSummaryCard
+            total={calculateTotal()}
+            startDate={checkInDate}
+            endDate={checkOutDate}
+            location={city}
+            zipCode={zipCode}
+          />
+
+          <Collapsible 
+            open={isLocationOpen} 
+            onOpenChange={setIsLocationOpen}
+            className="border rounded-lg overflow-hidden"
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between p-4 bg-gray-50">
+              <span className="text-base font-medium">✅ Location Information</span>
               <span>{isLocationOpen ? '−' : '+'}</span>
             </CollapsibleTrigger>
-            <CollapsibleContent className="p-4 pt-2 space-y-4">
+            <CollapsibleContent className="p-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="zipCode" className="text-sm font-medium">
@@ -261,14 +271,17 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
               </div>
             </CollapsibleContent>
           </Collapsible>
-          
-          {/* Step 2: Date & Time Selection */}
-          <Collapsible open={isTimeOpen} onOpenChange={setIsTimeOpen}>
-            <CollapsibleTrigger className="flex w-full items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <span className="text-base font-medium">⏱️ Step 2: Travel Dates & Times</span>
+
+          <Collapsible 
+            open={isTimeOpen} 
+            onOpenChange={setIsTimeOpen}
+            className="border rounded-lg overflow-hidden"
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between p-4 bg-gray-50">
+              <span className="text-base font-medium">⏱️ Travel Dates & Times</span>
               <span>{isTimeOpen ? '−' : '+'}</span>
             </CollapsibleTrigger>
-            <CollapsibleContent className="p-4 pt-2 space-y-4">
+            <CollapsibleContent className="p-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="checkInDate" className="text-sm font-medium">
@@ -360,14 +373,17 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
               </div>
             </CollapsibleContent>
           </Collapsible>
-          
-          {/* Step 3: Meal Selection */}
-          <Collapsible open={isMealOpen} onOpenChange={setIsMealOpen}>
-            <CollapsibleTrigger className="flex w-full items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <span className="text-base font-medium">🍽️ Step 3: Provided Meals</span>
+
+          <Collapsible 
+            open={isMealOpen} 
+            onOpenChange={setIsMealOpen}
+            className="border rounded-lg overflow-hidden"
+          >
+            <CollapsibleTrigger className="flex w-full items-center justify-between p-4 bg-gray-50">
+              <span className="text-base font-medium">🍽️ Provided Meals</span>
               <span>{isMealOpen ? '−' : '+'}</span>
             </CollapsibleTrigger>
-            <CollapsibleContent className="p-4 pt-2 space-y-4">
+            <CollapsibleContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Switch 
                   id="mealsProvided" 
@@ -446,46 +462,15 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
               )}
             </CollapsibleContent>
           </Collapsible>
-          
-          {/* Step 4: Per Diem Calculation Result */}
-          <Card className="border border-gray-200 shadow-sm">
-            <CardHeader className="py-3 px-4 bg-gray-50 rounded-t-lg border-b">
-              <CardTitle className="text-base flex items-center gap-2">
-                🧮 Per Diem Calculation Result
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <MealCalculationTable
-                checkInDate={checkInDate}
-                checkInTime={checkInTime}
-                checkOutDate={checkOutDate}
-                checkOutTime={checkOutTime}
-                perDiemRate={perDiemRate}
-                breakfastRate={DEFAULT_RATES.breakfast}
-                lunchRate={DEFAULT_RATES.lunch}
-                dinnerRate={DEFAULT_RATES.dinner}
-                incidentalsRate={DEFAULT_RATES.incidentals}
-                providedMeals={dailyMeals.reduce((acc, day, index) => {
-                  const dateStr = format(day.date, 'yyyy-MM-dd');
-                  const meals: Meal[] = [];
-                  if (day.breakfast) meals.push('breakfast');
-                  if (day.lunch) meals.push('lunch');
-                  if (day.dinner) meals.push('dinner');
-                  return { ...acc, [dateStr]: meals };
-                }, {})}
-              />
-            </CardContent>
-          </Card>
-          
-          {/* Policy Breakdown (Collapsible Accordion) */}
-          <Accordion type="single" collapsible className="border rounded-lg">
-            <AccordionItem value="item-1" className="border-0">
-              <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-gray-50">
-                <span className="text-base font-medium flex items-center gap-2">
-                  📉 Policy Breakdown
-                </span>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className="flex items-center gap-2 text-sm text-gray-600">
+                <Info className="h-4 w-4" />
+                View Policy Breakdown
+              </TooltipTrigger>
+              <TooltipContent side="right" className="w-80 p-4">
+                <h4 className="font-medium mb-2">Per Diem Policy Breakdown</h4>
                 <div className="border rounded-md overflow-hidden">
                   <Table>
                     <TableHeader className="bg-gray-50">
@@ -504,11 +489,10 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
                     </TableBody>
                   </Table>
                 </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          
-          {/* Step 5: Justification/Comments Section */}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           <div className="space-y-2">
             <Label htmlFor="justification" className="flex items-center gap-2 text-sm font-medium">
               <span>📝</span> Add Note or Justification
@@ -521,26 +505,16 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
               className="min-h-[80px]"
             />
           </div>
+
+          <ActionButtons
+            onSave={handleSave}
+            onClose={onClose}
+            onDownloadPDF={handleDownloadPDF}
+            onRecalculate={() => {
+              console.log('Recalculating...');
+            }}
+          />
         </div>
-        
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          <Button 
-            variant="outline" 
-            onClick={handleDownloadPDF}
-            className="gap-2"
-          >
-            <Download className="h-4 w-4" />
-            Download Summary (PDF)
-          </Button>
-          <div className="flex gap-2 ml-auto">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave}>
-              Save Calculation
-            </Button>
-          </div>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
