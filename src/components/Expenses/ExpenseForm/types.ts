@@ -1,43 +1,5 @@
 
-import { ExpenseType } from '@/types/expense';
-
-export interface ExpenseLineItemFormData {
-  id: string;
-  type: ExpenseType;
-  amount: number;
-  date: string;
-  description: string;
-  receiptUrl: string;
-  receiptName: string;
-  merchantName: string;
-  account: string;
-  accountName: string;
-  costCenter: string;
-  costCenterName: string;
-  wbs: string;
-  notes: string;
-  glAccount?: string;
-  zipCode?: string;
-  city?: string;
-  mealsRate?: number;
-  hotelRate?: number;
-  throughDate?: string;
-  perDiemExplanation?: string;
-  departureTime?: string;
-  returnTime?: string;
-  miles?: number;
-  mileageRate?: number;
-}
-
-export interface PolicyViolation {
-  id: string;
-  lineNumber: number;
-  lineTitle: string;
-  expenseType: string;
-  violationType: 'error' | 'warning';
-  message: string;
-  category: string;
-}
+import { ExpenseType, ExpenseLineItemFormData } from '@/types/expense';
 
 export interface FieldGroupProps {
   values: ExpenseLineItemFormData;
@@ -63,4 +25,14 @@ export interface ValidationResult {
   llmWarnings: string[];
   hasErrors: boolean;
   hasWarnings: boolean;
+}
+
+export interface PolicyViolation {
+  id: string;
+  lineNumber: number;
+  lineTitle: string;
+  expenseType: string;
+  violationType: 'error' | 'warning';
+  message: string;
+  category: string;
 }

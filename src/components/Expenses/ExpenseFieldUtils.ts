@@ -102,3 +102,13 @@ export const EXPENSE_TYPE_DISPLAY = {
   rental: 'Rental Car',
   auditing: 'Auditing Serv Fees',
 };
+
+// Add the missing exports for expense type categories
+export const GL_ACCOUNT_REQUIRED_TYPES: ExpenseType[] = [
+  'professional_fees', 'auditing', 'baggage', 'business_meals', 'subscriptions', 
+  'gasoline', 'office_supplies', 'other', 'parking', 'postage', 'registration', 'rental'
+];
+
+export const HOTEL_LODGING_TYPES: ExpenseType[] = ['hotel'];
+export const MEALS_TYPES: ExpenseType[] = ['meals', 'business_meals'];
+export const MILEAGE_TYPES: ExpenseType[] = ['mileage'];
