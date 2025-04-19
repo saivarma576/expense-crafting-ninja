@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { AlertCircle, AlertTriangle, MessageSquare, Plus, Paperclip, Flag } from 'lucide-react';
+import { CircleCheck, AlertCircle, AlertTriangle, MessageSquare, Plus, Paperclip, Flag } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -29,7 +29,22 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
   const [activeViolation, setActiveViolation] = useState<string | null>(null);
   const [selectedViolation, setSelectedViolation] = useState<PolicyViolation | null>(null);
 
-  if (violations.length === 0) return null;
+  if (violations.length === 0) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button className={`${className} relative group`}>
+            <CircleCheck 
+              className="h-4 w-4 text-green-500 transition-transform group-hover:scale-110 animate-pulse" 
+            />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="bg-green-50 text-green-700 p-2 rounded-md">
+          <p>No Policy Violations Detected</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
 
   const hasErrors = violations.some(v => v.severity === 'error');
 
