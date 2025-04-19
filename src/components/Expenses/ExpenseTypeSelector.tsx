@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Car, Utensils, Building2, Plane, Coffee, Briefcase, ParkingCircle,
@@ -22,7 +21,6 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
   selectedType, 
   onTypeChange 
 }) => {
-  // Primary expense types shown in main row
   const primaryTypes = [
     { value: 'mileage', label: 'Miles', icon: <Car className="h-4 w-4" /> },
     { value: 'meals', label: 'Meals', icon: <Utensils className="h-4 w-4" /> },
@@ -33,7 +31,6 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
     { value: 'parking', label: 'Parking', icon: <ParkingCircle className="h-4 w-4" /> },
   ];
 
-  // Secondary types shown in dropdown
   const secondaryTypes = [
     { value: 'registration', label: 'Register', icon: <ClipboardCheck className="h-4 w-4" /> },
     { value: 'baggage', label: 'Baggage', icon: <Luggage className="h-4 w-4" /> },
@@ -44,7 +41,22 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
 
   return (
     <div className="mb-3">
-      <label className="text-sm font-medium text-gray-700 block mb-1">Expense Type</label>
+      <div className="flex items-center justify-between mb-1">
+        <label className="text-sm font-medium text-gray-700">Expense Type</label>
+        <select 
+          value={selectedType}
+          onChange={(e) => onTypeChange(e.target.value as ExpenseType)}
+          className="h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm w-[200px]"
+        >
+          <option value="" disabled>Select expense type...</option>
+          {[...primaryTypes, ...secondaryTypes].map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      
       <div className="flex items-center gap-2" style={{ height: 'auto', width: 'auto' }}>
         {primaryTypes.map((type) => (
           <button
@@ -97,22 +109,8 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
-      <select 
-        value={selectedType}
-        onChange={(e) => onTypeChange(e.target.value as ExpenseType)}
-        className="mt-2 w-full h-9 rounded-md border border-gray-300 bg-transparent px-3 py-1 text-sm shadow-sm"
-      >
-        <option value="" disabled>Select expense type...</option>
-        {[...primaryTypes, ...secondaryTypes].map((type) => (
-          <option key={type.value} value={type.value}>
-            {type.label}
-          </option>
-        ))}
-      </select>
     </div>
   );
 };
 
 export default ExpenseTypeSelector;
-
