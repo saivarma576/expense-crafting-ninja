@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues, Meal } from './types';
@@ -24,7 +23,6 @@ const MealSelection: React.FC = () => {
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
 
-  // Use useCallback to memoize functions
   const handleMealChange = useCallback((meal: Meal) => {
     setValue('meals', 
       watchMeals.includes(meal)
@@ -96,36 +94,34 @@ const MealSelection: React.FC = () => {
               </label>
             </div>
 
-            {sameForAllDays && (
-              <div className="grid grid-cols-3 gap-3">
-                {[
-                  { meal: 'breakfast', emoji: '🍳', label: 'Breakfast' },
-                  { meal: 'lunch', emoji: '🥗', label: 'Lunch' },
-                  { meal: 'dinner', emoji: '🍽️', label: 'Dinner' }
-                ].map(({ meal, emoji, label }) => (
-                  <div 
-                    key={meal}
-                    className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
-                      watchMeals.includes(meal as Meal) ? 'bg-primary/10 border-primary' : ''
-                    }`}
-                    onClick={() => handleMealChange(meal as Meal)}
-                  >
-                    <Checkbox 
-                      id={`meal-${meal}`}
-                      checked={watchMeals.includes(meal as Meal)}
-                      onCheckedChange={() => handleMealChange(meal as Meal)}
-                    />
-                    <div className="flex items-center">
-                      <span className="mr-1.5">{emoji}</span>
-                      <span className="text-sm">{label}</span>
-                    </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { meal: 'breakfast', emoji: '🍳', label: 'Breakfast' },
+                { meal: 'lunch', emoji: '🥗', label: 'Lunch' },
+                { meal: 'dinner', emoji: '🍽️', label: 'Dinner' }
+              ].map(({ meal, emoji, label }) => (
+                <div 
+                  key={meal}
+                  className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
+                    watchMeals.includes(meal as Meal) ? 'bg-primary/10 border-primary' : ''
+                  }`}
+                  onClick={() => handleMealChange(meal as Meal)}
+                >
+                  <Checkbox 
+                    id={`meal-${meal}`}
+                    checked={watchMeals.includes(meal as Meal)}
+                    onCheckedChange={() => handleMealChange(meal as Meal)}
+                  />
+                  <div className="flex items-center">
+                    <span className="mr-1.5">{emoji}</span>
+                    <span className="text-sm">{label}</span>
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {watchFromDate && watchToDate && (
+          {!sameForAllDays && watchFromDate && watchToDate && (
             <div className="mt-6">
               <FormLabel>Step 2: Advanced Selection</FormLabel>
               <DailyMealGrid
