@@ -2,15 +2,15 @@
 import React, { useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Clock, MapPin, Building, CalendarDays } from 'lucide-react';
+import { Clock, MapPin } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
-import MealCalculationTable from './MealCalculationTable';
 import { format, addDays } from 'date-fns';
 import { Meal } from '@/components/Expenses/CreateExpense/types';
 import PerDiemCalculationDialog from './PerDiemCalculationDialog';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import CalculationDetailsTable from './PerDiem/CalculationDetailsTable';
 
 const MealsFields: React.FC<FieldGroupProps> = ({ 
   values, 
@@ -20,44 +20,21 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   const [showCalculation, setShowCalculation] = useState(false);
   const [showPerDiemDialog, setShowPerDiemDialog] = useState(false);
   
-  // Default values for demonstration
+  // Format date objects from strings if they exist
   const checkInDate = values.date ? new Date(values.date) : new Date();
   const checkOutDate = values.throughDate ? new Date(values.throughDate) : addDays(checkInDate, 1);
   
-  // Mock provided meals data (in a real app, this would come from the form)
+  // Initialize empty provided meals
   const providedMeals: Record<string, Meal[]> = {
     [format(checkInDate, 'yyyy-MM-dd')]: [],
-    [format(checkOutDate, 'yyyy-MM-dd')]: ['breakfast', 'lunch'],
-  };
-
-  const handlePerDiemSave = (perDiemData: any) => {
-    // Update the form values with the calculated per diem data
-    Object.entries(perDiemData).forEach(([key, value]) => {
-      if (key !== 'providedMeals') {
-        onChange(key, value);
-      }
-    });
-    
-    // Convert providedMeals to meals array format if needed
-    if (perDiemData.providedMeals) {
-      const allMeals: Meal[] = [];
-      Object.values(perDiemData.providedMeals).forEach((meals: any) => {
-        meals.forEach((meal: Meal) => {
-          if (!allMeals.includes(meal)) {
-            allMeals.push(meal);
-          }
-        });
-      });
-      
-      onChange('meals', allMeals);
-    }
+    [format(checkOutDate, 'yyyy-MM-dd')]: [],
   };
 
   return (
-    <div className="mb-4 space-y-4">
+    <div className="space-y-4">
       <h3 className="text-sm font-medium text-gray-700">Meal Details</h3>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700">
             Location Zip Code
@@ -71,12 +48,10 @@ const MealsFields: React.FC<FieldGroupProps> = ({
               className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.zipCode ? 'border-amber-300 pr-8' : ''}`}
             />
             <MapPin className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
-            <FieldValidationIndicator
-              llmSuggestion={llmSuggestions.zipCode}
-            />
+            <FieldValidationIndicator llmSuggestion={llmSuggestions.zipCode} />
           </div>
         </div>
-        
+
         <div>
           <Label htmlFor="city" className="text-xs font-medium text-gray-700">
             City
@@ -90,80 +65,44 @@ const MealsFields: React.FC<FieldGroupProps> = ({
               className="h-8 px-2 py-1 text-sm pl-7"
               readOnly
             />
-            <Building className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
+            <MapPin className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
           </div>
         </div>
-        
+
         <div>
-          <Label htmlFor="checkInDate" className="text-xs font-medium text-gray-700">
-            Check-in Date
-          </Label>
-          <div className="relative">
-            <Input
-              id="checkInDate"
-              type="date"
-              value={values.date || ''}
-              onChange={(e) => onChange('date', e.target.value)}
-              className="h-8 px-2 py-1 text-sm pl-7"
-            />
-            <CalendarDays className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
-          </div>
-        </div>
-        
-        <div>
-          <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700">
+          <Label htmlFor="checkInTime" className="text-xs font-medium text-gray-700">
             Check-in Time
           </Label>
           <div className="relative">
             <Input
-              id="departureTime"
+              id="checkInTime"
               type="time"
               value={values.departureTime || ''}
               onChange={(e) => onChange('departureTime', e.target.value)}
-              className={`h-8 px-2 py-1 text-sm ${llmSuggestions.departureTime ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.departureTime ? 'border-amber-300 pr-8' : ''}`}
             />
             <Clock className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
-            <FieldValidationIndicator
-              llmSuggestion={llmSuggestions.departureTime}
-            />
+            <FieldValidationIndicator llmSuggestion={llmSuggestions.departureTime} />
           </div>
         </div>
-        
+
         <div>
-          <Label htmlFor="checkOutDate" className="text-xs font-medium text-gray-700">
-            Check-out Date
-          </Label>
-          <div className="relative">
-            <Input
-              id="checkOutDate"
-              type="date"
-              value={values.throughDate || ''}
-              onChange={(e) => onChange('throughDate', e.target.value)}
-              className="h-8 px-2 py-1 text-sm pl-7"
-            />
-            <CalendarDays className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
-          </div>
-        </div>
-        
-        <div>
-          <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
+          <Label htmlFor="checkOutTime" className="text-xs font-medium text-gray-700">
             Check-out Time
           </Label>
           <div className="relative">
             <Input
-              id="returnTime"
+              id="checkOutTime"
               type="time"
               value={values.returnTime || ''}
               onChange={(e) => onChange('returnTime', e.target.value)}
-              className={`h-8 px-2 py-1 text-sm ${llmSuggestions.returnTime ? 'border-amber-300 pr-8' : ''}`}
+              className={`h-8 px-2 py-1 text-sm pl-7 ${llmSuggestions.returnTime ? 'border-amber-300 pr-8' : ''}`}
             />
             <Clock className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
-            <FieldValidationIndicator
-              llmSuggestion={llmSuggestions.returnTime}
-            />
+            <FieldValidationIndicator llmSuggestion={llmSuggestions.returnTime} />
           </div>
         </div>
-        
+
         <div>
           <Label htmlFor="mealsRate" className="text-xs font-medium text-gray-700">
             Standard Meal Rate
@@ -183,8 +122,8 @@ const MealsFields: React.FC<FieldGroupProps> = ({
           <p className="mt-1 text-xs text-gray-500">Per diem rate for this location</p>
         </div>
       </div>
-      
-      <div className="flex flex-wrap gap-2 mt-4">
+
+      <div className="flex flex-wrap gap-2">
         <Button 
           type="button" 
           variant="outline" 
@@ -204,48 +143,35 @@ const MealsFields: React.FC<FieldGroupProps> = ({
           Advanced Per Diem Calculator
         </Button>
       </div>
-      
+
       {showCalculation && (
-        <MealCalculationTable
-          checkInDate={checkInDate}
-          checkInTime={values.departureTime || '13:00'}
-          checkOutDate={checkOutDate}
-          checkOutTime={values.returnTime || '19:00'}
-          perDiemRate={values.mealsRate || 74}
-          breakfastRate={18}
-          lunchRate={20}
-          dinnerRate={31}
-          incidentalsRate={5}
-          providedMeals={providedMeals}
-        />
-      )}
-      
-      {values.amount > (values.mealsRate || 0) && (
-        <div>
-          <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700">
-            Explanation for Exceeding Per Diem
-          </Label>
-          <div className="relative">
-            <Textarea
-              id="perDiemExplanation"
-              value={values.perDiemExplanation || ''}
-              onChange={(e) => onChange('perDiemExplanation', e.target.value)}
-              placeholder="Please explain why this expense exceeds the per diem rate"
-              className={`min-h-[80px] text-sm ${llmSuggestions.perDiemExplanation ? 'border-amber-300' : ''}`}
-            />
-            <FieldValidationIndicator
-              llmSuggestion={llmSuggestions.perDiemExplanation}
-              className="top-2 -translate-y-0"
+        <ScrollArea className="h-[400px] rounded-md border">
+          <div className="p-4">
+            <CalculationDetailsTable
+              dateRange={[checkInDate, checkOutDate]}
+              perDiemRate={values.mealsRate || 80}
+              providedMeals={providedMeals}
+              mealRates={{
+                breakfast: 18,
+                lunch: 20,
+                dinner: 31
+              }}
+              checkInTime={values.departureTime || '13:00'}
+              checkOutTime={values.returnTime || '19:00'}
             />
           </div>
-        </div>
+        </ScrollArea>
       )}
 
-      {/* Per Diem Dialog */}
       <PerDiemCalculationDialog
         isOpen={showPerDiemDialog}
         onClose={() => setShowPerDiemDialog(false)}
-        onSave={handlePerDiemSave}
+        onSave={(data) => {
+          Object.entries(data).forEach(([key, value]) => {
+            onChange(key, value);
+          });
+          setShowPerDiemDialog(false);
+        }}
         initialValues={values}
       />
     </div>

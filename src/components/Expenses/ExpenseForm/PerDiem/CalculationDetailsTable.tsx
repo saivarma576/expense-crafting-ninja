@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { format } from 'date-fns';
@@ -111,7 +110,7 @@ const CalculationDetailsTable: React.FC<CalculationDetailsTableProps> = ({
   return (
     <div className="rounded-lg border bg-card">
       <div className="overflow-x-auto">
-        <Table className="min-w-[1000px] table-fixed">
+        <Table className="w-full min-w-[900px] table-fixed">
           <TableHeader className="bg-muted/50">
             <TableRow>
               <TableHead className="w-28">Date</TableHead>
@@ -176,11 +175,7 @@ const CalculationDetailsTable: React.FC<CalculationDetailsTableProps> = ({
               </TableRow>
             ))}
             <TableRow className="bg-muted/50 font-medium">
-              <TableCell>TOTAL</TableCell>
-              <TableCell>—</TableCell>
-              <TableCell>—</TableCell>
-              <TableCell>—</TableCell>
-              <TableCell>—</TableCell>
+              <TableCell colSpan={5}>TOTAL</TableCell>
               <TableCell className={cn(totals.mealDeduction < 0 && "text-red-500")}>
                 {formatCurrency(totals.mealDeduction)}
               </TableCell>
