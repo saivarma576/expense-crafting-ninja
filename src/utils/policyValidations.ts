@@ -1,12 +1,9 @@
-
 export interface PolicyComment {
   id: string;
   comment: string;
   user: string;
   timestamp: Date;
   type: 'user' | 'system' | 'bot' | 'approver';
-  tags?: string[];
-  files?: string[];
 }
 
 export interface PolicyViolation {
