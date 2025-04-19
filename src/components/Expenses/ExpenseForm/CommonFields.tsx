@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -84,14 +83,12 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           <Label htmlFor="currency" className="text-xs font-medium text-gray-700">
             Currency
           </Label>
-          <Select defaultValue="USD">
+          <Select value="USD" disabled>
             <SelectTrigger className="h-8">
               <SelectValue placeholder="USD" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="USD">USD</SelectItem>
-              <SelectItem value="EUR">EUR</SelectItem>
-              <SelectItem value="GBP">GBP</SelectItem>
             </SelectContent>
           </Select>
         </div>
