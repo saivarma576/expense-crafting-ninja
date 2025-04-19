@@ -384,7 +384,7 @@ const NewExpense: React.FC = () => {
       severity: 'error' as const,
       status: 'violation' as const,
       category: 'Validation',
-      violationType: 'error'
+      violationType: 'error' as const
     })),
     ...llmWarnings.map((warning, index) => ({
       id: `warning-${index}`,
@@ -397,7 +397,7 @@ const NewExpense: React.FC = () => {
       severity: 'warning' as const,
       status: 'violation' as const,
       category: 'Policy',
-      violationType: 'warning'
+      violationType: 'warning' as const
     }))
   ];
 

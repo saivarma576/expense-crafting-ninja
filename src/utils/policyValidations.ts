@@ -1,3 +1,4 @@
+
 export interface PolicyComment {
   id: string;
   comment: string;
@@ -37,7 +38,12 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'Amount',
       message: 'Expense exceeds the $5,000 threshold for standard approval',
       severity: 'error',
-      status: 'violation'
+      status: 'violation',
+      lineNumber: 1,
+      lineTitle: 'Amount Limit',
+      expenseType: expense.type || 'general',
+      violationType: 'error',
+      category: 'Spending Limit'
     });
   } else if (expense.amount > 1000) {
     violations.push({
@@ -45,7 +51,12 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'Amount',
       message: 'Expense exceeds the $1,000 threshold and requires manager approval',
       severity: 'warning',
-      status: 'violation'
+      status: 'violation',
+      lineNumber: 2,
+      lineTitle: 'Amount Approval',
+      expenseType: expense.type || 'general',
+      violationType: 'warning',
+      category: 'Approval Required'
     });
   }
   
@@ -57,6 +68,11 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       message: 'Meal expense exceeds the $80 per day limit',
       severity: 'warning',
       status: 'violation',
+      lineNumber: 3,
+      lineTitle: 'Meal Limit',
+      expenseType: 'meals',
+      violationType: 'warning',
+      category: 'Per Diem Limit',
       comments: [
         {
           id: `comment-${Date.now()}-1`,
@@ -76,7 +92,12 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'Lodging',
       message: 'Hotel rate exceeds the maximum allowed rate of $300 per night',
       severity: 'warning',
-      status: 'violation'
+      status: 'violation',
+      lineNumber: 4,
+      lineTitle: 'Hotel Rate',
+      expenseType: 'hotel',
+      violationType: 'warning',
+      category: 'Lodging Limit'
     });
   }
   
@@ -87,7 +108,12 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'Receipt',
       message: 'Receipt is required for expenses over $75',
       severity: 'error',
-      status: 'violation'
+      status: 'violation',
+      lineNumber: 5,
+      lineTitle: 'Missing Receipt',
+      expenseType: expense.type || 'general',
+      violationType: 'error',
+      category: 'Documentation'
     });
   }
   
@@ -104,6 +130,11 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       message: 'Expense is older than 60 days and requires special approval',
       severity: 'error',
       status: 'violation',
+      lineNumber: 6,
+      lineTitle: 'Expense Age',
+      expenseType: expense.type || 'general',
+      violationType: 'error',
+      category: 'Timing Policy',
       comments: [
         {
           id: `comment-${Date.now()}-2`,
@@ -123,7 +154,12 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'Merchant',
       message: 'Merchant name is required for all expenses',
       severity: 'warning',
-      status: 'violation'
+      status: 'violation',
+      lineNumber: 7,
+      lineTitle: 'Missing Merchant',
+      expenseType: expense.type || 'general',
+      violationType: 'warning',
+      category: 'Documentation'
     });
   }
   
@@ -134,7 +170,12 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'Description',
       message: 'Description must be at least 10 characters long',
       severity: 'warning',
-      status: 'violation'
+      status: 'violation',
+      lineNumber: 8,
+      lineTitle: 'Description Length',
+      expenseType: expense.type || 'general',
+      violationType: 'warning',
+      category: 'Documentation'
     });
   }
   
