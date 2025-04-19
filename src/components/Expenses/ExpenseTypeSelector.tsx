@@ -25,21 +25,23 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
   const primaryTypes = [
     { value: 'mileage', label: 'Mileage', icon: <Car className="h-4 w-4" /> },
     { value: 'meals', label: 'Meals', icon: <Utensils className="h-4 w-4" /> },
-    { value: 'other', label: 'Others', icon: <HelpCircle className="h-4 w-4" /> },
+    { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
     { value: 'professional_fees', label: 'Professional Fees', icon: <Building2 className="h-4 w-4" /> },
     { value: 'hotel', label: 'Hotel/Lodging', icon: <Building2 className="h-4 w-4" /> },
     { value: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-4 w-4" /> },
     { value: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-4 w-4" /> },
+    
   ];
 
   const secondaryTypes = [
-    { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
     { value: 'registration', label: 'Registration Fees', icon: <ClipboardCheck className="h-4 w-4" /> },
     { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
     { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-4 w-4" /> },
     { value: 'postage', label: 'Postage & Freight', icon: <Package className="h-4 w-4" /> },
     { value: 'gasoline', label: 'Gasoline', icon: <Package className="h-4 w-4" /> },
     { value: 'office_supplies', label: 'Office Supplies', icon: <Package className="h-4 w-4" /> },
+    { value: 'other', label: 'Others', icon: <HelpCircle className="h-4 w-4" /> },
+
   ];
 
   return (
@@ -79,36 +81,7 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
           </button>
         ))}
 
-        <DropdownMenu>
-          <DropdownMenuTrigger 
-            className={cn(
-              "flex flex-col items-center justify-center p-2 border rounded-md transition-all min-w-[70px] h-[50px]",
-              "border-gray-200 hover:bg-gray-50 text-gray-600"
-            )}
-          >
-            <HelpCircle className="h-4 w-4" />
-            <span className="text-[11px] mt-1">More</span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            align="end" 
-            className="w-48 bg-white border border-gray-200 shadow-md z-50" 
-            sideOffset={5}
-          >
-            {secondaryTypes.map((type) => (
-              <DropdownMenuItem
-                key={type.value}
-                onSelect={() => onTypeChange(type.value as ExpenseType)}
-                className={cn(
-                  "flex items-center gap-2 cursor-pointer hover:bg-gray-50",
-                  selectedType === type.value && "bg-blue-50 text-blue-700"
-                )}
-              >
-                {type.icon}
-                <span>{type.label}</span>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+     
       </div>
     </div>
   );

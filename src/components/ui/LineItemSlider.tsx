@@ -56,7 +56,7 @@ const LineItemSlider: React.FC<LineItemSliderProps> = ({
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center justify-between p-2 border-b">
           <h2 className="text-base font-medium text-gray-800">{title}</h2>
           <button
             onClick={onClose}
