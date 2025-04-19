@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues, Meal } from './types';
 import DailyMealGrid from './DailyMealGrid';
@@ -24,6 +24,7 @@ const MealSelection: React.FC = () => {
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
 
+  // Handle meal changes in a way that doesn't cause infinite loops
   const handleMealChange = (meal: Meal) => {
     const updatedMeals = watchMeals.includes(meal)
       ? watchMeals.filter((m) => m !== meal)

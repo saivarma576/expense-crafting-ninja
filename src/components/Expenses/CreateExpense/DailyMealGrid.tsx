@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { Check } from 'lucide-react';
 import { Meal } from './types';
@@ -21,7 +21,13 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
   dailyMeals,
   onDailyMealChange,
 }) => {
-  if (!startDate || !endDate) return null;
+  const [dateRange, setDateRange] = useState<Date[]>([]);
+
+  useEffect(() => {
+    if (startDate && endDate) {
+      setDateRange(getDatesInRange(startDate, endDate));
+    }
+  }, [startDate, endDate]);
 
   const getDatesInRange = (start: Date, end: Date) => {
     const dates = [];
@@ -34,7 +40,7 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
     return dates;
   };
 
-  const dateRange = getDatesInRange(startDate, endDate);
+  if (!startDate || !endDate) return null;
 
   return (
     <Collapsible className="w-full">
