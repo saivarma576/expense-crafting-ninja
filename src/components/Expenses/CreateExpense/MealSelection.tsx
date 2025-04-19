@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues, Meal } from './types';
@@ -96,7 +95,7 @@ const MealSelection: React.FC = () => {
               onCheckedChange={(checked) => handleSameForAllDaysChange(checked as boolean)}
             />
             <label htmlFor="sameForAllDays" className="text-sm">
-              Meals were same for all days
+              All meals are provided for all days
             </label>
           </div>
 
