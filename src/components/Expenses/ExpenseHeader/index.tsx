@@ -1,12 +1,14 @@
-
 import React from 'react';
-import { TravelPurpose } from '../CreateExpense/types';
+import { Flag } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { PolicyViolation } from '@/utils/policyValidations';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import PolicyViolationsHeader from '../ExpenseForm/PolicyViolationsHeader';
+import { TravelPurpose } from '../CreateExpense/types';
 import EditableTitle from './EditableTitle';
 import TravelPurposeField from './TravelPurposeField';
 import UserProfile from './UserProfile';
 import ExpenseDetails from './ExpenseDetails';
-import PolicyViolationsHeader from '../ExpenseForm/PolicyViolationsHeader';
 
 interface ExpenseHeaderProps {
   title: string;
@@ -33,15 +35,12 @@ const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
   policyViolations = [],
   onAddViolationComment
 }) => {
+  const errorCount = policyViolations.filter(v => v.severity === 'error').length;
+  const warningCount = policyViolations.filter(v => v.severity === 'warning').length;
+  const totalViolations = errorCount + warningCount;
+
   return (
     <div className="mb-8 border-b pb-6">
-      {policyViolations.length > 0 && onAddViolationComment && (
-        <PolicyViolationsHeader
-          violations={policyViolations}
-          onAddComment={onAddViolationComment}
-        />
-      )}
-      
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <div className="flex flex-col items-start gap-4">
           <EditableTitle title={title} setTitle={setTitle} />
@@ -52,11 +51,37 @@ const ExpenseHeader: React.FC<ExpenseHeaderProps> = ({
           <UserProfile userName={userName} userEmail={userEmail} />
         </div>
 
-        <ExpenseDetails 
-          expenseNo={expenseNo} 
-          expenseDate={expenseDate} 
-          totalAmount={totalAmount} 
-        />
+        <div className="flex flex-col gap-4">
+          {totalViolations > 0 && onAddViolationComment && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full bg-red-50 hover:bg-red-100 text-red-700 gap-2 rounded-xl shadow-sm"
+                >
+                  <Flag className="h-4 w-4" />
+                  <span className="font-medium">{totalViolations} Policy Violations</span>
+                  <span className="text-xs underline ml-1">Review</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle className="text-xl">Policy Violations</DialogTitle>
+                </DialogHeader>
+                <PolicyViolationsHeader
+                  violations={policyViolations}
+                  onAddComment={onAddViolationComment}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+
+          <ExpenseDetails 
+            expenseNo={expenseNo} 
+            expenseDate={expenseDate} 
+            totalAmount={totalAmount} 
+          />
+        </div>
       </div>
     </div>
   );
