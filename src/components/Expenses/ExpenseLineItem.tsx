@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ExpenseType, ExpenseLineItemFormData } from '@/types/expense';
@@ -32,6 +31,8 @@ import {
   extractDataFromReceipt, 
   detectDataMismatch 
 } from '@/utils/ocrUtils';
+import { validateExpensePolicy, PolicyViolation } from '@/utils/policyValidations';
+import PolicyTooltip from './ExpenseForm/PolicyTooltip';
 
 export type { ExpenseLineItemFormData as ExpenseLineItemType };
 
@@ -111,6 +112,13 @@ const ExpenseLineItem: React.FC<FormProps> = ({
     receiptUrl, 
     receiptName
   };
+
+  const [policyViolations, setPolicyViolations] = useState<PolicyViolation[]>([]);
+
+  useEffect(() => {
+    const violations = validateExpensePolicy(formValues);
+    setPolicyViolations(violations);
+  }, [formValues]);
 
   useEffect(() => {
     if (type === 'mileage' && miles > 0) {
