@@ -1,3 +1,4 @@
+import { PolicyViolation } from '@/utils/policyValidations';
 
 export interface ExpenseLineItem {
   id: string;

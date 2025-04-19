@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { PolicyViolation, PolicyComment } from '@/utils/policyValidations';
-import { format } from 'date-fns';
+import PolicyCommentTimeline from './PolicyCommentTimeline';
 
 interface PolicyTooltipProps {
   violations: PolicyViolation[];
@@ -40,7 +40,7 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
 
   return (
     <TooltipProvider delayDuration={0}>
-      <Tooltip defaultOpen={true}>
+      <Tooltip>
         <TooltipTrigger asChild>
           <button className={`${className} flex items-center`}>
             {hasErrors ? (
@@ -50,21 +50,21 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
             )}
           </button>
         </TooltipTrigger>
-        <TooltipContent className="w-80 p-0 z-50">
-          <div className="p-2 space-y-2 bg-white border rounded-md shadow-lg">
+        <TooltipContent className="w-96 p-0">
+          <div className="p-4 space-y-4 bg-white border rounded-lg shadow-lg">
             {violations.map((violation) => (
               <div 
                 key={violation.id} 
-                className={`text-xs ${
+                className={`text-sm ${
                   violation.severity === 'error' 
                     ? 'text-red-600'
                     : 'text-amber-600'
                 }`}
               >
                 <div className="flex justify-between items-start">
-                  <div>
+                  <div className="space-y-1">
                     <p className="font-medium">{violation.field}</p>
-                    <p>{violation.message}</p>
+                    <p className="text-gray-600">{violation.message}</p>
                   </div>
                   {onAddComment && (
                     <Button
@@ -80,28 +80,22 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
                   )}
                 </div>
 
-                {/* Comments section */}
+                {/* Comments timeline */}
                 {violation.comments && violation.comments.length > 0 && (
-                  <div className="mt-2 space-y-1.5 pl-3 border-l-2 border-gray-200">
-                    {violation.comments.map((comment) => (
-                      <div key={comment.id} className="text-gray-600">
-                        <p className="text-[10px] font-medium text-gray-400">
-                          {comment.user} • {format(new Date(comment.timestamp), 'MMM d, yyyy HH:mm')}
-                        </p>
-                        <p className="text-xs">{comment.comment}</p>
-                      </div>
-                    ))}
-                  </div>
+                  <PolicyCommentTimeline 
+                    comments={violation.comments} 
+                    className="mt-3"
+                  />
                 )}
 
                 {/* Comment input */}
                 {activeViolation === violation.id && (
-                  <div className="mt-2 space-y-2">
+                  <div className="mt-3 space-y-2">
                     <Textarea
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       placeholder="Add a comment..."
-                      className="min-h-[60px] text-xs"
+                      className="min-h-[60px] text-sm"
                     />
                     <div className="flex justify-end space-x-2">
                       <Button
