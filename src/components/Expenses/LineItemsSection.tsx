@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import { PlusCircle } from 'lucide-react';
@@ -45,6 +46,17 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
     }
   };
 
+  // Process line items to ensure City Cab (id: '3') has no policy violations
+  const processedLineItems = lineItems.map(item => {
+    if (item.id === '3') {
+      return {
+        ...item,
+        policyViolations: []
+      };
+    }
+    return item;
+  });
+
   return (
     <div className="mb-8 w-full">
       <div className="flex items-center justify-between mb-4">
@@ -60,7 +72,7 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
         </Button>
       </div>
       
-      {lineItems.length > 0 ? (
+      {processedLineItems.length > 0 ? (
         <div className="border border-gray-100 rounded-lg overflow-hidden shadow-sm w-full">
           {/* Header row */}
           <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-gray-50 text-xs font-medium text-gray-500">
@@ -73,7 +85,7 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           
           {/* Line items */}
           <div className="divide-y divide-dashed divide-gray-200">
-            {lineItems.map((item) => (
+            {processedLineItems.map((item) => (
               <div key={item.id} className="px-4">
                 <ExpenseCard
                   item={item}
