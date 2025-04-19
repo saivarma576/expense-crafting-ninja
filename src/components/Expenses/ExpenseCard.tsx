@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
@@ -56,7 +57,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
         </div>
         
         {/* Actions */}
-        <div className="w-2/12 flex items-center justify-end gap-3">
+        <div className="w-2/12 flex items-center justify-end space-x-2">
           {/* Receipt Icon */}
           {item.receiptName && (
             <Button
