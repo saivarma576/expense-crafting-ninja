@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
@@ -51,27 +50,29 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
     item.policyViolations && item.policyViolations.length > 0;
 
   return (
-    <div className="py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {hasViolations ? (
-            <PolicyTooltip
-              violations={item.policyViolations || []}
-              onAddComment={onAddViolationComment ? 
-                (violationId: string, comment: string) => onAddViolationComment(violationId, comment) : 
-                undefined}
+    <div className="py-4 relative">
+      <div className="absolute top-2 right-2">
+        {hasViolations ? (
+          <PolicyTooltip
+            violations={item.policyViolations || []}
+            onAddComment={onAddViolationComment ? 
+              (violationId: string, comment: string) => onAddViolationComment(violationId, comment) : 
+              undefined}
+          />
+        ) : (
+          <div className="relative group">
+            <CircleCheck 
+              className="h-5 w-5 text-green-600 transition-transform group-hover:scale-110 animate-pulse" 
             />
-          ) : (
-            <div className="absolute top-2 right-2 relative group">
-              <CircleCheck 
-                className="h-5 w-5 text-green-600 transition-transform group-hover:scale-110 animate-pulse" 
-              />
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-green-50 text-green-700 text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-                No Violations
-              </div>
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-green-50 text-green-700 text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+              No Violations
             </div>
-          )}
-          
+          </div>
+        )}
+      </div>
+      
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-4 w-full">
           <div className="grid grid-cols-12 gap-2 items-center text-xs">
             <div className="col-span-5">
               <h4 className="font-medium text-gray-900">{item.title}</h4>
