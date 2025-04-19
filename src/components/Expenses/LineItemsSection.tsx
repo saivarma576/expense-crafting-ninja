@@ -65,7 +65,7 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           variant="default"
           size="sm" 
           onClick={handleAddLineItem}
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full"
+          className="bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-sm"
         >
           <PlusCircle className="h-4 w-4 mr-1.5" />
           Line Items
@@ -73,20 +73,20 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
       </div>
       
       {processedLineItems.length > 0 ? (
-        <div className="border border-gray-100 rounded-lg overflow-hidden shadow-sm w-full">
+        <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm w-full bg-white">
           {/* Header row */}
-          <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-gray-50 text-xs font-medium text-gray-500">
-            <div className="col-span-5">ITEM</div>
-            <div className="col-span-4">ACCOUNT (GL/CC)</div>
-            <div className="col-span-1">DATE</div>
-            <div className="col-span-1 text-right">AMOUNT</div>
-            <div className="col-span-1"></div>
+          <div className="flex items-center px-4 py-2.5 bg-gray-50 text-xs font-medium text-gray-500 border-b border-gray-200">
+            <div className="w-5/12">ITEM</div>
+            <div className="w-3/12">ACCOUNT/COST CENTER</div>
+            <div className="w-1/12">DATE</div>
+            <div className="w-2/12 text-right">AMOUNT</div>
+            <div className="w-1/12"></div>
           </div>
           
           {/* Line items */}
-          <div className="divide-y divide-dashed divide-gray-200">
+          <div className="divide-y divide-gray-100">
             {processedLineItems.map((item) => (
-              <div key={item.id} className="px-4">
+              <div key={item.id}>
                 <ExpenseCard
                   item={item}
                   onEdit={() => handleEditLineItem(item.id)}
@@ -103,11 +103,11 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           </div>
           
           {/* Total row */}
-          <div className="bg-gray-50 px-4 py-3">
+          <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
             <div className="flex justify-end">
-              <div className="w-32">
-                <div className="flex justify-between py-2 text-sm font-medium">
-                  <span className="text-gray-600">TOTAL</span>
+              <div className="w-36">
+                <div className="flex justify-between py-2 text-sm">
+                  <span className="text-gray-600 font-medium">TOTAL</span>
                   <span className="text-gray-900 font-semibold">${totalAmount}</span>
                 </div>
               </div>
