@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import { PlusCircle } from 'lucide-react';
@@ -46,7 +45,6 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
     }
   };
 
-  // Process line items to ensure City Cab (id: '3') has no policy violations
   const processedLineItems = lineItems.map(item => {
     if (item.id === '3') {
       return {
@@ -73,37 +71,36 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
       </div>
       
       {processedLineItems.length > 0 ? (
-        <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm w-full bg-white divide-y divide-gray-50">
+        <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm w-full bg-white">
           {/* Header row */}
-          <div className="flex items-center px-6 py-3 bg-gray-50/50 text-xs font-medium text-gray-500">
-            <div className="w-5/12 flex items-center space-x-2">EXPENSE</div>
-            <div className="w-2/12">TYPE</div>
-            <div className="w-2/12">DATE</div>
-            <div className="w-2/12 text-right">AMOUNT</div>
-            <div className="w-1/12"></div>
+          <div className="flex items-center px-6 py-3 bg-gray-50/80 border-b border-gray-100 text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <div className="w-3/12">Expense</div>
+            <div className="w-3/12">Type</div>
+            <div className="w-2/12">Date</div>
+            <div className="w-2/12 text-right">Amount</div>
+            <div className="w-2/12 text-right">Actions</div>
           </div>
           
           {/* Line items */}
-          <div>
+          <div className="divide-y divide-gray-100 divide-dotted">
             {processedLineItems.map((item) => (
-              <div key={item.id}>
-                <ExpenseCard
-                  item={item}
-                  onEdit={() => handleEditLineItem(item.id)}
-                  onDelete={() => handleDeleteLineItem(item.id)}
-                  onAddViolationComment={
-                    onAddViolationComment 
-                      ? (violationId: string, comment: string) => 
-                          handleAddComment(item.id, violationId, comment)
-                      : undefined
-                  }
-                />
-              </div>
+              <ExpenseCard
+                key={item.id}
+                item={item}
+                onEdit={() => handleEditLineItem(item.id)}
+                onDelete={() => handleDeleteLineItem(item.id)}
+                onAddViolationComment={
+                  onAddViolationComment 
+                    ? (violationId: string, comment: string) => 
+                        handleAddComment(item.id, violationId, comment)
+                    : undefined
+                }
+              />
             ))}
           </div>
           
           {/* Total row */}
-          <div className="bg-gray-50/50 px-6 py-3">
+          <div className="bg-gray-50/80 px-6 py-3 border-t border-gray-100">
             <div className="flex justify-end">
               <div className="w-36">
                 <div className="flex justify-between py-2">
