@@ -21,6 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { CalendarDays, Clock, Download, Info, MapPin, RefreshCw } from 'lucide-react';
 import MealCalculationTable from './MealCalculationTable';
+import CalculationDetailsTable from './PerDiem/CalculationDetailsTable';
 import { cn } from '@/lib/utils';
 import FormulasDisplay from './PerDiem/FormulasDisplay';
 
@@ -212,6 +213,29 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
             breakfastRate={DEFAULT_RATES.breakfast}
             lunchRate={DEFAULT_RATES.lunch}
             dinnerRate={DEFAULT_RATES.dinner}
+          />
+
+          <CalculationDetailsTable
+            dateRange={generateDateRange()}
+            perDiemRate={perDiemRate}
+            providedMeals={generateDateRange().reduce((acc, date) => {
+              const dateStr = format(date, 'yyyy-MM-dd');
+              const dayMeals = dailyMeals.find(d => format(d.date, 'yyyy-MM-dd') === dateStr);
+              acc[dateStr] = [];
+              if (dayMeals) {
+                if (dayMeals.breakfast) acc[dateStr].push('breakfast');
+                if (dayMeals.lunch) acc[dateStr].push('lunch');
+                if (dayMeals.dinner) acc[dateStr].push('dinner');
+              }
+              return acc;
+            }, {} as Record<string, Meal[]>)}
+            mealRates={{
+              breakfast: DEFAULT_RATES.breakfast,
+              lunch: DEFAULT_RATES.lunch,
+              dinner: DEFAULT_RATES.dinner
+            }}
+            checkInTime={checkInTime}
+            checkOutTime={checkOutTime}
           />
 
           <Collapsible 
