@@ -3,9 +3,10 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { AlertTriangle, CircleX } from 'lucide-react';
+import { AlertTriangle, CircleX, Bot, MessageSquare } from 'lucide-react';
 import { PolicyViolation } from '@/utils/policyValidations';
-import PolicyCommentTimeline from './PolicyCommentTimeline';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { format } from 'date-fns';
 
 interface PolicyViolationsHeaderProps {
   violations: PolicyViolation[];
@@ -17,49 +18,100 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
   onAddComment
 }) => {
   const [expandedViolations, setExpandedViolations] = React.useState<string[]>([]);
+
   const toggleViolation = (id: string) => {
     setExpandedViolations(prev => prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]);
   };
-  
+
   return (
-    <ScrollArea className="h-[60vh] pr-4">
-      <div className="space-y-4 py-2">
-        {violations.map((violation) => (
-          <Collapsible
-            key={violation.id}
-            open={expandedViolations.includes(violation.id)}
-            onOpenChange={() => toggleViolation(violation.id)}
-            className="border rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200"
-          >
-            <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50">
-              <div className="flex items-center gap-2">
-                {violation.severity === 'error' ? (
-                  <CircleX className="h-5 w-5 text-red-500" />
-                ) : (
-                  <AlertTriangle className="h-5 w-5 text-amber-500" />
-                )}
-                <div>
-                  <div className="font-medium text-left">{violation.message}</div>
-                  <div className="text-sm text-gray-500 text-left">{violation.field}</div>
+    <div className="space-y-4">
+      <Alert className="bg-amber-50 border-amber-200">
+        <Bot className="h-4 w-4 text-amber-600" />
+        <AlertDescription className="text-amber-800">
+          This is an AI-flagged violation and may contain false positives. Please review carefully.
+        </AlertDescription>
+      </Alert>
+
+      <ScrollArea className="h-[60vh] pr-4">
+        <div className="space-y-4 py-2">
+          {violations.map((violation) => (
+            <Collapsible
+              key={violation.id}
+              open={expandedViolations.includes(violation.id)}
+              onOpenChange={() => toggleViolation(violation.id)}
+              className="border rounded-xl overflow-hidden shadow-sm hover:shadow transition-shadow duration-200"
+            >
+              <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50">
+                <div className="flex items-center gap-3">
+                  {violation.severity === 'error' ? (
+                    <CircleX className="h-5 w-5 text-red-500 flex-shrink-0" />
+                  ) : (
+                    <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                  )}
+                  <div>
+                    <div className="font-medium text-left">{violation.message}</div>
+                    <div className="text-sm text-gray-500 text-left flex items-center gap-2">
+                      <span>Line {violation.lineNumber}</span>
+                      <span>•</span>
+                      <span>{violation.expenseType}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <Badge variant={violation.severity === 'error' ? 'destructive' : 'outline'} className="ml-2">
-                {violation.severity}
-              </Badge>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="p-4 border-t bg-gray-50">
-                <PolicyCommentTimeline 
-                  violationId={violation.id}
-                  comments={violation.comments || []}
-                  onAddComment={(comment, type) => onAddComment(violation.id, comment, type)}
-                />
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-        ))}
-      </div>
-    </ScrollArea>
+                <Badge variant={violation.severity === 'error' ? 'destructive' : 'outline'} className="ml-2">
+                  {violation.severity}
+                </Badge>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="p-4 border-t bg-gray-50 space-y-4">
+                  {/* Comments Section */}
+                  <div className="space-y-3">
+                    {violation.comments?.map((comment) => (
+                      <div key={comment.id} className="relative pl-6 border-l-2 border-gray-200">
+                        <div className="absolute -left-[11px] mt-1">
+                          {comment.type === 'system' ? (
+                            <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center">
+                              <Bot className="w-3 h-3 text-gray-600" />
+                            </div>
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
+                              <MessageSquare className="w-3 h-3 text-blue-600" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="bg-white rounded-lg p-3 shadow-sm">
+                          <div className="flex items-center gap-2 text-xs text-gray-500 mb-1.5">
+                            <span className="font-medium text-gray-700">{comment.user}</span>
+                            <span>•</span>
+                            <time dateTime={comment.timestamp.toISOString()} className="text-gray-500">
+                              {format(comment.timestamp, 'MMM d, yyyy – h:mm a')}
+                            </time>
+                          </div>
+                          <p className="text-sm text-gray-700">{comment.comment}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add Comment Section */}
+                  <div className="mt-4 space-y-2">
+                    <textarea
+                      placeholder="Add your comment..."
+                      className="w-full min-h-[80px] p-3 rounded-lg border border-gray-200 text-sm"
+                      onChange={(e) => {
+                        if (e.target.value.trim()) {
+                          onAddComment(violation.id, e.target.value, 'user');
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          ))}
+        </div>
+      </ScrollArea>
+    </div>
   );
 };
 
