@@ -33,7 +33,7 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <button className={`${className} relative group`}>
+          <button className={`absolute top-2 right-2 ${className} relative group`}>
             <CircleCheck 
               className="h-4 w-4 text-green-500 transition-transform group-hover:scale-110 animate-pulse" 
             />
