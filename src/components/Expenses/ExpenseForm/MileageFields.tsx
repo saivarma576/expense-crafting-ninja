@@ -18,8 +18,8 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
       <h3 className="text-sm font-medium text-gray-700">Mileage Details</h3>
       
       <div className="grid grid-cols-12 gap-x-4 gap-y-2">
-        {/* Miles - 30% width */}
-        <div className="col-span-4">
+        {/* Distance Group */}
+        <div className="col-span-5">
           <Label htmlFor="miles" className="text-xs font-medium text-gray-700 flex items-center">
             Miles <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -45,8 +45,8 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
           )}
         </div>
         
-        {/* Mileage Rate - 20% width */}
-        <div className="col-span-3">
+        {/* Rate Group */}
+        <div className="col-span-4">
           <Label htmlFor="mileageRate" className="text-xs font-medium text-gray-700">
             Rate Per Mile
           </Label>
@@ -65,8 +65,8 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
           </Select>
         </div>
         
-        {/* Through Date - 40% width */}
-        <div className="col-span-5">
+        {/* Date Group */}
+        <div className="col-span-7">
           <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700">
             Return Date
           </Label>

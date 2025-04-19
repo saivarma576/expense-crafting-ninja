@@ -1,10 +1,10 @@
+
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Calendar, DollarSign, Store, FileText } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CommonFieldsProps extends FieldGroupProps {
   type: string;
@@ -25,8 +25,8 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
       <h3 className="text-sm font-medium text-gray-700">{type === 'mileage' ? 'Mileage Information' : 'Expense Information'}</h3>
       
       <div className="grid grid-cols-12 gap-x-4 gap-y-2">
-        {/* Date - 40% width */}
-        <div className="col-span-5">
+        {/* Basic Info Group */}
+        <div className="col-span-7">
           <Label htmlFor="date" className="text-xs font-medium text-gray-700 flex items-center">
             Date <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -50,8 +50,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           )}
         </div>
 
-        {/* Amount - 30% width */}
-        <div className="col-span-4">
+        <div className="col-span-5">
           <Label htmlFor="amount" className="text-xs font-medium text-gray-700 flex items-center">
             Amount <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -67,7 +66,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
               disabled={isAmountDisabled}
               required
             />
-            <span className="absolute left-2 top-2 text-gray-400 text-sm">$</span>
+            <DollarSign className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator 
               programmaticError={fieldErrors.amount} 
               llmSuggestion={llmSuggestions.amount} 
@@ -78,22 +77,7 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           )}
         </div>
 
-        {/* Currency - 20% width */}
-        <div className="col-span-3">
-          <Label htmlFor="currency" className="text-xs font-medium text-gray-700">
-            Currency
-          </Label>
-          <Select value="USD" disabled>
-            <SelectTrigger className="h-8">
-              <SelectValue placeholder="USD" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="USD">USD</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Merchant Name - Full width */}
+        {/* Merchant Details Group */}
         <div className="col-span-12">
           <Label htmlFor="merchantName" className="text-xs font-medium text-gray-700 flex items-center">
             Merchant Name <span className="text-red-500 ml-1">*</span>
@@ -118,7 +102,6 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           )}
         </div>
         
-        {/* Description - Full width */}
         <div className="col-span-12">
           <Label htmlFor="description" className="text-xs font-medium text-gray-700 flex items-center">
             Description <span className="text-red-500 ml-1">*</span>

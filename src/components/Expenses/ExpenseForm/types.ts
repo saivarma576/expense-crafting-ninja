@@ -1,4 +1,3 @@
-
 import { ExpenseType, ExpenseLineItemFormData } from '@/types/expense';
 
 export type { ExpenseLineItemFormData };
@@ -12,6 +11,10 @@ export interface FieldGroupProps {
 }
 
 export interface MileageFieldsProps extends FieldGroupProps {
+  error?: string | null;
+}
+
+export interface HotelFieldsProps extends FieldGroupProps {
   error?: string | null;
 }
 

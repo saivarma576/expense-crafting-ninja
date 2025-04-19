@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -15,8 +16,8 @@ const HotelFields: React.FC<HotelFieldsProps> = ({
       <h3 className="text-sm font-medium text-gray-700">Hotel Details</h3>
       
       <div className="grid grid-cols-12 gap-x-4 gap-y-2">
-        {/* Zip Code - 30% width */}
-        <div className="col-span-4">
+        {/* Location Group */}
+        <div className="col-span-5">
           <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700">
             Zip Code
           </Label>
@@ -34,8 +35,7 @@ const HotelFields: React.FC<HotelFieldsProps> = ({
           </div>
         </div>
 
-        {/* Through Date - 40% width */}
-        <div className="col-span-5">
+        <div className="col-span-7">
           <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700">
             Through Date
           </Label>
@@ -51,7 +51,8 @@ const HotelFields: React.FC<HotelFieldsProps> = ({
           </div>
         </div>
 
-        <div className="col-span-6">
+        {/* Additional Details Group */}
+        <div className="col-span-7">
           <Label htmlFor="city" className="text-xs font-medium text-gray-700">
             City
           </Label>
@@ -68,7 +69,7 @@ const HotelFields: React.FC<HotelFieldsProps> = ({
           </div>
         </div>
         
-        <div className="col-span-6">
+        <div className="col-span-5">
           <Label htmlFor="hotelRate" className="text-xs font-medium text-gray-700">
             Standard Rate
           </Label>
@@ -88,6 +89,7 @@ const HotelFields: React.FC<HotelFieldsProps> = ({
           <p className="mt-1 text-xs text-gray-500">CONUS per diem rate</p>
         </div>
         
+        {/* Explanation Group */}
         <div className="col-span-12">
           <Label htmlFor="perDiemExplanation" className="text-xs font-medium text-gray-700 flex items-center">
             Explanation for Exceeding Per Diem
