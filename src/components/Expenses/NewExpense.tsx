@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { PolicyViolation, validateExpensePolicy, PolicyComment } from '@/utils/policyValidations';
-import { ExpenseLineItemFormData, ExpenseLineItem } from '@/types/expense';
+import { ExpenseLineItemFormData, ExpenseLineItem as ExpenseLineItemType } from '@/types/expense';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -28,6 +29,11 @@ import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
 import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
+
+// Extend the ExpenseLineItemType to include the policyViolations property
+interface EnhancedExpenseLineItem extends ExpenseLineItemType {
+  policyViolations?: PolicyViolation[];
+}
 
 const initialLineItems = [
   {
@@ -305,7 +311,7 @@ const NewExpense: React.FC = () => {
   const handleAddViolationComment = (itemId: string, violationId: string, comment: string) => {
     const updatedItems = lineItems.map(item => {
       if (item.id === itemId) {
-        const currentViolations = item.policyViolations || getLineItemPolicyViolations(item);
+        const currentViolations = (item as EnhancedExpenseLineItem).policyViolations || getLineItemPolicyViolations(item);
         
         const updatedViolations = currentViolations.map(violation => {
           if (violation.id === violationId) {
@@ -328,7 +334,7 @@ const NewExpense: React.FC = () => {
         return {
           ...item,
           policyViolations: updatedViolations
-        };
+        } as EnhancedExpenseLineItem;
       }
       return item;
     });
@@ -389,7 +395,7 @@ const NewExpense: React.FC = () => {
     }))
   ];
 
-  const getLineItemPolicyViolations = (item: ExpenseLineItem): PolicyViolation[] => {
+  const getLineItemPolicyViolations = (item: ExpenseLineItemType): PolicyViolation[] => {
     const formData: ExpenseLineItemFormData = {
       id: item.id,
       type: item.type.toLowerCase().replace(/\s+/g, '_') as any,
@@ -449,7 +455,7 @@ const NewExpense: React.FC = () => {
         <LineItemsSection 
           lineItems={lineItems.map(item => ({
             ...item,
-            policyViolations: item.policyViolations || getLineItemPolicyViolations(item)
+            policyViolations: (item as EnhancedExpenseLineItem).policyViolations || getLineItemPolicyViolations(item)
           }))}
           handleAddLineItem={handleAddLineItem}
           handleEditLineItem={handleEditLineItem}

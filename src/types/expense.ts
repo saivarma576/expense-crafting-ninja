@@ -1,3 +1,4 @@
+
 export interface ExpenseLineItem {
   id: string;
   title: string;
@@ -25,6 +26,7 @@ export interface ExpenseLineItem {
   miles?: number;
   mileageRate?: number;
   merchantName?: string;
+  policyViolations?: PolicyViolation[];
 }
 
 export interface ExpenseDocument {
