@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -7,7 +6,7 @@ import { AlertTriangle, CircleX, Bot, MessageSquare } from 'lucide-react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { format } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 
 interface PolicyViolationsHeaderProps {
   violations: PolicyViolation[];
@@ -52,37 +51,51 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="relative">
-                          <MessageSquare 
-                            className={`h-5 w-5 ${violation.comments?.length ? 'text-blue-500' : 'text-gray-400'} hover:text-blue-600 transition-colors`} 
-                          />
-                          {violation.comments?.length > 0 && (
-                            <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                              {violation.comments.length}
-                            </div>
-                          )}
-                        </div>
-                      </TooltipTrigger>
-                      {violation.comments?.length > 0 && (
-                        <TooltipContent side="left" className="max-w-xs">
-                          <div className="space-y-2">
-                            {violation.comments.map((comment, idx) => (
-                              <div key={idx} className="text-sm">
-                                <div className="font-medium">{comment.user}</div>
-                                <div className="text-gray-500">{comment.comment}</div>
-                                <div className="text-xs text-gray-400">
-                                  {format(comment.timestamp, 'MMM d, yyyy – h:mm a')}
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <div className="relative cursor-pointer">
+                        <MessageSquare 
+                          className={`h-5 w-5 ${violation.comments?.length ? 'text-blue-500' : 'text-gray-400'} hover:text-blue-600 transition-colors`} 
+                        />
+                        {violation.comments?.length > 0 && (
+                          <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                            {violation.comments.length}
+                          </div>
+                        )}
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent 
+                      className="w-80 p-0" 
+                      side="left"
+                    >
+                      {violation.comments?.length > 0 ? (
+                        <div className="divide-y">
+                          {violation.comments.map((comment, idx) => (
+                            <div key={idx} className="p-3 hover:bg-gray-50 transition-colors">
+                              <div className="flex items-start gap-2">
+                                <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                  <MessageSquare className="h-3 w-3 text-blue-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-medium text-sm">{comment.user}</div>
+                                  <p className="text-sm text-gray-600 mt-1 break-words">
+                                    {comment.comment}
+                                  </p>
+                                  <div className="text-xs text-gray-400 mt-1.5">
+                                    {format(comment.timestamp, 'MMM d, yyyy – h:mm a')}
+                                  </div>
                                 </div>
                               </div>
-                            ))}
-                          </div>
-                        </TooltipContent>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-3 text-sm text-gray-500 text-center">
+                          No comments yet
+                        </div>
                       )}
-                    </Tooltip>
-                  </TooltipProvider>
+                    </HoverCardContent>
+                  </HoverCard>
                   <Badge variant={violation.severity === 'error' ? 'destructive' : 'outline'} className="ml-2">
                     {violation.severity}
                   </Badge>
@@ -90,7 +103,6 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="p-4 border-t bg-gray-50 space-y-4">
-                  {/* Comments Section */}
                   <div className="space-y-3">
                     {violation.comments?.map((comment) => (
                       <div key={comment.id} className="relative pl-6 border-l-2 border-gray-200">
@@ -118,8 +130,6 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
                       </div>
                     ))}
                   </div>
-
-                  {/* Add Comment Section */}
                   <div className="mt-4 space-y-2">
                     <textarea
                       placeholder="Add your comment..."
@@ -139,7 +149,6 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
         </div>
       </ScrollArea>
       
-      {/* AI Warning Message at the bottom */}
       <div className="text-xs text-gray-500 italic flex items-center gap-2 border-t pt-3">
         <Bot className="h-3 w-3" />
         This was flagged by AI as a potential violation, but it could be a false positive. Please review it carefully.
