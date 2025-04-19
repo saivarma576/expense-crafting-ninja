@@ -24,26 +24,26 @@ const ExpenseTypeTabs: React.FC<ExpenseTypeTabsProps> = ({
 }) => {
   // Main tabs that are always visible
   const mainTabs = [
-    { type: 'mileage', label: 'Miles', icon: <Car className="h-4 w-4" /> },
-    { type: 'meals', label: 'Meals', icon: <Utensils className="h-4 w-4" /> },
-    { type: 'hotel', label: 'Hotel', icon: <Hotel className="h-4 w-4" /> },
-    { type: 'transport', label: 'Travel', icon: <Plane className="h-4 w-4" /> },
-    { type: 'parking', label: 'Parking', icon: <ParkingCircle className="h-4 w-4" /> },
-    { type: 'professional_fees', label: 'Prof.', icon: <Briefcase className="h-4 w-4" /> },
-    { type: 'business_meals', label: 'B.Meals', icon: <Coffee className="h-4 w-4" /> },
+    { type: 'mileage' as ExpenseType, label: 'Miles', icon: <Car className="h-4 w-4" /> },
+    { type: 'meals' as ExpenseType, label: 'Meals', icon: <Utensils className="h-4 w-4" /> },
+    { type: 'hotel' as ExpenseType, label: 'Hotel', icon: <Hotel className="h-4 w-4" /> },
+    { type: 'transport' as ExpenseType, label: 'Travel', icon: <Plane className="h-4 w-4" /> },
+    { type: 'parking' as ExpenseType, label: 'Parking', icon: <ParkingCircle className="h-4 w-4" /> },
+    { type: 'professional_fees' as ExpenseType, label: 'Prof.', icon: <Briefcase className="h-4 w-4" /> },
+    { type: 'business_meals' as ExpenseType, label: 'B.Meals', icon: <Coffee className="h-4 w-4" /> },
   ];
   
   // Options for the "More" dropdown
   const moreOptions = [
-    { type: 'baggage', label: 'Baggage Fees' },
-    { type: 'subscriptions', label: 'Subscriptions' },
-    { type: 'gasoline', label: 'Gasoline' },
-    { type: 'office_supplies', label: 'Office Supplies' },
-    { type: 'postage', label: 'Postage' },
-    { type: 'registration', label: 'Registration' },
-    { type: 'rental', label: 'Car Rental' },
-    { type: 'auditing', label: 'Auditing' },
-    { type: 'other', label: 'Other', icon: <HelpCircle className="h-4 w-4" /> },
+    { type: 'baggage' as ExpenseType, label: 'Baggage Fees' },
+    { type: 'subscriptions' as ExpenseType, label: 'Subscriptions' },
+    { type: 'gasoline' as ExpenseType, label: 'Gasoline' },
+    { type: 'office_supplies' as ExpenseType, label: 'Office Supplies' },
+    { type: 'postage' as ExpenseType, label: 'Postage' },
+    { type: 'registration' as ExpenseType, label: 'Registration' },
+    { type: 'rental' as ExpenseType, label: 'Car Rental' },
+    { type: 'auditing' as ExpenseType, label: 'Auditing' },
+    { type: 'other' as ExpenseType, label: 'Other', icon: <HelpCircle className="h-4 w-4" /> },
   ];
 
   return (

@@ -1,5 +1,5 @@
 
-import { ExpenseLineItemFormData } from '@/components/Expenses/ExpenseForm/types';
+import { ExpenseLineItemFormData } from '@/types/expense';
 import { toast } from 'sonner';
 
 // Programmatic validations (displayed at field level)

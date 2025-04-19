@@ -1,6 +1,8 @@
 
 import { ExpenseType, ExpenseLineItemFormData } from '@/types/expense';
 
+export type { ExpenseLineItemFormData };
+
 export interface FieldGroupProps {
   values: ExpenseLineItemFormData;
   onChange: (id: string, value: any) => void;

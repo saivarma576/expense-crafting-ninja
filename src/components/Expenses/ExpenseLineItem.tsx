@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ExpenseType } from '@/types/expense';
+import { ExpenseType, ExpenseLineItemFormData } from '@/types/expense';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,7 +10,7 @@ import { Input } from "@/components/ui/input";
 
 import ExpenseTypeSelector from './ExpenseTypeSelector';
 import ReceiptPreview from './ReceiptPreview';
-import { ExpenseLineItemFormData, FormProps } from './ExpenseForm/types';
+import { FormProps } from './ExpenseForm/types';
 import CommonFields from './ExpenseForm/CommonFields';
 import HotelFields from './ExpenseForm/HotelFields';
 import MealsFields from './ExpenseForm/MealsFields';
