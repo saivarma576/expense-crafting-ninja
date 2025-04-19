@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -23,6 +22,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { CalendarDays, Clock, Download, Info, MapPin, RefreshCw } from 'lucide-react';
 import MealCalculationTable from './MealCalculationTable';
 import { cn } from '@/lib/utils';
+import FormulasDisplay from './PerDiem/FormulasDisplay';
 
 interface PerDiemCalculationDialogProps {
   isOpen: boolean;
@@ -183,7 +183,6 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
   };
 
   const calculateTotal = () => {
-    // Calculate total per diem based on daily meals and rates
     return dailyMeals.reduce((total, day) => {
       const rate = DEFAULT_RATES;
       return total + (day.breakfast ? rate.breakfast : 0) + (day.lunch ? rate.lunch : 0) + (day.dinner ? rate.dinner : 0);
@@ -206,6 +205,13 @@ const PerDiemCalculationDialog: React.FC<PerDiemCalculationDialogProps> = ({
             endDate={checkOutDate}
             location={city}
             zipCode={zipCode}
+          />
+
+          <FormulasDisplay
+            perDiemRate={perDiemRate}
+            breakfastRate={DEFAULT_RATES.breakfast}
+            lunchRate={DEFAULT_RATES.lunch}
+            dinnerRate={DEFAULT_RATES.dinner}
           />
 
           <Collapsible 
