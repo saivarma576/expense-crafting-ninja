@@ -1,4 +1,3 @@
-
 export interface ExpenseLineItem {
   id: string;
   title: string;
@@ -73,7 +72,6 @@ export type ExpenseType =
   | 'rental'
   | 'auditing';
 
-// Add the ExpenseLineItemFormData interface here
 export interface ExpenseLineItemFormData {
   id: string;
   type: ExpenseType;
