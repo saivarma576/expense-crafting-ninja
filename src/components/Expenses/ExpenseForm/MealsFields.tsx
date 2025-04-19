@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Calendar } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
@@ -11,6 +11,9 @@ import { Meal } from '@/components/Expenses/CreateExpense/types';
 import PerDiemCalculationDialog from './PerDiemCalculationDialog';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CalculationDetailsTable from './PerDiem/CalculationDetailsTable';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 const MealsFields: React.FC<FieldGroupProps> = ({ 
   values, 
@@ -28,6 +31,12 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   const providedMeals: Record<string, Meal[]> = {
     [format(checkInDate, 'yyyy-MM-dd')]: [],
     [format(checkOutDate, 'yyyy-MM-dd')]: [],
+  };
+
+  const handleDateChange = (field: 'date' | 'throughDate', date: Date | undefined) => {
+    if (date) {
+      onChange(field, format(date, 'yyyy-MM-dd'));
+    }
   };
 
   return (
@@ -66,6 +75,79 @@ const MealsFields: React.FC<FieldGroupProps> = ({
               readOnly
             />
             <MapPin className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="checkInDate" className="text-xs font-medium text-gray-700">
+            Check-in Date
+          </Label>
+          <div className="relative">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="checkInDate"
+                  variant={"outline"}
+                  className={cn(
+                    "w-full h-8 px-2 py-1 text-sm pl-7 justify-start text-left font-normal",
+                    !values.date && "text-muted-foreground"
+                  )}
+                >
+                  {values.date ? (
+                    format(new Date(values.date), "MMM dd, yyyy")
+                  ) : (
+                    <span>Select date</span>
+                  )}
+                  <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={values.date ? new Date(values.date) : undefined}
+                  onSelect={(date) => handleDateChange('date', date)}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="checkOutDate" className="text-xs font-medium text-gray-700">
+            Check-out Date
+          </Label>
+          <div className="relative">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  id="checkOutDate"
+                  variant={"outline"}
+                  className={cn(
+                    "w-full h-8 px-2 py-1 text-sm pl-7 justify-start text-left font-normal",
+                    !values.throughDate && "text-muted-foreground"
+                  )}
+                >
+                  {values.throughDate ? (
+                    format(new Date(values.throughDate), "MMM dd, yyyy")
+                  ) : (
+                    <span>Select date</span>
+                  )}
+                  <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={values.throughDate ? new Date(values.throughDate) : undefined}
+                  onSelect={(date) => handleDateChange('throughDate', date)}
+                  initialFocus
+                  disabled={(date) => values.date ? date < new Date(values.date) : false}
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
 
