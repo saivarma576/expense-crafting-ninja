@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { PolicyViolation, validateExpensePolicy } from '@/utils/policyValidations';
-import { ExpenseLineItemFormData } from '@/types/expense';
+import { PolicyViolation, validateExpensePolicy, PolicyComment } from '@/utils/policyValidations';
+import { ExpenseLineItemFormData, ExpenseLineItem } from '@/types/expense';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -27,7 +27,6 @@ import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
 import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
-import { validateExpensePolicy, PolicyViolation, PolicyComment } from '@/utils/policyValidations';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
 
 const initialLineItems = [
@@ -306,7 +305,9 @@ const NewExpense: React.FC = () => {
   const handleAddViolationComment = (itemId: string, violationId: string, comment: string) => {
     const updatedItems = lineItems.map(item => {
       if (item.id === itemId) {
-        const updatedViolations = item.policyViolations?.map(violation => {
+        const currentViolations = item.policyViolations || getLineItemPolicyViolations(item);
+        
+        const updatedViolations = currentViolations.map(violation => {
           if (violation.id === violationId) {
             return {
               ...violation,
@@ -332,7 +333,28 @@ const NewExpense: React.FC = () => {
       return item;
     });
 
-    handleLineItemSave(updatedItems.find(item => item.id === itemId)!);
+    const updatedItem = updatedItems.find(item => item.id === itemId);
+    
+    if (updatedItem) {
+      const formData: ExpenseLineItemFormData = {
+        id: updatedItem.id,
+        type: updatedItem.type.toLowerCase().replace(/\s+/g, '_') as any,
+        amount: updatedItem.amount,
+        date: updatedItem.date,
+        description: updatedItem.title,
+        receiptUrl: updatedItem.receiptUrl || '',
+        receiptName: updatedItem.receiptName || '',
+        merchantName: updatedItem.merchantName || '',
+        account: updatedItem.account,
+        accountName: updatedItem.accountName,
+        costCenter: updatedItem.costCenter,
+        costCenterName: updatedItem.costCenterName,
+        notes: updatedItem.notes || '',
+        wbs: updatedItem.wbs || ''
+      };
+      
+      handleLineItemSave(formData);
+    }
   };
 
   const [programmaticErrors, setProgrammaticErrors] = useState<{field: string, error: string}[]>([
@@ -367,16 +389,22 @@ const NewExpense: React.FC = () => {
     }))
   ];
 
-  const getLineItemPolicyViolations = (item: typeof lineItems[0]): PolicyViolation[] => {
+  const getLineItemPolicyViolations = (item: ExpenseLineItem): PolicyViolation[] => {
     const formData: ExpenseLineItemFormData = {
       id: item.id,
-      type: item.type.toLowerCase().replace(' ', '_'),
+      type: item.type.toLowerCase().replace(/\s+/g, '_') as any,
       amount: item.amount,
       date: item.date,
       description: item.title,
-      notes: '',
-      receiptUrl: item.receiptName,
-      merchantName: ''
+      notes: item.notes || '',
+      receiptUrl: item.receiptName || '',
+      receiptName: item.receiptName || '',
+      merchantName: item.merchantName || '',
+      account: item.account,
+      accountName: item.accountName,
+      costCenter: item.costCenter,
+      costCenterName: item.costCenterName,
+      wbs: item.wbs || ''
     };
     
     return validateExpensePolicy(formData);
@@ -421,7 +449,7 @@ const NewExpense: React.FC = () => {
         <LineItemsSection 
           lineItems={lineItems.map(item => ({
             ...item,
-            policyViolations: getLineItemPolicyViolations(item)
+            policyViolations: item.policyViolations || getLineItemPolicyViolations(item)
           }))}
           handleAddLineItem={handleAddLineItem}
           handleEditLineItem={handleEditLineItem}
