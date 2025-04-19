@@ -29,7 +29,7 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
             key={violation.id}
             open={expandedViolations.includes(violation.id)}
             onOpenChange={() => toggleViolation(violation.id)}
-            className="border rounded-lg overflow-hidden"
+            className="border rounded-lg overflow-hidden shadow-sm hover:shadow transition-shadow duration-200"
           >
             <CollapsibleTrigger className="flex items-center justify-between w-full p-4 hover:bg-gray-50">
               <div className="flex items-center gap-2">
