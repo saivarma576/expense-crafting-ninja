@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { PolicyViolation, validateExpensePolicy, PolicyComment } from '@/utils/policyValidations';
 import { ExpenseLineItemFormData, ExpenseLineItem as ExpenseLineItemType } from '@/types/expense';
@@ -7,8 +6,8 @@ import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem from '@/components/Expenses/ExpenseLineItem';
-import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
-import ExpenseHeader from '@/components/Expenses/ExpenseHeader';
+import ExpenseApproval from '@/components/Expenses/ExpenseApproval';
+import ExpenseHeader from '@/components/Expenses/ExpenseHeader/index';
 import LineItemsSection from '@/components/Expenses/LineItemsSection';
 import DocumentsNotesSection from '@/components/Expenses/DocumentsNotesSection';
 import { ExpenseActions } from '@/components/Expenses/ExpenseActions';
@@ -450,6 +449,11 @@ const NewExpense: React.FC = () => {
           userName={userName}
           userEmail={userEmail}
           travelPurpose={travelPurpose}
+          policyViolations={policyViolations}
+          onAddViolationComment={(violationId, comment, type) => {
+            // For header-level violations, we pass a dummy itemId since they're not associated with specific line items
+            handleAddViolationComment('header', violationId, comment);
+          }}
         />
 
         <LineItemsSection 
