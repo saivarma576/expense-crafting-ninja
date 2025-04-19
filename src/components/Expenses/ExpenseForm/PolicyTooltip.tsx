@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { AlertCircle, AlertTriangle, MessageSquare, Plus, Paperclip } from 'lucide-react';
+import { AlertCircle, AlertTriangle, MessageSquare, Plus, Paperclip, Flag } from 'lucide-react';
 import {
   Tooltip,
   TooltipContent,
@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PolicyViolation, PolicyComment } from '@/utils/policyValidations';
 import PolicyCommentTimeline from './PolicyCommentTimeline';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface PolicyTooltipProps {
   violations: PolicyViolation[];
@@ -26,9 +27,7 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
 }) => {
   const [commentText, setCommentText] = useState<string>('');
   const [activeViolation, setActiveViolation] = useState<string | null>(null);
-  const [commentTags, setCommentTags] = useState<string[]>([]);
-  const [commentFiles, setCommentFiles] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState<string>('');
+  const [selectedViolation, setSelectedViolation] = useState<PolicyViolation | null>(null);
 
   if (violations.length === 0) return null;
 
@@ -36,186 +35,129 @@ const PolicyTooltip: React.FC<PolicyTooltipProps> = ({
 
   const handleAddComment = (violationId: string) => {
     if (commentText.trim() && onAddComment) {
-      onAddComment(
-        violationId, 
-        commentText.trim(), 
-        commentTags.length > 0 ? commentTags : undefined,
-        commentFiles.length > 0 ? commentFiles : undefined
-      );
+      onAddComment(violationId, commentText.trim());
       setCommentText('');
-      setCommentTags([]);
-      setCommentFiles([]);
       setActiveViolation(null);
     }
   };
 
-  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
-      e.preventDefault();
-      const newTag = tagInput.trim().replace(/^#/, '');
-      if (newTag && !commentTags.includes(newTag)) {
-        setCommentTags([...commentTags, newTag]);
-      }
-      setTagInput('');
-    }
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setCommentTags(commentTags.filter(t => t !== tag));
-  };
-
-  const handleAddFile = () => {
-    // Mock file upload - in a real implementation, this would open a file picker
-    const mockFileName = `Receipt-${Math.floor(Math.random() * 1000)}.pdf`;
-    setCommentFiles([...commentFiles, mockFileName]);
-  };
-
-  const handleRemoveFile = (file: string) => {
-    setCommentFiles(commentFiles.filter(f => f !== file));
-  };
-
   return (
     <TooltipProvider delayDuration={0}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <button className={`${className} flex items-center`}>
-            {hasErrors ? (
-              <AlertCircle className="h-4 w-4 text-red-500" />
-            ) : (
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
-            )}
-          </button>
-        </TooltipTrigger>
-        <TooltipContent className="w-96 p-0">
-          <div className="p-4 space-y-4 bg-white border rounded-lg shadow-lg">
-            {violations.map((violation) => (
-              <div 
-                key={violation.id} 
-                className={`text-sm ${
-                  violation.severity === 'error' 
-                    ? 'text-red-600'
-                    : 'text-amber-600'
-                }`}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="space-y-1">
-                    <p className="font-medium">{violation.field}</p>
-                    <p className="text-gray-600">{violation.message}</p>
-                  </div>
-                  {onAddComment && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0"
-                      onClick={() => setActiveViolation(
-                        activeViolation === violation.id ? null : violation.id
-                      )}
-                    >
-                      <MessageSquare className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-
-                {/* Comments timeline */}
-                {(violation.comments && violation.comments.length > 0) || violation.message && (
-                  <PolicyCommentTimeline 
-                    comments={violation.comments || []} 
-                    policyRule={violation.message}
-                    severity={violation.severity}
-                    status={violation.status || 'violation'}
-                    className="mt-3"
-                  />
+      <Dialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button className={`${className} relative group`}>
+              <div className="relative">
+                {hasErrors ? (
+                  <AlertCircle className="h-4 w-4 text-red-500 transition-transform group-hover:scale-110" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 text-amber-500 transition-transform group-hover:scale-110" />
                 )}
-
-                {/* Comment input */}
-                {activeViolation === violation.id && (
-                  <div className="mt-3 space-y-2 bg-gray-50 p-3 rounded-md">
-                    <Textarea
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      placeholder="Add a comment..."
-                      className="min-h-[80px] text-sm"
-                    />
-                    
-                    {/* Tags input */}
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      {commentTags.map((tag, index) => (
-                        <Badge 
-                          key={index}
-                          variant="secondary" 
-                          className="text-xs py-0.5 px-2 cursor-pointer"
-                          onClick={() => handleRemoveTag(tag)}
-                        >
-                          #{tag} <span className="ml-1">×</span>
-                        </Badge>
-                      ))}
-                      <input
-                        type="text"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={handleAddTag}
-                        placeholder="Add tag..."
-                        className="text-xs flex-1 min-w-[80px] py-1 px-2 bg-transparent border-none outline-none"
-                      />
-                    </div>
-                    
-                    {/* File attachments */}
-                    {commentFiles.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
-                        {commentFiles.map((file, index) => (
-                          <Badge 
-                            key={index}
-                            variant="outline" 
-                            className="text-xs py-0.5 px-2 bg-gray-100 cursor-pointer"
-                            onClick={() => handleRemoveFile(file)}
-                          >
-                            {file} <span className="ml-1">×</span>
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="flex justify-between space-x-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-7 text-xs"
-                        onClick={handleAddFile}
-                      >
-                        <Paperclip className="h-3 w-3 mr-1" />
-                        Attach
-                      </Button>
-                      
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 text-xs"
-                          onClick={() => {
-                            setCommentText('');
-                            setCommentTags([]);
-                            setCommentFiles([]);
-                            setActiveViolation(null);
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="h-7 text-xs"
-                          onClick={() => handleAddComment(violation.id)}
-                        >
-                          Add Comment
-                        </Button>
-                      </div>
-                    </div>
+                {violations.some(v => v.comments?.length > 0) && (
+                  <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center animate-fade-in">
+                    {violations.reduce((acc, v) => acc + (v.comments?.length || 0), 0)}
                   </div>
                 )}
               </div>
-            ))}
-          </div>
-        </TooltipContent>
-      </Tooltip>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="p-0 w-80 bg-white border rounded-lg shadow-lg">
+            <div className="p-3 space-y-3">
+              {violations.map((violation) => (
+                <div 
+                  key={violation.id} 
+                  className="relative group hover:bg-gray-50 rounded-md transition-colors p-2"
+                >
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="flex items-start gap-2 flex-1">
+                      <div className={`p-1.5 rounded-lg ${
+                        violation.severity === 'error' ? 'bg-red-50' : 'bg-amber-50'
+                      }`}>
+                        {violation.severity === 'error' ? (
+                          <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                        ) : (
+                          <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+                        )}
+                      </div>
+                      <div>
+                        <p className={`text-sm font-medium ${
+                          violation.severity === 'error' ? 'text-red-700' : 'text-amber-700'
+                        }`}>
+                          {violation.message}
+                        </p>
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <Badge variant="outline" className="text-[10px] py-0 px-1.5 rounded-sm">
+                            {violation.field}
+                          </Badge>
+                          {violation.category && (
+                            <Badge variant="outline" className="text-[10px] py-0 px-1.5 rounded-sm">
+                              {violation.category}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setSelectedViolation(violation)}
+                      >
+                        <MessageSquare className="h-3.5 w-3.5" />
+                      </Button>
+                    </DialogTrigger>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="border-t p-2 bg-gray-50">
+              <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                <Flag className="h-3 w-3" />
+                <span>AI-flagged potential violations • Review carefully</span>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+
+        <DialogContent className="sm:max-w-[500px] p-0">
+          {selectedViolation && (
+            <>
+              <DialogHeader className="px-6 py-4 border-b">
+                <DialogTitle className="text-lg flex items-center gap-2">
+                  {selectedViolation.severity === 'error' ? (
+                    <AlertCircle className="h-5 w-5 text-red-500" />
+                  ) : (
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                  )}
+                  Policy Violation Details
+                </DialogTitle>
+              </DialogHeader>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <h3 className="font-medium">Issue</h3>
+                    <p className="text-sm text-gray-600">{selectedViolation.message}</p>
+                  </div>
+
+                  <PolicyCommentTimeline
+                    comments={selectedViolation.comments || []}
+                    policyRule={selectedViolation.message}
+                    severity={selectedViolation.severity}
+                    status={selectedViolation.status}
+                    maxHeight={300}
+                    onAddComment={
+                      onAddComment 
+                        ? (comment) => onAddComment(selectedViolation.id, comment)
+                        : undefined
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 };
