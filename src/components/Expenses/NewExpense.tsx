@@ -28,6 +28,7 @@ import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
 import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
+import CompactPolicyHeader from './ExpenseForm/CompactPolicyHeader';
 
 interface EnhancedExpenseLineItem extends ExpenseLineItemType {
   policyViolations?: PolicyViolation[];
@@ -380,21 +381,21 @@ const NewExpense: React.FC = () => {
       expenseType: 'Business Meal',
       field: error.field,
       message: error.error,
-      severity: 'error',
-      status: 'violation',
+      severity: 'error' as const,
+      status: 'violation' as const,
       category: 'Validation',
       violationType: 'error'
     })),
     ...llmWarnings.map((warning, index) => ({
       id: `warning-${index}`,
-      lineNumber: index + 2,
+      lineNumber: index + 1,
       lineTitle: `Policy Warning`,
       expenseType: 'Business Expense',
       field: warning.toLowerCase().includes('receipt') ? 'Receipt' : 
              warning.toLowerCase().includes('meal') ? 'Meal' : 'General',
       message: warning,
-      severity: 'warning',
-      status: 'violation',
+      severity: 'warning' as const,
+      status: 'violation' as const,
       category: 'Policy',
       violationType: 'warning'
     }))
@@ -435,6 +436,15 @@ const NewExpense: React.FC = () => {
       </div>
 
       <div className="px-6 py-5">
+        {policyViolations.length > 0 && (
+          <CompactPolicyHeader
+            violations={policyViolations}
+            onAddComment={(violationId, comment, type) => {
+              handleAddViolationComment('header', violationId, comment);
+            }}
+          />
+        )}
+        
         <TravelExpenseDetails 
           isTravelExpense={isTravelExpense}
           travelPurpose={travelPurpose}
