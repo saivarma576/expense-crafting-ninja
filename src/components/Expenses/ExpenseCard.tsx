@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
@@ -40,14 +39,12 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
         </div>
         
         {/* Type */}
-        <div className="w-3/12 flex items-center gap-2">
-          <Tag className="h-4 w-4 text-gray-500" />
+        <div className="w-3/12">
           <span className="text-sm text-gray-600">{item.type}</span>
         </div>
         
         {/* Date */}
-        <div className="w-2/12 flex items-center gap-2">
-          <CalendarDays className="h-4 w-4 text-gray-500" />
+        <div className="w-2/12">
           <span className="text-sm text-gray-600">{item.date}</span>
         </div>
         
@@ -57,40 +54,48 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
         </div>
         
         {/* Actions */}
-        <div className="w-2/12 flex items-center justify-end space-x-2">
-          {/* Receipt Icon */}
-          {item.receiptName && (
+        <div className="w-2/12 flex items-center justify-end gap-6">
+          {/* Receipt Icon - Always show the space */}
+          <div className="w-6 flex justify-center">
+            {item.receiptName && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full"
+                title={item.receiptName}
+              >
+                <Paperclip className="h-3.5 w-3.5" />
+                <span className="sr-only">View Receipt</span>
+              </Button>
+            )}
+          </div>
+          
+          {/* Edit Button - Always show the space */}
+          <div className="w-6 flex justify-center">
             <Button
               variant="ghost"
               size="icon"
+              onClick={onEdit}
               className="h-7 w-7 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full"
-              title={item.receiptName}
             >
-              <Paperclip className="h-3.5 w-3.5" />
-              <span className="sr-only">View Receipt</span>
+              <Edit className="h-3.5 w-3.5" />
+              <span className="sr-only">Edit</span>
             </Button>
-          )}
+          </div>
           
-          {/* Edit Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onEdit}
-            className="h-7 w-7 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full"
-          >
-            <Edit className="h-3.5 w-3.5" />
-            <span className="sr-only">Edit</span>
-          </Button>
-          
-          {/* Policy Violations Tooltip */}
-          {hasViolations && (
-            <PolicyTooltip
-              violations={item.policyViolations || []}
-              onAddComment={onAddViolationComment ? 
-                (violationId: string, comment: string) => onAddViolationComment(violationId, comment) : 
-                undefined}
-            />
-          )}
+          {/* Policy Violations - Always show the space */}
+          <div className="w-6 flex justify-center">
+            {hasViolations ? (
+              <PolicyTooltip
+                violations={item.policyViolations || []}
+                onAddComment={onAddViolationComment ? 
+                  (violationId: string, comment: string) => onAddViolationComment(violationId, comment) : 
+                  undefined}
+              />
+            ) : (
+              <div className="h-7 w-7" /> {/* Empty space holder */}
+            )}
+          </div>
         </div>
       </div>
     </div>
