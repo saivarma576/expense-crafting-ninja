@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Car, Utensils, Building2, Plane, Coffee, Briefcase, ParkingCircle,
@@ -22,21 +23,25 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
   onTypeChange 
 }) => {
   const primaryTypes = [
-    { value: 'mileage', label: 'Miles', icon: <Car className="h-4 w-4" /> },
+    { value: 'mileage', label: 'Mileage', icon: <Car className="h-4 w-4" /> },
     { value: 'meals', label: 'Meals', icon: <Utensils className="h-4 w-4" /> },
-    { value: 'hotel', label: 'Hotel', icon: <Building2 className="h-4 w-4" /> },
-    { value: 'transport', label: 'Travel', icon: <Plane className="h-4 w-4" /> },
-    { value: 'business_meals', label: 'Biz Meal', icon: <Coffee className="h-4 w-4" /> },
-    { value: 'professional_fees', label: 'Fees', icon: <Briefcase className="h-4 w-4" /> },
-    { value: 'parking', label: 'Parking', icon: <ParkingCircle className="h-4 w-4" /> },
+    { value: 'other', label: 'Others', icon: <HelpCircle className="h-4 w-4" /> },
+    { value: 'professional_fees', label: 'Professional Fees', icon: <Briefcase className="h-4 w-4" /> },
+    { value: 'hotel', label: 'Hotel/Lodging', icon: <Building2 className="h-4 w-4" /> },
+    { value: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-4 w-4" /> },
+    { value: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-4 w-4" /> },
   ];
 
   const secondaryTypes = [
-    { value: 'registration', label: 'Register', icon: <ClipboardCheck className="h-4 w-4" /> },
-    { value: 'baggage', label: 'Baggage', icon: <Luggage className="h-4 w-4" /> },
-    { value: 'subscriptions', label: 'Subs', icon: <BookOpen className="h-4 w-4" /> },
-    { value: 'postage', label: 'Postage', icon: <Package className="h-4 w-4" /> },
-    { value: 'other', label: 'Other', icon: <HelpCircle className="h-4 w-4" /> },
+    { value: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-4 w-4" /> },
+    { value: 'registration', label: 'Registration Fees', icon: <ClipboardCheck className="h-4 w-4" /> },
+    { value: 'baggage', label: 'Baggage Fees', icon: <Luggage className="h-4 w-4" /> },
+    { value: 'subscriptions', label: 'Dues Subscriptions', icon: <BookOpen className="h-4 w-4" /> },
+    { value: 'postage', label: 'Postage & Freight', icon: <Package className="h-4 w-4" /> },
+    { value: 'gasoline', label: 'Gasoline', icon: <Package className="h-4 w-4" /> },
+    { value: 'office_supplies', label: 'Office Supplies', icon: <Package className="h-4 w-4" /> },
+    { value: 'rental', label: 'Rental Car', icon: <Car className="h-4 w-4" /> },
+    { value: 'auditing', label: 'Auditing Serv Fees', icon: <Briefcase className="h-4 w-4" /> },
   ];
 
   return (
