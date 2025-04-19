@@ -1,5 +1,11 @@
-
 import { ExpenseLineItemFormData } from '@/types/expense';
+
+export interface PolicyComment {
+  id: string;
+  comment: string;
+  user: string;
+  timestamp: Date;
+}
 
 export interface PolicyViolation {
   id: string;
@@ -7,6 +13,7 @@ export interface PolicyViolation {
   message: string;
   severity: 'error' | 'warning';
   category: 'receipt' | 'travel' | 'transportation' | 'lodging' | 'meals' | 'general';
+  comments: PolicyComment[];
 }
 
 export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyViolation[] => {
@@ -19,7 +26,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'receipt',
       message: 'Itemized receipt is required for all expenses except mileage.',
       severity: 'error',
-      category: 'receipt'
+      category: 'receipt',
+      comments: []
     });
   }
 
@@ -30,7 +38,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'description',
       message: 'A clear business purpose must be provided in the description.',
       severity: 'error',
-      category: 'general'
+      category: 'general',
+      comments: []
     });
   }
 
@@ -43,7 +52,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
         field: 'notes',
         message: 'For meal expenses over $50, please confirm no alcohol was included.',
         severity: 'warning',
-        category: 'meals'
+        category: 'meals',
+        comments: []
       });
     }
 
@@ -55,7 +65,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
         field: 'amount',
         message: 'Tips exceeding 20% may require additional approval.',
         severity: 'warning',
-        category: 'meals'
+        category: 'meals',
+        comments: []
       });
     }
   }
@@ -68,7 +79,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
         field: 'zipCode',
         message: 'ZIP code is required to verify distance and rate compliance.',
         severity: 'error',
-        category: 'lodging'
+        category: 'lodging',
+        comments: []
       });
     }
 
@@ -78,7 +90,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
         field: 'amount',
         message: 'Amount exceeds standard lodging rate. Justification required.',
         severity: 'warning',
-        category: 'lodging'
+        category: 'lodging',
+        comments: []
       });
     }
   }
@@ -91,7 +104,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
         field: 'notes',
         message: 'Confirm this mileage excludes normal commute distance.',
         severity: 'warning',
-        category: 'transportation'
+        category: 'transportation',
+        comments: []
       });
     }
   }
@@ -107,7 +121,8 @@ export const validateExpensePolicy = (expense: ExpenseLineItemFormData): PolicyV
       field: 'date',
       message: 'Expenses submitted after 60 days may be treated as taxable income.',
       severity: 'error',
-      category: 'general'
+      category: 'general',
+      comments: []
     });
   }
 

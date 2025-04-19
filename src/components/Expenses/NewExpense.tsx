@@ -25,7 +25,7 @@ import ValidationWarnings from './ExpenseForm/ValidationWarnings';
 import PolicyViolationsModal from './ExpenseForm/PolicyViolationsModal';
 import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
-import { validateExpensePolicy, PolicyViolation } from '@/utils/policyValidations';
+import { validateExpensePolicy, PolicyViolation, PolicyComment } from '@/utils/policyValidations';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
 
 const initialLineItems = [
@@ -301,6 +301,38 @@ const NewExpense: React.FC = () => {
     }
   };
 
+  const handleAddViolationComment = (itemId: string, violationId: string, comment: string) => {
+    setLineItems(prevItems => 
+      prevItems.map(item => {
+        if (item.id === itemId) {
+          const updatedViolations = item.policyViolations?.map(violation => {
+            if (violation.id === violationId) {
+              return {
+                ...violation,
+                comments: [
+                  ...(violation.comments || []),
+                  {
+                    id: `comment-${Date.now()}`,
+                    comment,
+                    user: userName,
+                    timestamp: new Date()
+                  }
+                ]
+              };
+            }
+            return violation;
+          });
+
+          return {
+            ...item,
+            policyViolations: updatedViolations
+          };
+        }
+        return item;
+      })
+    );
+  };
+
   const [programmaticErrors, setProgrammaticErrors] = useState<{field: string, error: string}[]>([
     {field: 'Amount', error: 'Amount exceeds the $500 limit for meals without approval'},
     {field: 'Merchant Name', error: 'Merchant name is required'}
@@ -393,6 +425,7 @@ const NewExpense: React.FC = () => {
           handleEditLineItem={handleEditLineItem}
           handleDeleteLineItem={handleDeleteLineItem}
           totalAmount={totalAmount}
+          onAddViolationComment={handleAddViolationComment}
         />
           
         <DocumentsNotesSection 

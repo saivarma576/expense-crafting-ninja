@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { PlusCircle, Paperclip } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
-import { Separator } from '@/components/ui/separator';
+import { PolicyViolation, PolicyComment } from '@/utils/policyValidations';
+import { toast } from 'sonner';
 
 interface ExpenseLineItem {
   id: string;
@@ -17,6 +18,7 @@ interface ExpenseLineItem {
   costCenter: string;
   costCenterName: string;
   receiptName?: string;
+  policyViolations?: PolicyViolation[];
 }
 
 interface LineItemsSectionProps {
@@ -25,6 +27,7 @@ interface LineItemsSectionProps {
   handleEditLineItem: (id: string) => void;
   handleDeleteLineItem: (id: string) => void;
   totalAmount: string;
+  onAddViolationComment?: (itemId: string, violationId: string, comment: string) => void;
 }
 
 const LineItemsSection: React.FC<LineItemsSectionProps> = ({
@@ -32,8 +35,16 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
   handleAddLineItem,
   handleEditLineItem,
   handleDeleteLineItem,
-  totalAmount
+  totalAmount,
+  onAddViolationComment
 }) => {
+  const handleAddComment = (itemId: string, violationId: string, comment: string) => {
+    if (onAddViolationComment) {
+      onAddViolationComment(itemId, violationId, comment);
+      toast.success('Comment added successfully');
+    }
+  };
+
   return (
     <div className="mb-8 w-full">
       <div className="flex items-center justify-between mb-4">
@@ -68,6 +79,12 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
                   item={item}
                   onEdit={() => handleEditLineItem(item.id)}
                   onDelete={() => handleDeleteLineItem(item.id)}
+                  onAddViolationComment={
+                    onAddViolationComment 
+                      ? (violationId: string, comment: string) => 
+                          handleAddComment(item.id, violationId, comment)
+                      : undefined
+                  }
                 />
               </div>
             ))}
