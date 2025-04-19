@@ -72,13 +72,17 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
             <HelpCircle className="h-4 w-4" />
             <span className="text-[11px] mt-1">More</span>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-white">
+          <DropdownMenuContent 
+            align="end" 
+            className="w-48 bg-white border border-gray-200 shadow-md z-50" 
+            sideOffset={5}
+          >
             {secondaryTypes.map((type) => (
               <DropdownMenuItem
                 key={type.value}
                 onClick={() => onTypeChange(type.value as ExpenseType)}
                 className={cn(
-                  "flex items-center gap-2 cursor-pointer",
+                  "flex items-center gap-2 cursor-pointer hover:bg-gray-50",
                   selectedType === type.value && "bg-blue-50 text-blue-700"
                 )}
               >
