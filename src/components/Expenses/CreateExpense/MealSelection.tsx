@@ -1,8 +1,8 @@
 
-import React from 'react';
-import { UtensilsCrossed, Coffee, Soup, EggFried } from 'lucide-react';
+import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues, Meal } from './types';
+import DailyMealGrid from './DailyMealGrid';
 
 import {
   FormField,
@@ -16,16 +16,34 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 const MealSelection: React.FC = () => {
   const { control, watch, setValue } = useFormContext<FormValues>();
+  const [sameForAllDays, setSameForAllDays] = useState(true);
+  const [dailyMeals, setDailyMeals] = useState<Record<string, Meal[]>>({});
+  
   const watchMealsProvided = watch('mealsProvided');
-  const watchMeals = watch('meals');
+  const watchMeals = watch('meals') || [];
+  const watchFromDate = watch('fromDate');
+  const watchToDate = watch('toDate');
 
   const handleMealChange = (meal: Meal) => {
-    const currentMeals = watchMeals || [];
-    const updatedMeals = currentMeals.includes(meal)
-      ? currentMeals.filter((m) => m !== meal)
-      : [...currentMeals, meal];
+    const updatedMeals = watchMeals.includes(meal)
+      ? watchMeals.filter((m) => m !== meal)
+      : [...watchMeals, meal];
     
     setValue('meals', updatedMeals, { shouldValidate: true });
+  };
+
+  const handleDailyMealChange = (date: string, meal: Meal) => {
+    setDailyMeals(prev => {
+      const currentMeals = prev[date] || [...watchMeals];
+      const updatedMeals = currentMeals.includes(meal)
+        ? currentMeals.filter(m => m !== meal)
+        : [...currentMeals, meal];
+      
+      return {
+        ...prev,
+        [date]: updatedMeals
+      };
+    });
   };
 
   return (
@@ -61,35 +79,62 @@ const MealSelection: React.FC = () => {
         )}
       />
 
-      {/* Meal selection checkboxes with modern icons */}
       {watchMealsProvided === 'yes' && (
-        <div className="space-y-3 pt-2 animate-fade-in">
-          <FormLabel>Select which meals were provided:</FormLabel>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { meal: 'breakfast', icon: EggFried, color: 'text-amber-500', label: 'Breakfast' },
-              { meal: 'lunch', icon: Soup, color: 'text-green-500', label: 'Lunch' },
-              { meal: 'dinner', icon: UtensilsCrossed, color: 'text-blue-500', label: 'Dinner' }
-            ].map(({ meal, icon: Icon, color, label }) => (
-              <div 
-                key={meal}
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
-                  watchMeals?.includes(meal as Meal) ? 'bg-primary/10 border-primary' : ''
-                }`}
-                onClick={() => handleMealChange(meal as Meal)}
-              >
-                <Checkbox 
-                  id={`meal-${meal}`}
-                  checked={watchMeals?.includes(meal as Meal)} 
-                  onCheckedChange={() => handleMealChange(meal as Meal)}
-                />
-                <div className="flex items-center">
-                  <Icon className={`h-4 w-4 mr-1.5 ${color}`} />
-                  <span className="text-sm">{label}</span>
-                </div>
+        <div className="space-y-4 pt-2 animate-fade-in">
+          <div className="space-y-2">
+            <FormLabel>Step 1: Quick Selection</FormLabel>
+            <div className="flex items-center gap-2 mb-4">
+              <Checkbox
+                id="sameForAllDays"
+                checked={sameForAllDays}
+                onCheckedChange={(checked) => setSameForAllDays(checked as boolean)}
+              />
+              <label htmlFor="sameForAllDays" className="text-sm">
+                Meals were same for all days
+              </label>
+            </div>
+
+            {sameForAllDays && (
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { meal: 'breakfast', emoji: '🍳', label: 'Breakfast' },
+                  { meal: 'lunch', emoji: '🥗', label: 'Lunch' },
+                  { meal: 'dinner', emoji: '🍽️', label: 'Dinner' }
+                ].map(({ meal, emoji, label }) => (
+                  <div 
+                    key={meal}
+                    className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
+                      watchMeals.includes(meal as Meal) ? 'bg-primary/10 border-primary' : ''
+                    }`}
+                    onClick={() => handleMealChange(meal as Meal)}
+                  >
+                    <Checkbox 
+                      id={`meal-${meal}`}
+                      checked={watchMeals.includes(meal as Meal)}
+                      onCheckedChange={() => handleMealChange(meal as Meal)}
+                    />
+                    <div className="flex items-center">
+                      <span className="mr-1.5">{emoji}</span>
+                      <span className="text-sm">{label}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
+
+          {watchFromDate && watchToDate && (
+            <div className="mt-6">
+              <FormLabel>Step 2: Advanced Selection</FormLabel>
+              <DailyMealGrid
+                startDate={watchFromDate}
+                endDate={watchToDate}
+                selectedMeals={watchMeals}
+                dailyMeals={dailyMeals}
+                onDailyMealChange={handleDailyMealChange}
+              />
+            </div>
+          )}
         </div>
       )}
     </>
