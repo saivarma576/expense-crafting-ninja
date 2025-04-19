@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface PolicyCommentTimelineProps {
   comments: PolicyComment[];
@@ -15,6 +16,7 @@ interface PolicyCommentTimelineProps {
   status?: 'violation' | 'exception' | 'approved';
   maxHeight?: number;
   onAddComment?: (comment: string) => void;
+  className?: string;
 }
 
 const PolicyCommentTimeline: React.FC<PolicyCommentTimelineProps> = ({
@@ -23,7 +25,8 @@ const PolicyCommentTimeline: React.FC<PolicyCommentTimelineProps> = ({
   severity = 'warning',
   status = 'violation',
   maxHeight = 300,
-  onAddComment
+  onAddComment,
+  className
 }) => {
   const [newComment, setNewComment] = useState('');
 
@@ -51,7 +54,7 @@ const PolicyCommentTimeline: React.FC<PolicyCommentTimelineProps> = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div className={cn("space-y-3", className)}>
       {/* Policy Rule Header */}
       {policyRule && (
         <div className={cn(
