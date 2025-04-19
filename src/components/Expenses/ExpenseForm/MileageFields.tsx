@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar, Route } from 'lucide-react';
 import { MileageFieldsProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const MileageFields: React.FC<MileageFieldsProps> = ({ 
   values, 
@@ -16,8 +17,9 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
     <div className="mb-4 space-y-4">
       <h3 className="text-sm font-medium text-gray-700">Mileage Details</h3>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-        <div>
+      <div className="grid grid-cols-12 gap-x-4 gap-y-2">
+        {/* Miles - 30% width */}
+        <div className="col-span-4">
           <Label htmlFor="miles" className="text-xs font-medium text-gray-700 flex items-center">
             Miles <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -30,6 +32,7 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
               placeholder="Enter miles"
               className={`h-8 px-2 py-1 text-sm pl-7 ${error ? 'border-red-500 pr-8' : llmSuggestions.miles ? 'border-amber-300 pr-8' : ''}`}
               required
+              maxLength={10}
             />
             <Route className="w-4 h-4 absolute left-2 top-2 text-gray-400 pointer-events-none" />
             <FieldValidationIndicator 
@@ -42,27 +45,28 @@ const MileageFields: React.FC<MileageFieldsProps> = ({
           )}
         </div>
         
-        <div>
+        {/* Mileage Rate - 20% width */}
+        <div className="col-span-3">
           <Label htmlFor="mileageRate" className="text-xs font-medium text-gray-700">
             Rate Per Mile
           </Label>
-          <div className="relative">
-            <Input
-              id="mileageRate"
-              type="number"
-              step="0.01"
-              value={values.mileageRate || ''}
-              onChange={(e) => onChange('mileageRate', parseFloat(e.target.value) || 0)}
-              placeholder="Rate per mile"
-              className="h-8 px-2 py-1 text-sm pl-7"
-              disabled
-            />
-            <span className="absolute left-2 top-2 text-gray-400 text-sm">$</span>
-          </div>
-          <p className="mt-1 text-xs text-gray-500">Standard mileage rate</p>
+          <Select 
+            value={values.mileageRate?.toString() || ''} 
+            onValueChange={(value) => onChange('mileageRate', parseFloat(value))}
+          >
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder="Select rate" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0.70">$0.70</SelectItem>
+              <SelectItem value="0.65">$0.65</SelectItem>
+              <SelectItem value="0.60">$0.60</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
         
-        <div>
+        {/* Through Date - 40% width */}
+        <div className="col-span-5">
           <Label htmlFor="throughDate" className="text-xs font-medium text-gray-700">
             Return Date
           </Label>

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Calendar, DollarSign, Store, FileText } from 'lucide-react';
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface CommonFieldsProps extends FieldGroupProps {
   type: string;
@@ -24,8 +25,9 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
     <div className="mb-4 space-y-4">
       <h3 className="text-sm font-medium text-gray-700">{type === 'mileage' ? 'Mileage Information' : 'Expense Information'}</h3>
       
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-        <div>
+      <div className="grid grid-cols-12 gap-x-4 gap-y-2">
+        {/* Date - 40% width */}
+        <div className="col-span-5">
           <Label htmlFor="date" className="text-xs font-medium text-gray-700 flex items-center">
             Date <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -48,8 +50,9 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
             <p className="mt-1 text-xs text-red-500">{fieldErrors.date}</p>
           )}
         </div>
-        
-        <div>
+
+        {/* Amount - 30% width */}
+        <div className="col-span-4">
           <Label htmlFor="amount" className="text-xs font-medium text-gray-700 flex items-center">
             Amount <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -75,8 +78,26 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
             <p className="mt-1 text-xs text-red-500">{fieldErrors.amount}</p>
           )}
         </div>
-        
-        <div>
+
+        {/* Currency - 20% width */}
+        <div className="col-span-3">
+          <Label htmlFor="currency" className="text-xs font-medium text-gray-700">
+            Currency
+          </Label>
+          <Select defaultValue="USD">
+            <SelectTrigger className="h-8">
+              <SelectValue placeholder="USD" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">USD</SelectItem>
+              <SelectItem value="EUR">EUR</SelectItem>
+              <SelectItem value="GBP">GBP</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Merchant Name - Full width */}
+        <div className="col-span-12">
           <Label htmlFor="merchantName" className="text-xs font-medium text-gray-700 flex items-center">
             Merchant Name <span className="text-red-500 ml-1">*</span>
           </Label>
@@ -100,7 +121,8 @@ const CommonFields: React.FC<CommonFieldsProps> = ({
           )}
         </div>
         
-        <div>
+        {/* Description - Full width */}
+        <div className="col-span-12">
           <Label htmlFor="description" className="text-xs font-medium text-gray-700 flex items-center">
             Description <span className="text-red-500 ml-1">*</span>
           </Label>
