@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues, Meal } from './types';
 import DailyMealGrid from './DailyMealGrid';
@@ -24,16 +24,17 @@ const MealSelection: React.FC = () => {
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
 
-  // Handle meal changes in a way that doesn't cause infinite loops
-  const handleMealChange = (meal: Meal) => {
-    const updatedMeals = watchMeals.includes(meal)
-      ? watchMeals.filter((m) => m !== meal)
-      : [...watchMeals, meal];
-    
-    setValue('meals', updatedMeals, { shouldValidate: true });
-  };
+  // Use useCallback to memoize functions
+  const handleMealChange = useCallback((meal: Meal) => {
+    setValue('meals', 
+      watchMeals.includes(meal)
+        ? watchMeals.filter((m) => m !== meal)
+        : [...watchMeals, meal], 
+      { shouldValidate: true }
+    );
+  }, [watchMeals, setValue]);
 
-  const handleDailyMealChange = (date: string, meal: Meal) => {
+  const handleDailyMealChange = useCallback((date: string, meal: Meal) => {
     setDailyMeals(prev => {
       const currentMeals = prev[date] || [...watchMeals];
       const updatedMeals = currentMeals.includes(meal)
@@ -45,7 +46,7 @@ const MealSelection: React.FC = () => {
         [date]: updatedMeals
       };
     });
-  };
+  }, [watchMeals]);
 
   return (
     <>

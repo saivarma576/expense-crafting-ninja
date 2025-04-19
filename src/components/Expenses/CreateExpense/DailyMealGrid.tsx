@@ -1,10 +1,10 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { format } from 'date-fns';
-import { Check } from 'lucide-react';
 import { Meal } from './types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 interface DailyMealGridProps {
   startDate?: Date;
@@ -21,26 +21,22 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
   dailyMeals,
   onDailyMealChange,
 }) => {
-  const [dateRange, setDateRange] = useState<Date[]>([]);
-
-  useEffect(() => {
-    if (startDate && endDate) {
-      setDateRange(getDatesInRange(startDate, endDate));
-    }
-  }, [startDate, endDate]);
-
-  const getDatesInRange = (start: Date, end: Date) => {
+  // Use useMemo to calculate date range only when dates change
+  const dateRange = useMemo(() => {
+    if (!startDate || !endDate) return [];
+    
     const dates = [];
-    let currentDate = new Date(start);
-
-    while (currentDate <= end) {
+    let currentDate = new Date(startDate);
+    
+    while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
     }
+    
     return dates;
-  };
+  }, [startDate, endDate]);
 
-  if (!startDate || !endDate) return null;
+  if (!startDate || !endDate || dateRange.length === 0) return null;
 
   return (
     <Collapsible className="w-full">
