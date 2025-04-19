@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { PolicyViolation, validateExpensePolicy, PolicyComment } from '@/utils/policyValidations';
 import { ExpenseLineItemFormData, ExpenseLineItem as ExpenseLineItemType } from '@/types/expense';
@@ -6,7 +7,7 @@ import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
 import LineItemSlider from '@/components/ui/LineItemSlider';
 import ExpenseLineItem from '@/components/Expenses/ExpenseLineItem';
-import ExpenseApproval from '@/components/Expenses/ExpenseApproval';
+import { ExpenseApproval } from '@/components/Expenses/ExpenseApproval';
 import ExpenseHeader from '@/components/Expenses/ExpenseHeader/index';
 import LineItemsSection from '@/components/Expenses/LineItemsSection';
 import DocumentsNotesSection from '@/components/Expenses/DocumentsNotesSection';
@@ -373,14 +374,17 @@ const NewExpense: React.FC = () => {
     'Consider using a corporate card for this expense type'
   ]);
 
-  const policyViolations = [
+  // Convert the programmatic errors and LLM warnings to the PolicyViolation type
+  const policyViolations: PolicyViolation[] = [
     ...programmaticErrors.map((error, index) => ({
       id: `error-${index}`,
       lineNumber: index + 1,
       lineTitle: `Error in ${error.field}`,
       expenseType: 'Business Meal',
-      violationType: 'error' as const,
+      field: error.field,
       message: error.error,
+      severity: 'error' as const,
+      status: 'violation' as const,
       category: 'Validation'
     })),
     ...llmWarnings.map((warning, index) => ({
@@ -388,8 +392,11 @@ const NewExpense: React.FC = () => {
       lineNumber: index + 2,
       lineTitle: `Policy Warning`,
       expenseType: 'Business Expense',
-      violationType: 'warning' as const,
+      field: warning.toLowerCase().includes('receipt') ? 'Receipt' : 
+             warning.toLowerCase().includes('meal') ? 'Meal' : 'General',
       message: warning,
+      severity: 'warning' as const,
+      status: 'violation' as const,
       category: 'Policy'
     }))
   ];
