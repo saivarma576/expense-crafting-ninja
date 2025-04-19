@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React from 'react';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, ChevronUp, AlertTriangle, CircleX } from 'lucide-react';
+import { AlertTriangle, CircleX } from 'lucide-react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import PolicyCommentTimeline from './PolicyCommentTimeline';
 
@@ -16,15 +16,13 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
   violations,
   onAddComment
 }) => {
-  const [expandedViolations, setExpandedViolations] = useState<string[]>([]);
+  const [expandedViolations, setExpandedViolations] = React.useState<string[]>([]);
 
   const toggleViolation = (id: string) => {
     setExpandedViolations(prev => 
       prev.includes(id) ? prev.filter(v => v !== id) : [...prev, id]
     );
   };
-
-  if (!violations.length) return null;
 
   return (
     <div className="mb-6 bg-gray-50 rounded-lg p-4">
@@ -56,19 +54,19 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
                       <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5" />
                     )}
                     <div>
-                      <p className="font-medium text-sm">
-                        {violation.field}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-medium text-sm">
+                          {violation.field}
+                        </p>
+                        <Badge variant={violation.severity === 'error' ? 'destructive' : 'warning'}>
+                          {violation.severity}
+                        </Badge>
+                      </div>
                       <p className="text-sm text-gray-600">
                         {violation.message}
                       </p>
                     </div>
                   </div>
-                  {expandedViolations.includes(violation.id) ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
                 </CollapsibleTrigger>
 
                 <CollapsibleContent>
