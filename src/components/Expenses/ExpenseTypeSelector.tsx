@@ -45,13 +45,14 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
   return (
     <div className="mb-3">
       <label className="text-sm font-medium text-gray-700 block mb-1">Expense Type</label>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" style={{ height: 'auto', width: 'auto' }}>
         {primaryTypes.map((type) => (
           <button
             key={type.value}
             onClick={() => onTypeChange(type.value as ExpenseType)}
+            style={{ height: '50px', width: '60px' }}
             className={cn(
-              "flex flex-col items-center justify-center h-[70px] w-[85px] p-2 border rounded-md transition-all",
+              "flex flex-col items-center justify-center p-2 border rounded-md transition-all",
               selectedType === type.value 
                 ? "border-blue-500 bg-blue-50 text-blue-700" 
                 : "border-gray-200 hover:bg-gray-50 text-gray-600"
@@ -65,10 +66,13 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
         ))}
 
         <DropdownMenu>
-          <DropdownMenuTrigger className={cn(
-            "flex flex-col items-center justify-center h-[70px] w-[85px] p-2 border rounded-md transition-all",
-            "border-gray-200 hover:bg-gray-50 text-gray-600"
-          )}>
+          <DropdownMenuTrigger 
+            style={{ height: '50px', width: '60px' }}
+            className={cn(
+              "flex flex-col items-center justify-center p-2 border rounded-md transition-all",
+              "border-gray-200 hover:bg-gray-50 text-gray-600"
+            )}
+          >
             <HelpCircle className="h-4 w-4" />
             <span className="text-[11px] mt-1">More</span>
           </DropdownMenuTrigger>
@@ -111,3 +115,4 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
 };
 
 export default ExpenseTypeSelector;
+
