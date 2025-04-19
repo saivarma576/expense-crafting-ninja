@@ -2,21 +2,22 @@
 import React from 'react';
 import { 
   Car, Utensils, Hotel, Plane, ParkingCircle, 
-  Briefcase, MoreHorizontal, ChevronDown, 
-  MapPin
+  Briefcase, MoreHorizontal, MapPin, Coffee 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { ExpenseType } from '@/types/expense';
 
 type ExpenseTabOption = {
   type: ExpenseType;
   label: string;
   icon: React.ReactNode;
+  shortLabel?: string;
 }
 
 interface ExpenseTypeTabsProps {
@@ -30,19 +31,18 @@ const ExpenseTypeTabs: React.FC<ExpenseTypeTabsProps> = ({
 }) => {
   // Main tabs that are always visible
   const mainTabs: ExpenseTabOption[] = [
-    { type: 'mileage', label: 'Mileage', icon: <Car className="h-5 w-5" /> },
+    { type: 'mileage', label: 'Mileage', icon: <Car className="h-5 w-5" />, shortLabel: 'Miles' },
     { type: 'meals', label: 'Meals', icon: <Utensils className="h-5 w-5" /> },
-    { type: 'hotel', label: 'Hotel/Lodging', icon: <Hotel className="h-5 w-5" /> },
-    { type: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-5 w-5" /> },
-    { type: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-5 w-5" /> },
-    { type: 'professional_fees', label: 'Professional', icon: <Briefcase className="h-5 w-5" /> },
+    { type: 'hotel', label: 'Hotel/Lodging', icon: <Hotel className="h-5 w-5" />, shortLabel: 'Hotel' },
+    { type: 'transport', label: 'Air/Taxi/Uber', icon: <Plane className="h-5 w-5" />, shortLabel: 'Travel' },
+    { type: 'parking', label: 'Parking/Tolls', icon: <ParkingCircle className="h-5 w-5" />, shortLabel: 'Parking' },
+    { type: 'professional_fees', label: 'Professional', icon: <Briefcase className="h-5 w-5" />, shortLabel: 'Prof.' },
+    { type: 'business_meals', label: 'Business Meals', icon: <Coffee className="h-5 w-5" />, shortLabel: 'B.Meals' },
   ];
   
-  // Options for the "Others" dropdown
-  const otherOptions: ExpenseTabOption[] = [
-    { type: 'auditing', label: 'Auditing', icon: <MapPin className="h-4 w-4" /> },
-    { type: 'baggage', label: 'Baggage', icon: <MapPin className="h-4 w-4" /> },
-    { type: 'business_meals', label: 'Business Meals', icon: <Utensils className="h-4 w-4" /> },
+  // Options for the "More" dropdown
+  const moreOptions: ExpenseTabOption[] = [
+    { type: 'baggage', label: 'Baggage Fees', icon: <MapPin className="h-4 w-4" /> },
     { type: 'subscriptions', label: 'Subscriptions', icon: <MapPin className="h-4 w-4" /> },
     { type: 'gasoline', label: 'Gasoline', icon: <MapPin className="h-4 w-4" /> },
     { type: 'office_supplies', label: 'Office Supplies', icon: <MapPin className="h-4 w-4" /> },
@@ -50,10 +50,8 @@ const ExpenseTypeTabs: React.FC<ExpenseTypeTabsProps> = ({
     { type: 'postage', label: 'Postage', icon: <MapPin className="h-4 w-4" /> },
     { type: 'registration', label: 'Registration', icon: <MapPin className="h-4 w-4" /> },
     { type: 'rental', label: 'Rental', icon: <MapPin className="h-4 w-4" /> },
+    { type: 'auditing', label: 'Auditing', icon: <MapPin className="h-4 w-4" /> },
   ];
-
-  // Find the currently selected option
-  const selectedOption = [...mainTabs, ...otherOptions].find(option => option.type === selectedType);
   
   return (
     <div>
@@ -61,13 +59,13 @@ const ExpenseTypeTabs: React.FC<ExpenseTypeTabsProps> = ({
         <h3 className="text-sm font-medium text-gray-700">Expense Type</h3>
       </div>
       
-      <div className="flex space-x-2 mb-4">
+      <div className="flex items-center space-x-2 mb-4">
         {mainTabs.map((tab) => (
           <button
             key={tab.type}
             onClick={() => onTypeChange(tab.type)}
             className={cn(
-              "flex flex-col items-center justify-center h-20 w-20 p-2 border rounded-md transition-all",
+              "flex flex-col items-center justify-center h-16 w-16 p-1.5 border rounded-md transition-all text-center",
               selectedType === tab.type 
                 ? "border-blue-500 bg-blue-50 text-blue-700" 
                 : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
@@ -76,16 +74,18 @@ const ExpenseTypeTabs: React.FC<ExpenseTypeTabsProps> = ({
             <div className="mb-1">
               {tab.icon}
             </div>
-            <span className="text-xs text-center">{tab.label}</span>
+            <span className="text-[10px] leading-tight">
+              {tab.shortLabel || tab.label}
+            </span>
           </button>
         ))}
         
-        <Popover>
-          <PopoverTrigger asChild>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <button
               className={cn(
-                "flex flex-col items-center justify-center h-20 w-20 p-2 border rounded-md transition-all",
-                otherOptions.some(o => o.type === selectedType)
+                "flex flex-col items-center justify-center h-16 w-16 p-1.5 border rounded-md transition-all",
+                moreOptions.some(o => o.type === selectedType)
                   ? "border-blue-500 bg-blue-50 text-blue-700" 
                   : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50"
               )}
@@ -93,46 +93,33 @@ const ExpenseTypeTabs: React.FC<ExpenseTypeTabsProps> = ({
               <div className="mb-1">
                 <MoreHorizontal className="h-5 w-5" />
               </div>
-              <span className="text-xs flex items-center">
-                Others
-                <ChevronDown className="h-3 w-3 ml-0.5" />
+              <span className="text-[10px] leading-tight">
+                More
               </span>
             </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-56 p-2">
-            <div className="grid grid-cols-2 gap-1">
-              {otherOptions.map((option) => (
-                <button
-                  key={option.type}
-                  onClick={() => {
-                    onTypeChange(option.type);
-                  }}
-                  className={cn(
-                    "flex items-center space-x-2 p-2 rounded-md text-sm w-full text-left",
-                    selectedType === option.type
-                      ? "bg-blue-50 text-blue-700"
-                      : "hover:bg-gray-100"
-                  )}
-                >
-                  <span className="text-gray-500">{option.icon}</span>
-                  <span>{option.label}</span>
-                </button>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            {moreOptions.map((option) => (
+              <DropdownMenuItem
+                key={option.type}
+                onClick={() => onTypeChange(option.type)}
+                className={cn(
+                  "flex items-center space-x-2 px-3 py-2",
+                  selectedType === option.type && "bg-blue-50 text-blue-700"
+                )}
+              >
+                <span className="text-gray-500">{option.icon}</span>
+                <span>{option.label}</span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-base font-medium text-gray-800">
-          {selectedOption?.label || 'Expense'} Information
+          {[...mainTabs, ...moreOptions].find(opt => opt.type === selectedType)?.label || 'Expense'} Information
         </h3>
-        
-        {selectedType === 'mileage' && (
-          <div className="ml-auto">
-            <h3 className="text-base font-medium text-gray-800">Mileage Details</h3>
-          </div>
-        )}
       </div>
     </div>
   );
