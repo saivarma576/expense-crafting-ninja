@@ -46,7 +46,7 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
 
   return (
     <div className="mb-3">
-      <div className="flex items-center justify-between mb-1">
+      <div className="flex items-center justify-between mb-2">
         <label className="text-sm font-medium text-gray-700">Expense Type</label>
         <select 
           value={selectedType}
@@ -62,21 +62,20 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
         </select>
       </div>
       
-      <div className="flex items-center gap-2" style={{ height: 'auto', width: 'auto' }}>
+      <div className="flex items-center justify-start gap-2 overflow-x-auto py-1">
         {primaryTypes.map((type) => (
           <button
             key={type.value}
             onClick={() => onTypeChange(type.value as ExpenseType)}
-            style={{ height: '50px', width: '60px' }}
             className={cn(
-              "flex flex-col items-center justify-center p-2 border rounded-md transition-all",
+              "flex flex-col items-center justify-center p-2 border rounded-md transition-all min-w-[70px] h-[50px]",
               selectedType === type.value 
                 ? "border-blue-500 bg-blue-50 text-blue-700" 
                 : "border-gray-200 hover:bg-gray-50 text-gray-600"
             )}
           >
             {type.icon}
-            <span className="text-[11px] mt-1 text-center leading-tight">
+            <span className="text-[11px] mt-1 text-center truncate">
               {type.label}
             </span>
           </button>
@@ -84,9 +83,8 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
 
         <DropdownMenu>
           <DropdownMenuTrigger 
-            style={{ height: '50px', width: '60px' }}
             className={cn(
-              "flex flex-col items-center justify-center p-2 border rounded-md transition-all",
+              "flex flex-col items-center justify-center p-2 border rounded-md transition-all min-w-[70px] h-[50px]",
               "border-gray-200 hover:bg-gray-50 text-gray-600"
             )}
           >
@@ -101,7 +99,7 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
             {secondaryTypes.map((type) => (
               <DropdownMenuItem
                 key={type.value}
-                onClick={() => onTypeChange(type.value as ExpenseType)}
+                onSelect={() => onTypeChange(type.value as ExpenseType)}
                 className={cn(
                   "flex items-center gap-2 cursor-pointer hover:bg-gray-50",
                   selectedType === type.value && "bg-blue-50 text-blue-700"
