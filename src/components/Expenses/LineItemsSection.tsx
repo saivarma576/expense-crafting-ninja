@@ -1,9 +1,9 @@
-
 import React from 'react';
+import { PolicyViolation } from '@/utils/policyValidations';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
-import { PolicyViolation, PolicyComment } from '@/utils/policyValidations';
+import { PolicyComment } from '@/utils/policyValidations';
 import { toast } from 'sonner';
 
 interface ExpenseLineItem {

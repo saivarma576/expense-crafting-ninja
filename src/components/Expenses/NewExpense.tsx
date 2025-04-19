@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { PolicyViolation, validateExpensePolicy } from '@/utils/policyValidations';
+import { ExpenseLineItemFormData } from '@/types/expense';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Plane, HelpCircle } from 'lucide-react';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -302,35 +304,35 @@ const NewExpense: React.FC = () => {
   };
 
   const handleAddViolationComment = (itemId: string, violationId: string, comment: string) => {
-    setLineItems(prevItems => 
-      prevItems.map(item => {
-        if (item.id === itemId) {
-          const updatedViolations = item.policyViolations?.map(violation => {
-            if (violation.id === violationId) {
-              return {
-                ...violation,
-                comments: [
-                  ...(violation.comments || []),
-                  {
-                    id: `comment-${Date.now()}`,
-                    comment,
-                    user: userName,
-                    timestamp: new Date()
-                  }
-                ]
-              };
-            }
-            return violation;
-          });
+    const updatedItems = lineItems.map(item => {
+      if (item.id === itemId) {
+        const updatedViolations = item.policyViolations?.map(violation => {
+          if (violation.id === violationId) {
+            return {
+              ...violation,
+              comments: [
+                ...(violation.comments || []),
+                {
+                  id: `comment-${Date.now()}`,
+                  comment,
+                  user: userName,
+                  timestamp: new Date()
+                }
+              ]
+            };
+          }
+          return violation;
+        });
 
-          return {
-            ...item,
-            policyViolations: updatedViolations
-          };
-        }
-        return item;
-      })
-    );
+        return {
+          ...item,
+          policyViolations: updatedViolations
+        };
+      }
+      return item;
+    });
+
+    handleLineItemSave(updatedItems.find(item => item.id === itemId)!);
   };
 
   const [programmaticErrors, setProgrammaticErrors] = useState<{field: string, error: string}[]>([
@@ -365,16 +367,16 @@ const NewExpense: React.FC = () => {
     }))
   ];
 
-  const getLineItemPolicyViolations = (item: ExpenseLineItem): PolicyViolation[] => {
+  const getLineItemPolicyViolations = (item: typeof lineItems[0]): PolicyViolation[] => {
     const formData: ExpenseLineItemFormData = {
       id: item.id,
-      type: item.type.toLowerCase().replace(' ', '') as ExpenseType,
+      type: item.type.toLowerCase().replace(' ', '_'),
       amount: item.amount,
       date: item.date,
       description: item.title,
+      notes: '',
       receiptUrl: item.receiptName,
-      merchantName: item.merchantName,
-      // ... add other necessary fields
+      merchantName: ''
     };
     
     return validateExpensePolicy(formData);
