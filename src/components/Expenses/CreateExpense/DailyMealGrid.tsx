@@ -1,4 +1,3 @@
-
 import React, { useMemo } from 'react';
 import { format } from 'date-fns';
 import { Meal } from './types';
@@ -6,15 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { STANDARD_RATES } from '@/components/Expenses/ExpenseFieldUtils';
 import { Separator } from '@/components/ui/separator';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 interface DailyMealGridProps {
   startDate?: Date;
   endDate?: Date;
@@ -22,81 +13,70 @@ interface DailyMealGridProps {
   dailyMeals: Record<string, Meal[]>;
   onDailyMealChange: (date: string, meal: Meal) => void;
 }
-
 const DailyMealGrid: React.FC<DailyMealGridProps> = ({
   startDate,
   endDate,
   selectedMeals,
   dailyMeals,
-  onDailyMealChange,
+  onDailyMealChange
 }) => {
   const dateRange = useMemo(() => {
     if (!startDate || !endDate) return [];
-    
     const dates = [];
     let currentDate = new Date(startDate);
-    
     while (currentDate <= endDate) {
       dates.push(new Date(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    
     return dates;
   }, [startDate, endDate]);
-
   const [showCalculation, setShowCalculation] = React.useState(false);
-
   if (!startDate || !endDate || dateRange.length === 0) return null;
 
   // Calculate totals
   const getMealDeduction = (date: Date, meal: Meal): number => {
     const dateStr = format(date, 'yyyy-MM-dd');
     const mealsForDate = dailyMeals[dateStr] || selectedMeals;
-    
     if (mealsForDate.includes(meal)) {
       switch (meal) {
-        case 'breakfast': return 18;
-        case 'lunch': return 20;
-        case 'dinner': return 31;
-        default: return 0;
+        case 'breakfast':
+          return 18;
+        case 'lunch':
+          return 20;
+        case 'dinner':
+          return 31;
+        default:
+          return 0;
       }
     }
     return 0;
   };
-
   const calculateDailyAllowance = (date: Date, index: number): number => {
     const isFirstDay = index === 0;
     const isLastDay = index === dateRange.length - 1;
     const fullRate = STANDARD_RATES.MEALS_RATE;
-    
+
     // For simplicity, we'll use fixed percentages for first and last days
     let percentage = 100;
     if (isFirstDay) percentage = 100; // Assuming full day for first day
-    if (isLastDay) percentage = 25;   // Assuming 25% for last day
-    
+    if (isLastDay) percentage = 25; // Assuming 25% for last day
+
     const baseAmount = fullRate * (percentage / 100);
-    
+
     // Deduct provided meals (if full day)
     if (percentage === 100) {
       const dateStr = format(date, 'yyyy-MM-dd');
       const mealsForDate = dailyMeals[dateStr] || selectedMeals;
-      
       let deduction = 0;
       if (mealsForDate.includes('breakfast')) deduction += 18;
       if (mealsForDate.includes('lunch')) deduction += 20;
       if (mealsForDate.includes('dinner')) deduction += 31;
-      
       return Math.max(0, baseAmount - deduction);
     }
-    
     return baseAmount;
   };
-
-  const totalPerDiem = dateRange.reduce((sum, date, index) => 
-    sum + calculateDailyAllowance(date, index), 0);
-
-  return (
-    <div className="space-y-4">
+  const totalPerDiem = dateRange.reduce((sum, date, index) => sum + calculateDailyAllowance(date, index), 0);
+  return <div className="space-y-4">
       <div className="border rounded-lg overflow-hidden">
         <div className="grid grid-cols-4 bg-gray-50 border-b text-sm font-medium">
           <div className="p-2 border-r">Date</div>
@@ -106,44 +86,23 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
         </div>
         <div className="max-h-[200px] overflow-y-auto">
           {dateRange.map((date, index) => {
-            const dateStr = format(date, 'yyyy-MM-dd');
-            const mealsForDate = dailyMeals[dateStr] || selectedMeals;
-            
-            return (
-              <div key={dateStr} className="grid grid-cols-4 border-b last:border-b-0">
+          const dateStr = format(date, 'yyyy-MM-dd');
+          const mealsForDate = dailyMeals[dateStr] || selectedMeals;
+          return <div key={dateStr} className="grid grid-cols-4 border-b last:border-b-0">
                 <div className="p-2 border-r text-sm">
                   {format(date, 'dd-MMM-yy')}
                 </div>
-                {['breakfast', 'lunch', 'dinner'].map((meal, index) => (
-                  <div key={meal} className={`p-2 ${index < 2 ? 'border-r' : ''} flex justify-center`}>
-                    <Checkbox
-                      checked={mealsForDate.includes(meal as Meal)}
-                      onCheckedChange={() => onDailyMealChange(dateStr, meal as Meal)}
-                    />
-                  </div>
-                ))}
-              </div>
-            );
-          })}
+                {['breakfast', 'lunch', 'dinner'].map((meal, index) => <div key={meal} className={`p-2 ${index < 2 ? 'border-r' : ''} flex justify-center`}>
+                    <Checkbox checked={mealsForDate.includes(meal as Meal)} onCheckedChange={() => onDailyMealChange(dateStr, meal as Meal)} />
+                  </div>)}
+              </div>;
+        })}
         </div>
       </div>
       
-      <div className="flex justify-between items-center">
-        <Button 
-          type="button" 
-          variant="outline" 
-          size="sm"
-          onClick={() => setShowCalculation(!showCalculation)}
-        >
-          {showCalculation ? 'Hide' : 'Show'} Calculation
-        </Button>
-        <div className="text-sm font-medium">
-          Estimated Per Diem: ${totalPerDiem.toFixed(2)}
-        </div>
-      </div>
       
-      {showCalculation && (
-        <div className="mt-4 border rounded-lg p-4">
+      
+      {showCalculation && <div className="mt-4 border rounded-lg p-4">
           <h4 className="text-sm font-medium mb-3">Per Diem Calculation Preview</h4>
           
           <Table>
@@ -157,15 +116,13 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
             </TableHeader>
             <TableBody>
               {dateRange.map((date, index) => {
-                const dateStr = format(date, 'yyyy-MM-dd');
-                const mealsForDate = dailyMeals[dateStr] || selectedMeals;
-                const isFirstDay = index === 0;
-                const isLastDay = index === dateRange.length - 1;
-                const baseRate = STANDARD_RATES.MEALS_RATE;
-                const eligibleAmount = calculateDailyAllowance(date, index);
-                
-                return (
-                  <TableRow key={dateStr}>
+            const dateStr = format(date, 'yyyy-MM-dd');
+            const mealsForDate = dailyMeals[dateStr] || selectedMeals;
+            const isFirstDay = index === 0;
+            const isLastDay = index === dateRange.length - 1;
+            const baseRate = STANDARD_RATES.MEALS_RATE;
+            const eligibleAmount = calculateDailyAllowance(date, index);
+            return <TableRow key={dateStr}>
                     <TableCell>
                       {format(date, 'MM/dd/yyyy')}
                       {isFirstDay && " (Arrival)"}
@@ -176,22 +133,17 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
                       {isLastDay && " × 25%"}
                     </TableCell>
                     <TableCell>
-                      {mealsForDate.length > 0 ? (
-                        <div className="text-xs text-red-500">
+                      {mealsForDate.length > 0 ? <div className="text-xs text-red-500">
                           {mealsForDate.includes('breakfast') && <div>- Breakfast: -$18.00</div>}
                           {mealsForDate.includes('lunch') && <div>- Lunch: -$20.00</div>}
                           {mealsForDate.includes('dinner') && <div>- Dinner: -$31.00</div>}
-                        </div>
-                      ) : (
-                        "None"
-                      )}
+                        </div> : "None"}
                     </TableCell>
                     <TableCell className="text-right font-medium">
                       ${eligibleAmount.toFixed(2)}
                     </TableCell>
-                  </TableRow>
-                );
-              })}
+                  </TableRow>;
+          })}
             </TableBody>
           </Table>
           
@@ -236,10 +188,7 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
 export default DailyMealGrid;
