@@ -1,9 +1,10 @@
+
 export interface PolicyComment {
   id: string;
   comment: string;
   user: string;
   timestamp: Date;
-  type: 'user' | 'system' | 'bot' | 'approver';
+  type?: 'user' | 'system' | 'bot' | 'approver';
 }
 
 export interface PolicyViolation {
@@ -13,6 +14,12 @@ export interface PolicyViolation {
   severity: 'error' | 'warning';
   status: 'violation' | 'exception' | 'approved';
   comments?: PolicyComment[];
+  // Additional properties needed for compatibility
+  lineNumber?: number;
+  lineTitle?: string;
+  expenseType?: string;
+  violationType?: 'error' | 'warning';
+  category?: string;
 }
 
 import { ExpenseLineItemFormData } from '@/types/expense';

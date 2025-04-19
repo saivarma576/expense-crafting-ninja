@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { PolicyViolation, validateExpensePolicy, PolicyComment } from '@/utils/policyValidations';
 import { ExpenseLineItemFormData, ExpenseLineItem as ExpenseLineItemType } from '@/types/expense';
@@ -30,7 +29,6 @@ import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
 
-// Extend the ExpenseLineItemType to include the policyViolations property
 interface EnhancedExpenseLineItem extends ExpenseLineItemType {
   policyViolations?: PolicyViolation[];
 }
@@ -374,7 +372,6 @@ const NewExpense: React.FC = () => {
     'Consider using a corporate card for this expense type'
   ]);
 
-  // Convert the programmatic errors and LLM warnings to the PolicyViolation type
   const policyViolations: PolicyViolation[] = [
     ...programmaticErrors.map((error, index) => ({
       id: `error-${index}`,
@@ -383,9 +380,10 @@ const NewExpense: React.FC = () => {
       expenseType: 'Business Meal',
       field: error.field,
       message: error.error,
-      severity: 'error' as const,
-      status: 'violation' as const,
-      category: 'Validation'
+      severity: 'error',
+      status: 'violation',
+      category: 'Validation',
+      violationType: 'error'
     })),
     ...llmWarnings.map((warning, index) => ({
       id: `warning-${index}`,
@@ -395,9 +393,10 @@ const NewExpense: React.FC = () => {
       field: warning.toLowerCase().includes('receipt') ? 'Receipt' : 
              warning.toLowerCase().includes('meal') ? 'Meal' : 'General',
       message: warning,
-      severity: 'warning' as const,
-      status: 'violation' as const,
-      category: 'Policy'
+      severity: 'warning',
+      status: 'violation',
+      category: 'Policy',
+      violationType: 'warning'
     }))
   ];
 
@@ -458,7 +457,6 @@ const NewExpense: React.FC = () => {
           travelPurpose={travelPurpose}
           policyViolations={policyViolations}
           onAddViolationComment={(violationId, comment, type) => {
-            // For header-level violations, we pass a dummy itemId since they're not associated with specific line items
             handleAddViolationComment('header', violationId, comment);
           }}
         />
