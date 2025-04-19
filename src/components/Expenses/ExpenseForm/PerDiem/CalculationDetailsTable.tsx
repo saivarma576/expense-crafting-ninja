@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import { format, differenceInHours } from 'date-fns';
+import { format } from 'date-fns';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Meal } from '@/components/Expenses/CreateExpense/types';
 import { Info } from 'lucide-react';
