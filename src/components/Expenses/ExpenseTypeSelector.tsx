@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   Car, Utensils, Building2, Plane, Coffee, Briefcase, ParkingCircle,
-  ClipboardCheck, Luggage, BookOpen, Package, HelpCircle, MoreHorizontal
+  ClipboardCheck, Luggage, BookOpen, Package, HelpCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ExpenseType } from '@/types/expense';
@@ -24,17 +24,17 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
 }) => {
   // Primary expense types shown in main row
   const primaryTypes = [
-    { value: 'mileage', label: 'Mileage', icon: <Car className="h-4 w-4" /> },
+    { value: 'mileage', label: 'Miles', icon: <Car className="h-4 w-4" /> },
     { value: 'meals', label: 'Meals', icon: <Utensils className="h-4 w-4" /> },
     { value: 'hotel', label: 'Hotel', icon: <Building2 className="h-4 w-4" /> },
-    { value: 'transport', label: 'Transport', icon: <Plane className="h-4 w-4" /> },
-    { value: 'business_meals', label: 'Biz Meals', icon: <Coffee className="h-4 w-4" /> },
+    { value: 'transport', label: 'Travel', icon: <Plane className="h-4 w-4" /> },
+    { value: 'business_meals', label: 'Biz Meal', icon: <Coffee className="h-4 w-4" /> },
+    { value: 'professional_fees', label: 'Fees', icon: <Briefcase className="h-4 w-4" /> },
+    { value: 'parking', label: 'Parking', icon: <ParkingCircle className="h-4 w-4" /> },
   ];
 
   // Secondary types shown in dropdown
   const secondaryTypes = [
-    { value: 'professional_fees', label: 'Prof Fees', icon: <Briefcase className="h-4 w-4" /> },
-    { value: 'parking', label: 'Parking', icon: <ParkingCircle className="h-4 w-4" /> },
     { value: 'registration', label: 'Register', icon: <ClipboardCheck className="h-4 w-4" /> },
     { value: 'baggage', label: 'Baggage', icon: <Luggage className="h-4 w-4" /> },
     { value: 'subscriptions', label: 'Subs', icon: <BookOpen className="h-4 w-4" /> },
@@ -51,14 +51,14 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
             key={type.value}
             onClick={() => onTypeChange(type.value as ExpenseType)}
             className={cn(
-              "flex flex-col items-center justify-center p-2 border rounded-md transition-all min-w-[80px]",
+              "flex flex-col items-center justify-center h-[70px] w-[85px] p-2 border rounded-md transition-all",
               selectedType === type.value 
                 ? "border-blue-500 bg-blue-50 text-blue-700" 
                 : "border-gray-200 hover:bg-gray-50 text-gray-600"
             )}
           >
             {type.icon}
-            <span className="text-[10px] mt-1 text-center leading-tight">
+            <span className="text-[11px] mt-1 text-center leading-tight">
               {type.label}
             </span>
           </button>
@@ -66,11 +66,11 @@ const ExpenseTypeSelector: React.FC<ExpenseTypeSelectorProps> = ({
 
         <DropdownMenu>
           <DropdownMenuTrigger className={cn(
-            "flex flex-col items-center justify-center p-2 border rounded-md transition-all min-w-[80px]",
+            "flex flex-col items-center justify-center h-[70px] w-[85px] p-2 border rounded-md transition-all",
             "border-gray-200 hover:bg-gray-50 text-gray-600"
           )}>
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="text-[10px] mt-1">More</span>
+            <HelpCircle className="h-4 w-4" />
+            <span className="text-[11px] mt-1">More</span>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-white">
             {secondaryTypes.map((type) => (
