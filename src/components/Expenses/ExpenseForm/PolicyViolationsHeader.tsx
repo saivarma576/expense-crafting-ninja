@@ -7,6 +7,7 @@ import { AlertTriangle, CircleX, Bot, MessageSquare } from 'lucide-react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { format } from 'date-fns';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PolicyViolationsHeaderProps {
   violations: PolicyViolation[];
@@ -25,13 +26,6 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
 
   return (
     <div className="space-y-4">
-      <Alert className="bg-amber-50 border-amber-200">
-        <Bot className="h-4 w-4 text-amber-600" />
-        <AlertDescription className="text-amber-800">
-          This is an AI-flagged violation and may contain false positives. Please review carefully.
-        </AlertDescription>
-      </Alert>
-
       <ScrollArea className="h-[60vh] pr-4">
         <div className="space-y-4 py-2">
           {violations.map((violation) => (
@@ -57,9 +51,42 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
                     </div>
                   </div>
                 </div>
-                <Badge variant={violation.severity === 'error' ? 'destructive' : 'outline'} className="ml-2">
-                  {violation.severity}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="relative">
+                          <MessageSquare 
+                            className={`h-5 w-5 ${violation.comments?.length ? 'text-blue-500' : 'text-gray-400'} hover:text-blue-600 transition-colors`} 
+                          />
+                          {violation.comments?.length > 0 && (
+                            <div className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                              {violation.comments.length}
+                            </div>
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      {violation.comments?.length > 0 && (
+                        <TooltipContent side="left" className="max-w-xs">
+                          <div className="space-y-2">
+                            {violation.comments.map((comment, idx) => (
+                              <div key={idx} className="text-sm">
+                                <div className="font-medium">{comment.user}</div>
+                                <div className="text-gray-500">{comment.comment}</div>
+                                <div className="text-xs text-gray-400">
+                                  {format(comment.timestamp, 'MMM d, yyyy – h:mm a')}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                  <Badge variant={violation.severity === 'error' ? 'destructive' : 'outline'} className="ml-2">
+                    {violation.severity}
+                  </Badge>
+                </div>
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <div className="p-4 border-t bg-gray-50 space-y-4">
@@ -111,6 +138,12 @@ const PolicyViolationsHeader: React.FC<PolicyViolationsHeaderProps> = ({
           ))}
         </div>
       </ScrollArea>
+      
+      {/* AI Warning Message at the bottom */}
+      <div className="text-xs text-gray-500 italic flex items-center gap-2 border-t pt-3">
+        <Bot className="h-3 w-3" />
+        This was flagged by AI as a potential violation, but it could be a false positive. Please review it carefully.
+      </div>
     </div>
   );
 };
