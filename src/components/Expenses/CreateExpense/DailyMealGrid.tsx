@@ -4,7 +4,6 @@ import { format } from 'date-fns';
 import { Meal } from './types';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 
 interface DailyMealGridProps {
   startDate?: Date;

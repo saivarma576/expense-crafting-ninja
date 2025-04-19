@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { Plane } from 'lucide-react';
 import { FormValues } from './CreateExpense/types';
@@ -42,9 +42,16 @@ const TravelExpenseDialog: React.FC = () => {
       expenseTitle: ''
     }
   });
+  
+  // Use a controlled onOpenChange handler with a guard condition
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (open !== showTravelDialog) {
+      setShowTravelDialog(open);
+    }
+  }, [showTravelDialog, setShowTravelDialog]);
 
   return (
-    <Dialog open={showTravelDialog} onOpenChange={setShowTravelDialog}>
+    <Dialog open={showTravelDialog} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-2">
           <DialogTitle className="flex items-center gap-2 text-xl">
@@ -67,7 +74,7 @@ const TravelExpenseDialog: React.FC = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={() => setShowTravelDialog(false)}
+                  onClick={() => handleOpenChange(false)}
                 >
                   Cancel
                 </Button>
