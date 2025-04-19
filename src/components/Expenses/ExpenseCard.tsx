@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
@@ -93,7 +94,7 @@ const ExpenseCard: React.FC<ExpenseCardProps> = ({
                   undefined}
               />
             ) : (
-              <div className="h-7 w-7" /> {/* Empty space holder */}
+              <div className="h-7 w-7" /> /* Empty space holder */
             )}
           </div>
         </div>
