@@ -185,7 +185,7 @@ const MealsFields: React.FC<FieldGroupProps> = ({
           </div>
         </div>
 
-        <div>
+        <div className="sm:col-span-2">
           <Label htmlFor="mealsRate" className="text-xs font-medium text-gray-700">
             Standard Meal Rate
           </Label>
@@ -227,22 +227,24 @@ const MealsFields: React.FC<FieldGroupProps> = ({
       </div>
 
       {showCalculation && (
-        <ScrollArea className="h-[400px] rounded-md border">
-          <div className="p-4">
-            <CalculationDetailsTable
-              dateRange={[checkInDate, checkOutDate]}
-              perDiemRate={values.mealsRate || 80}
-              providedMeals={providedMeals}
-              mealRates={{
-                breakfast: 18,
-                lunch: 20,
-                dinner: 31
-              }}
-              checkInTime={values.departureTime || '13:00'}
-              checkOutTime={values.returnTime || '19:00'}
-            />
-          </div>
-        </ScrollArea>
+        <div className="border rounded-md">
+          <ScrollArea className="h-[400px]">
+            <div className="p-4">
+              <CalculationDetailsTable
+                dateRange={[checkInDate, checkOutDate]}
+                perDiemRate={values.mealsRate || 80}
+                providedMeals={providedMeals}
+                mealRates={{
+                  breakfast: 18,
+                  lunch: 20,
+                  dinner: 31
+                }}
+                checkInTime={values.departureTime || '13:00'}
+                checkOutTime={values.returnTime || '19:00'}
+              />
+            </div>
+          </ScrollArea>
+        </div>
       )}
 
       <PerDiemCalculationDialog
