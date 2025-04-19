@@ -10,6 +10,7 @@ import FieldValidationIndicator from './FieldValidationIndicator';
 import MealCalculationTable from './MealCalculationTable';
 import { format, addDays } from 'date-fns';
 import { Meal } from '@/components/Expenses/CreateExpense/types';
+import PerDiemCalculationDialog from './PerDiemCalculationDialog';
 
 const MealsFields: React.FC<FieldGroupProps> = ({ 
   values, 
@@ -17,6 +18,7 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   llmSuggestions = {}
 }) => {
   const [showCalculation, setShowCalculation] = useState(false);
+  const [showPerDiemDialog, setShowPerDiemDialog] = useState(false);
   
   // Default values for demonstration
   const checkInDate = values.date ? new Date(values.date) : new Date();
@@ -26,6 +28,29 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   const providedMeals: Record<string, Meal[]> = {
     [format(checkInDate, 'yyyy-MM-dd')]: [],
     [format(checkOutDate, 'yyyy-MM-dd')]: ['breakfast', 'lunch'],
+  };
+
+  const handlePerDiemSave = (perDiemData: any) => {
+    // Update the form values with the calculated per diem data
+    Object.entries(perDiemData).forEach(([key, value]) => {
+      if (key !== 'providedMeals') {
+        onChange(key, value);
+      }
+    });
+    
+    // Convert providedMeals to meals array format if needed
+    if (perDiemData.providedMeals) {
+      const allMeals: Meal[] = [];
+      Object.values(perDiemData.providedMeals).forEach((meals: any) => {
+        meals.forEach((meal: Meal) => {
+          if (!allMeals.includes(meal)) {
+            allMeals.push(meal);
+          }
+        });
+      });
+      
+      onChange('meals', allMeals);
+    }
   };
 
   return (
@@ -159,15 +184,26 @@ const MealsFields: React.FC<FieldGroupProps> = ({
         </div>
       </div>
       
-      <Button 
-        type="button" 
-        variant="outline" 
-        size="sm"
-        onClick={() => setShowCalculation(!showCalculation)}
-        className="mt-2"
-      >
-        {showCalculation ? 'Hide' : 'Show'} Per Diem Calculation
-      </Button>
+      <div className="flex flex-wrap gap-2 mt-4">
+        <Button 
+          type="button" 
+          variant="outline" 
+          size="sm"
+          onClick={() => setShowCalculation(!showCalculation)}
+        >
+          {showCalculation ? 'Hide' : 'Show'} Per Diem Calculation
+        </Button>
+
+        <Button 
+          type="button" 
+          variant="secondary" 
+          size="sm"
+          onClick={() => setShowPerDiemDialog(true)}
+          className="bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200"
+        >
+          Advanced Per Diem Calculator
+        </Button>
+      </div>
       
       {showCalculation && (
         <MealCalculationTable
@@ -204,6 +240,14 @@ const MealsFields: React.FC<FieldGroupProps> = ({
           </div>
         </div>
       )}
+
+      {/* Per Diem Dialog */}
+      <PerDiemCalculationDialog
+        isOpen={showPerDiemDialog}
+        onClose={() => setShowPerDiemDialog(false)}
+        onSave={handlePerDiemSave}
+        initialValues={values}
+      />
     </div>
   );
 };
