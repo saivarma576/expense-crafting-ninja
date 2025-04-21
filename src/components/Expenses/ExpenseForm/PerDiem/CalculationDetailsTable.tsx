@@ -8,22 +8,22 @@ const mockDays = [
   {
     date: new Date(2024, 6, 1),
     percent: 0.5,
-    mealsProvided: [],
+    mealsProvided: [] as ("breakfast" | "lunch" | "dinner")[],
   },
   {
     date: new Date(2024, 6, 2),
     percent: 1,
-    mealsProvided: [],
+    mealsProvided: [] as ("breakfast" | "lunch" | "dinner")[],
   },
   {
     date: new Date(2024, 6, 3),
     percent: 0.25,
-    mealsProvided: ["lunch", "dinner"],
+    mealsProvided: ["lunch", "dinner"] as ("breakfast" | "lunch" | "dinner")[],
   },
   {
     date: new Date(2024, 6, 4),
     percent: 0.5,
-    mealsProvided: [],
+    mealsProvided: [] as ("breakfast" | "lunch" | "dinner")[],
   },
 ];
 
