@@ -1,215 +1,165 @@
 
 import React from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { format } from "date-fns";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info } from "lucide-react";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableFooter } from "@/components/ui/table";
 
-// Data for the table based on your requirements
-const PER_DIEM_DATA = [
-  {
-    label: "Breakfast",
-    values: [
-      {
-        amount: 9,
-        tooltip:
-          "🍳 Breakfast reimbursed\n50% of $18 = $9.00\n(Duration: 11 hrs → 50% applied)",
-      },
-      {
-        amount: 18,
-        tooltip: "🍳 Breakfast reimbursed\n100% of $18 = $18.00\n(Duration: 19 hrs → 100% applied)",
-      },
-      {
-        amount: 0,
-        tooltip: "🍳 Meal provided by host\nNot eligible for reimbursement",
-      },
-      {
-        amount: 9,
-        tooltip: "🍳 Breakfast reimbursed\n50% of $18 = $9.00",
-      },
-      {
-        amount: 36, // Total for this row
-        tooltip: "",
-        isTotal: true,
-      },
-    ],
-    base: 18,
-  },
-  {
-    label: "Lunch",
-    values: [
-      {
-        amount: 10,
-        tooltip: "🥗 Lunch reimbursed\n50% of $20 = $10.00",
-      },
-      {
-        amount: 20,
-        tooltip: "🥗 Lunch reimbursed\n100% of $20 = $20.00",
-      },
-      {
-        amount: 0,
-        tooltip: "🍱 Meal provided by meeting organizer\nNot eligible for reimbursement",
-      },
-      {
-        amount: 10,
-        tooltip: "🥗 Lunch reimbursed\n50% of $20 = $10.00",
-      },
-      {
-        amount: 40,
-        tooltip: "",
-        isTotal: true,
-      },
-    ],
-    base: 20,
-  },
-  {
-    label: "Dinner",
-    values: [
-      {
-        amount: 15.5,
-        tooltip: "🍽️ Dinner reimbursed\n50% of $31 = $15.50",
-      },
-      {
-        amount: 31,
-        tooltip: "🍽️ Dinner reimbursed\n100% of $31 = $31.00",
-      },
-      {
-        amount: 0,
-        tooltip: "🍱 Meal provided by meeting organizer\nNot eligible for reimbursement",
-      },
-      {
-        amount: 15.5,
-        tooltip: "🍽️ Dinner reimbursed\n50% of $31 = $15.50",
-      },
-      {
-        amount: 62,
-        tooltip: "",
-        isTotal: true,
-      },
-    ],
-    base: 31,
-  },
-  {
-    label: "Incidentals",
-    values: [
-      {
-        amount: 2.5,
-        tooltip: "💼 Incidentals\n50% of $5 = $2.50",
-      },
-      {
-        amount: 5,
-        tooltip: "💼 Incidentals\n100% of $5 = $5.00",
-      },
-      {
-        amount: 5,
-        tooltip: "💼 Incidentals\n100% of $5 = $5.00",
-      },
-      {
-        amount: 2.5,
-        tooltip: "💼 Incidentals\n50% of $5 = $2.50",
-      },
-      {
-        amount: 15,
-        tooltip: "",
-        isTotal: true,
-      },
-    ],
-    base: 5,
-  },
-];
+// Type for a single day's per diem data
+type PerDiemDay = {
+  date: Date;
+  percent: number; // 0-1 fraction (e.g., 0.5 for 50%)
+  mealsProvided: ("breakfast" | "lunch" | "dinner")[];
+};
 
-const FINAL_TOTALS = [37, 74, 23, 37, 171];
+interface UltraCleanPerDiemTableProps {
+  // Array of days, in order
+  days: PerDiemDay[];
+  // Rates for each meal and incidentals
+  rates: { breakfast: number; lunch: number; dinner: number; incidentals: number; };
+  // Base per diem rate used for headlines
+  baseRate: number;
+}
 
-const dayHeaders = ["Day 1", "Day 2", "Day 3", "Day 4", "Total"];
+// Utility for getting the nice label for each meal
+const MEAL_LABELS = {
+  breakfast: "Breakfast",
+  lunch: "Lunch",
+  dinner: "Dinner",
+  incidentals: "Incidentals"
+};
+const MEAL_ICONS = {
+  breakfast: "🍳",
+  lunch: "🥗",
+  dinner: "🍽️",
+  incidentals: "💼"
+};
 
-const UltraCleanPerDiemTable: React.FC = () => (
-  <TooltipProvider>
-    <div className="overflow-x-auto border rounded-lg w-full max-w-full mb-6 bg-white">
-      <Table className="min-w-[700px] border-collapse">
+const UltraCleanPerDiemTable: React.FC<UltraCleanPerDiemTableProps> = ({
+  days,
+  rates,
+  baseRate,
+}) => {
+  // Helper: compute reimbursed value & explanation for cell, based on meal+day
+  function getMealCell(day: PerDiemDay, meal: keyof typeof MEAL_LABELS, idx: number) {
+    if (meal === "incidentals") {
+      // Incidentals is only limited by % (never "provided")
+      const value = rates.incidentals * day.percent;
+      return {
+        value,
+        tooltip: `${MEAL_ICONS[meal]} Incidentals
+${Math.round(day.percent * 100)}% of $${rates.incidentals.toFixed(2)} = $${value.toFixed(2)}
+(Duration: Day ${idx + 1} → ${Math.round(day.percent * 100)}% applied)`
+      };
+    }
+    if (day.mealsProvided.includes(meal as any)) {
+      return {
+        value: 0,
+        tooltip: `${MEAL_ICONS[meal]} ${MEAL_LABELS[meal]} provided
+Not eligible for reimbursement`
+      };
+    } else {
+      const value = rates[meal] * day.percent;
+      return {
+        value,
+        tooltip: `${MEAL_ICONS[meal]} ${MEAL_LABELS[meal]} reimbursed
+${Math.round(day.percent * 100)}% of $${rates[meal].toFixed(2)} = $${value.toFixed(2)}
+(Duration: Day ${idx + 1} → ${Math.round(day.percent * 100)}% applied)`
+      };
+    }
+  }
+
+  // All rows: breakfast, lunch, dinner, incidentals — for each day
+  const mealTypes: (keyof typeof MEAL_LABELS)[] = ["breakfast", "lunch", "dinner", "incidentals"];
+
+  // Compute per-day totals and final total
+  const dayTotals = days.map((day, idx) => {
+    let sum = 0;
+    mealTypes.forEach(meal => {
+      const { value } = getMealCell(day, meal, idx);
+      sum += value;
+    });
+    return sum;
+  });
+  const grandTotal = dayTotals.reduce((a, b) => a + b, 0);
+
+  // Build meal provided summary
+  function providedSummary() {
+    return days
+      .map((day, idx) => {
+        if (day.mealsProvided.length === 0) return null;
+        return `Day ${idx + 1}: ${day.mealsProvided.map(m => MEAL_LABELS[m]).join(" & ")}`;
+      })
+      .filter(Boolean)
+      .join("; ");
+  }
+
+  return (
+    <div className="space-y-4">
+      <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="font-semibold"></TableHead>
-            {dayHeaders.map((day, idx) => (
-              <TableHead key={day + idx} className="text-center font-semibold text-gray-700">
-                {day}
-              </TableHead>
-            ))}
+            <TableHead />
+            {days.map((day, idx) =>
+              <TableHead key={idx}>Day {idx + 1}</TableHead>
+            )}
+            <TableHead>Total</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {PER_DIEM_DATA.map((row, rowIdx) => (
-            <TableRow key={row.label}>
-              <TableCell className="font-medium whitespace-nowrap">{row.label}
-                <span className="text-xs text-gray-500 ml-1">
-                  (${row.base})
-                </span>
+          {mealTypes.map(meal => (
+            <TableRow key={meal}>
+              <TableCell className="font-medium">
+                <span className="flex items-center gap-1">{MEAL_ICONS[meal]} {MEAL_LABELS[meal]}</span>
               </TableCell>
-              {row.values.map((cell, cellIdx) => (
-                <TableCell key={row.label + "-cell-" + cellIdx} className="text-center relative">
-                  <span>
-                    {cell.amount?.toLocaleString(undefined, {
-                      style: "currency",
-                      currency: "USD",
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    }) || ""}
-                  </span>
-                  {!cell.isTotal && (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className="inline-flex items-center ml-1 text-blue-500 focus:outline-none hover:text-blue-700"
-                          tabIndex={0}
-                          aria-label={"info"}
-                        >
-                          <Info className="w-3.5 h-3.5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent className="max-w-xs whitespace-pre-line text-xs">
-                        {cell.tooltip}
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                </TableCell>
-              ))}
+              {days.map((day, idx) => {
+                const { value, tooltip } = getMealCell(day, meal, idx);
+                return (
+                  <TableCell key={idx} className="relative">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-1 cursor-help select-none">
+                            ${value.toFixed(2)} <span className="text-gray-400 text-xs ml-1">🛈</span>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent className="whitespace-pre-line max-w-xs">{tooltip}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                );
+              })}
+              {/* Row total */}
+              <TableCell className="font-semibold">
+                ${days.reduce((acc, day, idx) => acc + getMealCell(day, meal, idx).value, 0).toFixed(2)}
+              </TableCell>
             </TableRow>
           ))}
-          {/* Final total per day */}
-          <TableRow className="bg-blue-50 font-semibold border-t-2 border-blue-200">
-            <TableCell className="py-3 font-semibold">🟩 Final Total Per Day</TableCell>
-            {FINAL_TOTALS.map((tot, idx) => (
-              <TableCell key={"final-" + idx} className="text-center py-3 font-semibold">
-                {tot.toLocaleString(undefined, {
-                  style: "currency",
-                  currency: "USD",
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })}
+          {/* Final total row per day */}
+          <TableRow>
+            <TableCell className="font-semibold bg-green-50">🟩 Final Total Per Day</TableCell>
+            {dayTotals.map((dt, idx) => (
+              <TableCell key={idx} className="bg-green-50 font-semibold">
+                ${dt.toFixed(2)}
               </TableCell>
             ))}
+            <TableCell className="bg-green-100 font-bold">
+              ${grandTotal.toFixed(2)}
+            </TableCell>
           </TableRow>
         </TableBody>
       </Table>
+
+      {/* Summary below table */}
+      <div className="px-3 py-2 bg-blue-50 border rounded mt-2 space-y-1 text-sm">
+        <div>• <span className="font-medium">Base Per Diem Rate:</span> <span className="font-mono">${baseRate.toFixed(2)}/day</span></div>
+        <div>• <span className="font-medium">Duration-Based % Applied:</span> <span className="text-gray-400">(hidden, see cell tooltips)</span></div>
+        {providedSummary() && (
+          <div>• <span className="font-medium">Meals Provided:</span> {providedSummary()}</div>
+        )}
+        <div>✅ <span className="font-medium">Final Reimbursable Total:</span> <span className="font-bold text-green-700">${grandTotal.toFixed(2)}</span></div>
+      </div>
     </div>
-    {/* Table Summary Below */}
-    <div className="bg-neutral-50 border rounded p-4 mt-2 text-sm max-w-2xl">
-      <div className="font-semibold mb-1">🧾 Summary</div>
-      <ul className="list-disc ml-6 space-y-1">
-        <li>
-          <span className="font-medium">Base Per Diem Rate:</span> <span className="tabular-nums">$74.00/day</span>
-        </li>
-        <li>
-          <span className="font-medium">Duration-Based % Applied:</span> <span className="text-gray-500">Hidden (viewable via 🛈 tooltips)</span>
-        </li>
-        <li>
-          <span className="font-medium">Meals Provided:</span> Lunch &amp; Dinner on Day 3
-        </li>
-        <li>
-          <span className="font-medium">✅ Final Reimbursable Total:</span>{" "}
-          <span className="font-bold text-green-700">$171.00</span>
-        </li>
-      </ul>
-    </div>
-  </TooltipProvider>
-);
+  );
+};
 
 export default UltraCleanPerDiemTable;
