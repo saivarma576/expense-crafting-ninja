@@ -41,7 +41,6 @@ const MealCalculationTable: React.FC<MealCalculationProps> = ({
   incidentalsRate,
   providedMeals
 }) => {
-  // Generate an array of dates between check-in and check-out
   const dateRange: Date[] = [];
   const currentDate = new Date(checkInDate);
   const endDate = new Date(checkOutDate);
@@ -54,19 +53,7 @@ const MealCalculationTable: React.FC<MealCalculationProps> = ({
   return (
     <div className="space-y-4">
       <h3 className="text-base font-medium">Per Diem Calculation</h3>
-      
-      <CalculationDetailsTable
-        dateRange={dateRange}
-        perDiemRate={perDiemRate}
-        providedMeals={providedMeals}
-        mealRates={{
-          breakfast: breakfastRate,
-          lunch: lunchRate,
-          dinner: dinnerRate
-        }}
-        checkInTime={checkInTime}
-        checkOutTime={checkOutTime}
-      />
+      <CalculationDetailsTable />
     </div>
   );
 };
