@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -23,11 +22,9 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   const [showCalculation, setShowCalculation] = useState(false);
   const [showPerDiemDialog, setShowPerDiemDialog] = useState(false);
   
-  // Format date objects from strings if they exist
   const checkInDate = values.date ? new Date(values.date) : new Date();
   const checkOutDate = values.throughDate ? new Date(values.throughDate) : addDays(checkInDate, 1);
   
-  // Initialize empty provided meals
   const providedMeals: Record<string, Meal[]> = {
     [format(checkInDate, 'yyyy-MM-dd')]: [],
     [format(checkOutDate, 'yyyy-MM-dd')]: [],
@@ -230,18 +227,7 @@ const MealsFields: React.FC<FieldGroupProps> = ({
         <div className="border rounded-md">
           <ScrollArea className="h-[400px]">
             <div className="p-4">
-              <CalculationDetailsTable
-                dateRange={[checkInDate, checkOutDate]}
-                perDiemRate={values.mealsRate || 80}
-                providedMeals={providedMeals}
-                mealRates={{
-                  breakfast: 18,
-                  lunch: 20,
-                  dinner: 31
-                }}
-                checkInTime={values.departureTime || '13:00'}
-                checkOutTime={values.returnTime || '19:00'}
-              />
+              <CalculationDetailsTable />
             </div>
           </ScrollArea>
         </div>
