@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import DateRangeSelection from './DateRangeSelection';
 import TravelPurposeSelector from './TravelPurposeSelector';
 import MealSelection from './MealSelection';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { STANDARD_RATES } from '@/components/Expenses/ExpenseFieldUtils';
 
 interface StepTwoProps {
   onBack: () => void;
@@ -14,12 +17,15 @@ interface StepTwoProps {
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
-  const { watch } = useFormContext<FormValues>();
+  const { watch, setValue } = useFormContext<FormValues>();
   const watchTravelPurpose = watch('travelPurpose');
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
+  const watchDepartureTime = watch('departureTime') || '';
+  const watchReturnTime = watch('returnTime') || '';
   const watchMealsProvided = watch('mealsProvided');
   const watchMeals = watch('meals');
+  const watchZipCode = watch('zipCode') || '';
 
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -27,10 +33,10 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
   };
 
   // Determine if continue button should be disabled
-  const isContinueDisabled = 
-    !watchTravelPurpose || 
-    !watchFromDate || 
-    !watchToDate || 
+  const isContinueDisabled =
+    !watchTravelPurpose ||
+    !watchFromDate ||
+    !watchToDate ||
     (watchMealsProvided === 'yes' && (!watchMeals || watchMeals.length === 0)) ||
     (watchMealsProvided !== 'yes' && watchMealsProvided !== 'no');
 
@@ -41,15 +47,76 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
         <TravelPurposeSelector />
 
         {/* Date Range Selection Component */}
-        <DateRangeSelection />
-
+        <div>
+          <DateRangeSelection />
+          {/* Insert Departure/Return Time Fields below dates */}
+          <div className="grid grid-cols-2 gap-4 mt-3">
+            <div>
+              <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700">
+                Departure Time
+              </Label>
+              <Input
+                type="time"
+                id="departureTime"
+                value={watchDepartureTime}
+                onChange={(e) => setValue('departureTime', e.target.value)}
+                className="h-8 px-2 py-1 text-sm"
+              />
+            </div>
+            <div>
+              <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
+                Return Time
+              </Label>
+              <Input
+                type="time"
+                id="returnTime"
+                value={watchReturnTime}
+                onChange={(e) => setValue('returnTime', e.target.value)}
+                className="h-8 px-2 py-1 text-sm"
+              />
+            </div>
+          </div>
+          {/* Add Zip Code field below time fields */}
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700">Location Zip Code</Label>
+              <Input
+                id="zipCode"
+                value={watchZipCode}
+                onChange={(e) => setValue('zipCode', e.target.value)}
+                placeholder="Enter zip code"
+                className="h-8 px-2 py-1 text-sm"
+              />
+            </div>
+          </div>
+        </div>
         {/* Meal Selection Component */}
-        <MealSelection />
+        <div>
+          <MealSelection />
+          {/* GSA Meals Rates Info */}
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
+            <span className="block text-sm font-medium text-blue-900 mb-2">🧾 GSA Meal Rates</span>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <span className="font-medium">Breakfast</span>
+                <div className="text-blue-800 text-lg">${STANDARD_RATES.MEALS_RATE ? 18 : 18}</div>
+              </div>
+              <div>
+                <span className="font-medium">Lunch</span>
+                <div className="text-blue-800 text-lg">${STANDARD_RATES.MEALS_RATE ? 20 : 20}</div>
+              </div>
+              <div>
+                <span className="font-medium">Dinner</span>
+                <div className="text-blue-800 text-lg">${STANDARD_RATES.MEALS_RATE ? 31 : 31}</div>
+              </div>
+            </div>
+            <div className="text-xs text-blue-800 mt-2">Standard federal GSA rates per meal (adjust if your org uses different)</div>
+          </div>
+        </div>
       </div>
-      
       <div className="flex justify-between pt-2">
-        <Button 
-          type="button" 
+        <Button
+          type="button"
           variant="outline"
           onClick={onBack}
           size="sm"
@@ -57,8 +124,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           onClick={handleSubmit}
           size="sm"
           disabled={isContinueDisabled}
@@ -69,5 +136,4 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
     </div>
   );
 };
-
 export default StepTwo;
