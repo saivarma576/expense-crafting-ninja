@@ -34,6 +34,15 @@ const MEAL_ICONS = {
   incidentals: "💼"
 };
 
+function getDurationHoursAndPercent(percent: number): { hours: string; label: string } {
+  // This is a stub. Real duration-hour mapping must be injected from business logic.
+  // For best accuracy, pass actual hours from parent later if needed.
+  if (percent === 1) return { hours: "24", label: "100%" };
+  if (percent === 0.5) return { hours: "11", label: "50%" };
+  if (percent === 0.25) return { hours: "6", label: "25%" };
+  return { hours: "?", label: `${Math.round(percent * 100)}%` };
+}
+
 const UltraCleanPerDiemTable: React.FC<UltraCleanPerDiemTableProps> = ({
   days,
   rates,
@@ -41,31 +50,51 @@ const UltraCleanPerDiemTable: React.FC<UltraCleanPerDiemTableProps> = ({
 }) => {
   // Helper: compute reimbursed value & explanation for cell, based on meal+day
   function getMealCell(day: PerDiemDay, meal: keyof typeof MEAL_LABELS, idx: number) {
+    const { hours, label: percentLabel } = getDurationHoursAndPercent(day.percent);
+    const mealLabel = MEAL_LABELS[meal];
+    const mealIcon = MEAL_ICONS[meal];
+    const rate = rates[meal];
+    const percent = day.percent;
+    const finalValue = meal === "incidentals" ? rates.incidentals * percent :
+      day.mealsProvided.includes(meal as any) ? 0 : rates[meal] * percent;
+
+    // Meals Provided: Yes/No
+    const provided = meal === "incidentals"
+      ? "No"
+      : (day.mealsProvided.includes(meal as any) ? "Yes" : "No");
+
+    // Tooltip message per spec
+    let tooltipLines: string[] = [];
+
+    tooltipLines.push(`Meals Provided: ${provided}`);
+
     if (meal === "incidentals") {
-      // Incidentals is only limited by % (never "provided")
-      const value = rates.incidentals * day.percent;
-      return {
-        value,
-        tooltip: `${MEAL_ICONS[meal]} Incidentals
-${Math.round(day.percent * 100)}% of $${rates.incidentals.toFixed(2)} = $${value.toFixed(2)}
-(Duration: Day ${idx + 1} → ${Math.round(day.percent * 100)}% applied)`
-      };
-    }
-    if (day.mealsProvided.includes(meal as any)) {
-      return {
-        value: 0,
-        tooltip: `${MEAL_ICONS[meal]} ${MEAL_LABELS[meal]} provided
-Not eligible for reimbursement`
-      };
+      tooltipLines.push(
+        `GSA Meal Rate for Incidentals: $${rates.incidentals.toFixed(2)}`,
+        hours !== "?" ? `Duration: ${hours} hrs → Eligible for ${percentLabel} of daily allowance` : `Eligible: ${percentLabel}`,
+        `Calculation: $${rates.incidentals.toFixed(2)} × ${percentLabel} = $${finalValue.toFixed(2)}`,
+        `Final Amount: $${finalValue.toFixed(2)}`
+      );
+    } else if (provided === "Yes") {
+      tooltipLines.push(
+        `GSA Meal Rate for ${mealLabel}: $${rate.toFixed(2)}`,
+        "Provided by meeting organizer",
+        "Not eligible for reimbursement",
+        "Final Amount: $0.00"
+      );
     } else {
-      const value = rates[meal] * day.percent;
-      return {
-        value,
-        tooltip: `${MEAL_ICONS[meal]} ${MEAL_LABELS[meal]} reimbursed
-${Math.round(day.percent * 100)}% of $${rates[meal].toFixed(2)} = $${value.toFixed(2)}
-(Duration: Day ${idx + 1} → ${Math.round(day.percent * 100)}% applied)`
-      };
+      tooltipLines.push(
+        `GSA Meal Rate for ${mealLabel}: $${rate.toFixed(2)}`,
+        hours !== "?" ? `Duration: ${hours} hrs → Eligible for ${percentLabel} of daily allowance` : `Eligible: ${percentLabel}`,
+        `Calculation: $${rate.toFixed(2)} × ${percentLabel} = $${finalValue.toFixed(2)}`,
+        `Final Amount: $${finalValue.toFixed(2)}`
+      );
     }
+
+    return {
+      value: finalValue,
+      tooltip: tooltipLines.join("\n")
+    };
   }
 
   // All rows: breakfast, lunch, dinner, incidentals — for each day
@@ -119,7 +148,7 @@ ${Math.round(day.percent * 100)}% of $${rates[meal].toFixed(2)} = $${value.toFix
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <span className="flex items-center gap-1 cursor-help select-none">
-                            ${value.toFixed(2)} <span className="text-gray-400 text-xs ml-1">🛈</span>
+                            ${value.toFixed(2)} <span className="text-gray-400 text-xs ml-1" aria-label="info">🛈</span>
                           </span>
                         </TooltipTrigger>
                         <TooltipContent className="whitespace-pre-line max-w-xs">{tooltip}</TooltipContent>
@@ -163,3 +192,4 @@ ${Math.round(day.percent * 100)}% of $${rates[meal].toFixed(2)} = $${value.toFix
 };
 
 export default UltraCleanPerDiemTable;
+
