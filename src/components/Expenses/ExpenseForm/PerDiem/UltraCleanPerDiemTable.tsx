@@ -1,4 +1,3 @@
-
 import React from "react";
 import { format } from "date-fns";
 import { Info, Calendar, CircleHelp, Coffee, Plus, Minus } from "lucide-react";
@@ -218,4 +217,3 @@ const UltraCleanPerDiemTable: React.FC<UltraCleanPerDiemTableProps> = ({ days, r
 };
 
 export default UltraCleanPerDiemTable;
-
