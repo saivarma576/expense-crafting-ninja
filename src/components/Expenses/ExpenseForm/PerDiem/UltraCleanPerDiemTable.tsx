@@ -1,8 +1,10 @@
-import React from "react";
-import { format } from "date-fns";
-import { Info, Calendar, CircleHelp, Coffee, Plus, Minus } from "lucide-react";
+
+import React, { useState } from "react";
+import { format, isToday } from "date-fns";
+import { CircleCheck } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableFooter } from "@/components/ui/table";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 // Type for a single day's per diem data
 type PerDiemDay = {
@@ -12,23 +14,11 @@ type PerDiemDay = {
 };
 
 interface UltraCleanPerDiemTableProps {
-  // Array of days, in order
   days: PerDiemDay[];
-  // Rates for each meal and incidentals
   rates: { breakfast: number; lunch: number; dinner: number; incidentals: number };
-  // Base per diem rate used for headlines
   baseRate: number;
 }
 
-// Modern Lucide meal icons with updated hover & colors
-const MealLucideIcons: Record<keyof typeof MEAL_LABELS, JSX.Element> = {
-  breakfast: <Coffee size={20} className="text-amber-500" />,
-  lunch: <Plus size={20} className="text-green-500" />,
-  dinner: <Minus size={20} className="text-pink-500" />,
-  incidentals: <CircleHelp size={20} className="text-blue-500" />,
-};
-
-// Utility for getting the nice label for each meal
 const MEAL_LABELS = {
   breakfast: "Breakfast",
   lunch: "Lunch",
@@ -36,13 +26,33 @@ const MEAL_LABELS = {
   incidentals: "Incidentals",
 };
 
-// Utility for nice colors/rows for better visuals
-const MEAL_BG: Record<keyof typeof MEAL_LABELS, string> = {
-  breakfast: "bg-yellow-50",
-  lunch: "bg-green-50",
-  dinner: "bg-pink-50",
-  incidentals: "bg-blue-50",
+const MealIcons: Record<string, JSX.Element> = {
+  breakfast: (
+    <span className="inline-flex items-center justify-center rounded-full bg-amber-100 p-1">
+      <span className="text-amber-500 text-md">🍳</span>
+    </span>
+  ),
+  lunch: (
+    <span className="inline-flex items-center justify-center rounded-full bg-green-100 p-1">
+      <span className="text-green-600 text-md">🥗</span>
+    </span>
+  ),
+  dinner: (
+    <span className="inline-flex items-center justify-center rounded-full bg-pink-100 p-1">
+      <span className="text-pink-500 text-md">🍽️</span>
+    </span>
+  ),
+  incidentals: (
+    <span className="inline-flex items-center justify-center rounded-full bg-sky-100 p-1">
+      <span className="text-blue-500 text-md">💡</span>
+    </span>
+  ),
 };
+
+// Just for visual pills in summary
+const ProvidedMealPill: React.FC<{ meal: string }> = ({ meal }) => (
+  <span className="inline-flex px-2 py-0.5 rounded-full bg-gray-100 text-xs font-medium mr-1 border border-gray-200">{meal}</span>
+);
 
 function getDurationHoursAndPercent(percent: number): { hours: string; label: string } {
   if (percent === 1) return { hours: "24", label: "100%" };
@@ -51,165 +61,281 @@ function getDurationHoursAndPercent(percent: number): { hours: string; label: st
   return { hours: "?", label: `${Math.round(percent * 100)}%` };
 }
 
+// Show/hide per-day columns if all meals are provided and incidentals is zero
+function allMealsProvidedExceptIncidentals(day: PerDiemDay) {
+  return (
+    (["breakfast", "lunch", "dinner"] as (keyof typeof MEAL_LABELS)[]).every((m) => day.mealsProvided.includes(m))
+  );
+}
+
+// Helper for meal cell calculation
+function getMealValue(day: PerDiemDay, meal: keyof typeof MEAL_LABELS, rates: UltraCleanPerDiemTableProps["rates"]) {
+  const value =
+    meal === "incidentals"
+      ? rates.incidentals * day.percent
+      : day.mealsProvided.includes(meal)
+      ? 0
+      : rates[meal] * day.percent;
+  return value;
+}
+
 const UltraCleanPerDiemTable: React.FC<UltraCleanPerDiemTableProps> = ({ days, rates, baseRate }) => {
-  // Helper: compute reimbursed value & explanation for cell, based on meal+day
-  function getMealCell(day: PerDiemDay, meal: keyof typeof MEAL_LABELS, idx: number) {
-    const { hours, label: percentLabel } = getDurationHoursAndPercent(day.percent);
-    const mealLabel = MEAL_LABELS[meal];
-    const rate = rates[meal];
-    const percent = day.percent;
-    const provided = meal === "incidentals" ? "No" : day.mealsProvided.includes(meal) ? "Yes" : "No";
-    const finalValue =
-      meal === "incidentals"
-        ? rates.incidentals * percent
-        : day.mealsProvided.includes(meal)
-        ? 0
-        : rates[meal] * percent;
+  // Row expansion state: days that are expanded
+  const [expanded, setExpanded] = useState<Record<number, boolean>>({});
 
-    // Compose tooltip with line breaks and formatting for readability
-    let tooltip = "";
-    if (provided === "Yes" && meal !== "incidentals") {
-      tooltip = 
-        `Meals Provided: Yes\n` +
-        `GSA Meal Rate for ${mealLabel}: $${rate.toFixed(2)}\n` +
-        `Provided by meeting organizer\n` + 
-        `Not eligible for reimbursement\n` +
-        `Final Amount: $0.00`;
-    } else {
-      tooltip = 
-        `Meals Provided: No\n` +
-        `GSA Meal Rate for ${mealLabel}: $${rate.toFixed(2)}\n` +
-        `Duration: ${hours} hrs → Eligible for ${percentLabel} of daily allowance\n` +
-        `Calculation: $${rate.toFixed(2)} × ${percentLabel} = $${finalValue.toFixed(2)}\n` +
-        `Final Amount: $${finalValue.toFixed(2)}`;
-    }
-
-    return {
-      value: finalValue,
-      tooltip,
-    };
-  }
-
-  // Meal rows: breakfast, lunch, dinner, incidentals
   const mealTypes: (keyof typeof MEAL_LABELS)[] = ["breakfast", "lunch", "dinner", "incidentals"];
 
-  // Compute per-day totals and final total
-  const dayTotals = days.map((day, idx) =>
-    mealTypes.reduce((sum, meal) => sum + getMealCell(day, meal, idx).value, 0)
-  );
+  // Calculate day totals
+  const dayTotals = days.map((day) => mealTypes.reduce((sum, meal) => sum + getMealValue(day, meal, rates), 0));
   const grandTotal = dayTotals.reduce((a, b) => a + b, 0);
 
-  // Build meal provided summary
-  function providedSummary() {
-    return days
-      .map((day) => {
-        if (day.mealsProvided.length === 0) return null;
-        return `${format(day.date, "MMM d")}: ${day.mealsProvided.map((m) => MEAL_LABELS[m]).join(" & ")}`;
-      })
-      .filter(Boolean)
-      .join("; ");
+  // Provided summary chips and percent
+  function ProvidedSummaryChips() {
+    return (
+      <div className="flex flex-wrap gap-1 flex-row">
+        {days.map((day, idx) =>
+          day.mealsProvided.length > 0 ? (
+            <Badge key={idx} className="bg-white text-purple-700 border border-purple-200 px-2 py-1 font-medium">
+              {format(day.date, "MMM d") + ": "}
+              {day.mealsProvided.map((meal) => (
+                <ProvidedMealPill key={meal} meal={MEAL_LABELS[meal]} />
+              ))}
+            </Badge>
+          ) : null
+        )}
+      </div>
+    );
+  }
+
+  function getPercentTag(percent: number) {
+    const { label } = getDurationHoursAndPercent(percent);
+    return (
+      <Badge className="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-1 font-semibold">
+        {label} of daily
+      </Badge>
+    );
+  }
+
+  // Hover/click tooltip for each date (instead of per cell)
+  function DateHeaderTooltip({ day, idx }: { day: PerDiemDay; idx: number }) {
+    const percent = day.percent;
+    const { label, hours } = getDurationHoursAndPercent(percent);
+    // Compose a floating summary per day instead of one-per-cell
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center justify-center gap-1 cursor-help relative">
+              <span
+                className={
+                  "px-1.5 py-1 rounded font-semibold " +
+                  (isToday(day.date)
+                    ? "border-2 border-blue-400 bg-blue-50 text-blue-700"
+                    : "bg-white text-gray-800")
+                }
+              >
+                {format(day.date, "MMM d")}
+              </span>
+              <span className="ml-1 text-gray-400 font-normal text-xs select-none">(i)</span>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs rounded-lg bg-white border border-purple-200 shadow-lg p-3 font-semibold text-sm text-left animate-fade-in">
+            <div>
+              <span className="font-bold text-purple-700">{format(day.date, "eeee, MMM d y")}</span>
+            </div>
+            <div className="mt-1 text-gray-700">
+              Duration: <span className="font-mono">{hours} hrs</span> (<span className="font-bold">{label}</span>)
+            </div>
+            <div className="mt-1">
+              {day.mealsProvided.length > 0 ? (
+                <>
+                  <span className="text-purple-600">Meals Provided:</span>
+                  {day.mealsProvided.map((m) => (
+                    <ProvidedMealPill key={m} meal={MEAL_LABELS[m]} />
+                  ))}
+                </>
+              ) : (
+                <span className="text-green-500">No meals provided</span>
+              )}
+            </div>
+            <div className="mt-1 text-gray-700 font-semibold">
+              Reimbursable %: <span className="font-mono">{label}</span>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  // Enhanced collapsible for days with all meals provided (except incidentals)
+  function isCollapsed(idx: number) {
+    return !expanded[idx] && allMealsProvidedExceptIncidentals(days[idx]);
   }
 
   return (
-    <div className="rounded-2xl bg-white/90 dark:bg-dark/90 shadow-lg border border-gray-200 py-3 px-3 max-w-full">
-      <div className="w-full overflow-x-auto">
+    <div>
+      <div className="rounded-xl border shadow bg-white/90 overflow-x-auto max-w-full pb-2">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100">
-              <TableHead className="text-gray-700 font-semibold" />
-              {days.map((day, idx) => (
-                <TableHead key={idx} className="text-lg font-semibold text-purple-700 text-center">
-                  <span className="flex items-center justify-center gap-1 select-none">
-                    <Calendar size={16} className="text-indigo-500" />
-                    {format(day.date, "MMM d")}
-                  </span>
-                </TableHead>
-              ))}
-              <TableHead className="text-lg font-semibold text-white bg-purple-600 rounded-r-lg text-center">
+            <TableRow className="sticky top-0 z-10 bg-white border-b border-gray-300 shadow-sm">
+              <TableHead className="w-20"></TableHead>
+              {/* Move "Total" to left */}
+              <TableHead className="text-right font-semibold text-purple-800 uppercase bg-purple-50 border-r border-purple-200">
                 Total
               </TableHead>
+              {days.map((day, idx) => (
+                <TableHead
+                  key={idx}
+                  className="text-center font-bold text-gray-800 px-2 py-2"
+                  style={{
+                    minWidth: 90,
+                    background: isToday(day.date) ? "#f0f9ff" : undefined,
+                  }}
+                >
+                  {/* Only one hover tooltip (group cell) */}
+                  <div
+                    onClick={() =>
+                      allMealsProvidedExceptIncidentals(day)
+                        ? setExpanded((s) => ({ ...s, [idx]: !s[idx] }))
+                        : null
+                    }
+                    className={
+                      allMealsProvidedExceptIncidentals(day)
+                        ? "cursor-pointer"
+                        : ""
+                    }
+                  >
+                    <DateHeaderTooltip day={day} idx={idx} />
+                    {isCollapsed(idx) && (
+                      <div className="mt-1 text-xs text-gray-400 italic">Collapsed</div>
+                    )}
+                  </div>
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {mealTypes.map((meal) => (
-              <TableRow key={meal} className={MEAL_BG[meal]}>
-                <TableCell className="font-bold text-gray-800 text-base">
-                  <span className="flex items-center gap-2">
-                    <span className="rounded-full bg-white border border-gray-300 p-1 drop-shadow-sm">
-                      {MealLucideIcons[meal]}
-                    </span>
-                    {MEAL_LABELS[meal]}
-                  </span>
+              <TableRow className="group" key={meal}>
+                <TableCell className="py-2 font-bold whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    {MealIcons[meal]}
+                    <span>{MEAL_LABELS[meal]}</span>
+                  </div>
+                </TableCell>
+                {/* Day total per meal */}
+                <TableCell className="font-semibold text-right text-purple-800 bg-purple-50 border-r border-purple-200">
+                  {days
+                    .reduce(
+                      (acc, day, idx) =>
+                        isCollapsed(idx)
+                          ? acc
+                          : acc + getMealValue(day, meal, rates),
+                      0
+                    )
+                    .toLocaleString(undefined, {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                    })}
                 </TableCell>
                 {days.map((day, idx) => {
-                  const { value, tooltip } = getMealCell(day, meal, idx);
+                  // Hide details for collapsed days (all meals provided)
+                  if (isCollapsed(idx)) {
+                    return (
+                      <TableCell
+                        key={idx}
+                        className="bg-gray-50 text-gray-300 text-right italic"
+                      >
+                        —
+                      </TableCell>
+                    );
+                  }
+                  const value = getMealValue(day, meal, rates);
                   return (
                     <TableCell
                       key={idx}
-                      className="relative cursor-pointer select-none text-right pr-4 font-mono font-semibold text-gray-900 dark:text-white hover:bg-purple-100 transition"
+                      className="text-right font-mono font-semibold py-2 px-2"
                     >
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="flex items-center justify-end gap-1">
-                              <span>${value.toFixed(2)}</span>
-                              <span className="rounded-full bg-purple-100 p-1">
-                                <Info size={14} className="text-purple-600" />
-                              </span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent className="whitespace-pre-line max-w-xs bg-white text-gray-900 rounded-lg border border-purple-300 shadow-md p-4 font-semibold text-sm">
-                            {tooltip.split("\n").map((line, i) => (
-                              <div key={i} className={line.startsWith("Meals Provided") ? "text-purple-700" : undefined}>
-                                {line}
-                              </div>
-                            ))}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      {value.toLocaleString(undefined, {
+                        style: "currency",
+                        currency: "USD",
+                        minimumFractionDigits: 2,
+                      })}
                     </TableCell>
                   );
                 })}
-                <TableCell className="font-extrabold text-purple-700 bg-purple-100 text-right pr-6">
-                  ${days.reduce((acc, day, idx) => acc + getMealCell(day, meal, idx).value, 0).toFixed(2)}
-                </TableCell>
               </TableRow>
             ))}
-            {/* Final total row per day */}
             <TableRow>
-              <TableCell className="font-bold bg-purple-200 text-purple-900 rounded-l-lg">
-                <span className="flex items-center gap-2">🟩 Final Total Per Day</span>
+              <TableCell className="font-extrabold bg-purple-100 text-right border-l-4 border-purple-300 rounded-l-lg">
+                <div className="flex items-center gap-2 text-purple-900">
+                  <CircleCheck className="text-emerald-600 w-5 h-5" />
+                  Final Total
+                </div>
               </TableCell>
-              {dayTotals.map((dt, idx) => (
-                <TableCell
-                  key={idx}
-                  className="bg-purple-50 font-bold text-purple-900 text-right pr-6"
-                >
-                  ${dt.toFixed(2)}
-                </TableCell>
-              ))}
-              <TableCell className="bg-purple-600 font-extrabold rounded-r-lg text-white text-lg text-right pr-6">
-                ${grandTotal.toFixed(2)}
+              <TableCell
+                className="font-extrabold text-purple-900 bg-purple-100 text-right border-r-2 border-purple-200"
+                colSpan={1}
+              >
+                {grandTotal.toLocaleString(undefined, {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 2,
+                })}
               </TableCell>
+              {days.map((day, idx) =>
+                isCollapsed(idx) ? (
+                  <TableCell key={idx} className="bg-gray-50 text-gray-300 text-right">
+                    —
+                  </TableCell>
+                ) : (
+                  <TableCell key={idx} className="bg-purple-50 font-bold text-purple-900 text-right">
+                    {dayTotals[idx].toLocaleString(undefined, {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                    })}
+                  </TableCell>
+                )
+              )}
             </TableRow>
           </TableBody>
         </Table>
       </div>
-
-      {/* Summary below table */}
-      <div className="px-4 py-3 bg-purple-50 border border-purple-200 rounded mt-5 space-y-1 text-sm text-left text-purple-800 font-semibold">
-        <div>
-          • Base Per Diem Rate: <span className="font-mono">${baseRate.toFixed(2)}/day</span>
-        </div>
-        <div>• Duration-Based % Applied: <span className="text-purple-400">(see tooltips for details)</span></div>
-        {providedSummary() && (
-          <div>
-            • Meals Provided: <span className="font-normal">{providedSummary()}</span>
+      {/* Enhanced Summary Card */}
+      <div className="mt-5 flex flex-col md:flex-row gap-5 items-start justify-between">
+        <div className="bg-white border border-purple-100 rounded-2xl shadow-lg p-4 min-w-[300px] flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <CircleCheck className="text-emerald-600 w-6 h-6" />
+            <span className="text-xl font-extrabold text-gray-800">Final Reimbursable Total</span>
           </div>
-        )}
-        <div>
-          ✅ Final Reimbursable Total:{" "}
-          <span className="font-bold">${grandTotal.toFixed(2)}</span>
+          <div className="flex items-end gap-3">
+            <span className="text-3xl font-mono font-extrabold text-purple-800">
+              {grandTotal.toLocaleString(undefined, {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 2,
+              })}
+            </span>
+            <Badge className="bg-purple-100 text-purple-800 font-medium border border-purple-200">Success</Badge>
+          </div>
+        </div>
+        <div className="bg-purple-50 border border-purple-100 rounded-2xl p-4 min-w-[280px] flex-1 flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-purple-800">Base Rate:</span>
+            <span className="font-mono">{baseRate.toLocaleString(undefined, { style: "currency", currency: "USD" })}/day</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-purple-800">Duration %: </span>
+            {days.map((d, idx) => (
+              <span key={idx}>{getPercentTag(d.percent)}</span>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="font-bold text-purple-800">Meals Provided:</span>
+            <ProvidedSummaryChips />
+          </div>
         </div>
       </div>
     </div>
