@@ -1,4 +1,3 @@
-
 import { DynamicField, ExpenseType } from '@/types/expense';
 
 export const generateTypeSpecificFields = (type: ExpenseType): DynamicField[] => {
@@ -80,7 +79,11 @@ export const costCenters = [
 export const STANDARD_RATES = {
   HOTEL_RATE: 159,
   MEALS_RATE: 80,
-  MILEAGE_RATE: 0.7
+  MILEAGE_RATE: 0.7,
+  BREAKFAST: 18,
+  LUNCH: 20,
+  DINNER: 31,
+  INCIDENTALS: 5
 };
 
 // Expense type map for display - ordered according to priority

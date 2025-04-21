@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues } from './types';
@@ -10,6 +10,13 @@ import MealSelection from './MealSelection';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { STANDARD_RATES } from '@/components/Expenses/ExpenseFieldUtils';
+
+// Define meal rates constants to use since they're not in STANDARD_RATES
+const MEAL_RATES = {
+  BREAKFAST: 18,
+  LUNCH: 20,
+  DINNER: 31
+};
 
 interface StepTwoProps {
   onBack: () => void;
@@ -22,18 +29,45 @@ const StepTwo: React.FC<StepTwoProps> = ({
 }) => {
   const {
     watch,
-    setValue
+    setValue,
+    register
   } = useFormContext<FormValues>();
+
+  // Define state for city since it's not coming from the form
+  const [city, setCity] = useState<string>('');
 
   const watchTravelPurpose = watch('travelPurpose');
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
   const watchMealsProvided = watch('mealsProvided');
   const watchMeals = watch('meals');
-  const watchZipCode = watch('zipCode') || '';
-  const watchCity = watch('city') || '';
-  const watchDepartureTime = watch('departureTime') || '';
-  const watchReturnTime = watch('returnTime') || '';
+  const watchZipCode = watch('zipCode');
+  const watchDepartureTime = watch('departureTime');
+  const watchReturnTime = watch('returnTime');
+
+  // Simulate zip code to city lookup
+  useEffect(() => {
+    if (watchZipCode && watchZipCode.length === 5) {
+      // This would be an API call in a real application
+      setTimeout(() => {
+        // Mock city lookup based on zip code
+        const zipMapping: Record<string, string> = {
+          '90210': 'Beverly Hills',
+          '10001': 'New York',
+          '60601': 'Chicago',
+          '20500': 'Washington DC',
+          '94102': 'San Francisco'
+        };
+        
+        const foundCity = zipMapping[watchZipCode] || 'Unknown City';
+        setCity(foundCity);
+        setValue('city', foundCity);
+      }, 500);
+    } else {
+      setCity('');
+      setValue('city', '');
+    }
+  }, [watchZipCode, setValue]);
 
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,8 +97,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <Input
                 type="time"
                 id="departureTime"
-                value={watchDepartureTime}
-                onChange={e => setValue('departureTime', e.target.value)}
+                {...register('departureTime')}
                 className="h-8 px-2 py-1 text-sm"
               />
             </div>
@@ -77,8 +110,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <Input
                 type="time"
                 id="returnTime"
-                value={watchReturnTime}
-                onChange={e => setValue('returnTime', e.target.value)}
+                {...register('returnTime')}
                 className="h-8 px-2 py-1 text-sm"
               />
             </div>
@@ -89,16 +121,15 @@ const StepTwo: React.FC<StepTwoProps> = ({
               <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700">Location Zip Code</Label>
               <Input
                 id="zipCode"
-                value={watchZipCode}
-                onChange={e => setValue('zipCode', e.target.value)}
+                {...register('zipCode')}
                 placeholder="Enter zip code"
                 className="h-8 px-2 py-1 text-sm"
                 maxLength={5}
               />
-              {watchZipCode.length === 5 && (
+              {watchZipCode && watchZipCode.length === 5 && (
                 <div className="text-xs text-blue-600 mt-1">
-                  {watchCity ? (
-                    <>Location: <span className="font-semibold">{watchCity}</span></>
+                  {city ? (
+                    <>Location: <span className="font-semibold">{city}</span></>
                   ) : (
                     <>Looking up city...</>
                   )}
@@ -114,9 +145,9 @@ const StepTwo: React.FC<StepTwoProps> = ({
           <div className="mt-2 pb-2">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs text-gray-600 bg-blue-50 border border-blue-100 rounded p-2">
               <span className="font-semibold">GSA Meal Rates:</span>
-              <span>Breakfast: <span className="font-medium text-green-700">${STANDARD_RATES.BREAKFAST.toFixed(2)}</span></span>
-              <span>Lunch: <span className="font-medium text-green-700">${STANDARD_RATES.LUNCH.toFixed(2)}</span></span>
-              <span>Dinner: <span className="font-medium text-green-700">${STANDARD_RATES.DINNER.toFixed(2)}</span></span>
+              <span>Breakfast: <span className="font-medium text-green-700">${MEAL_RATES.BREAKFAST.toFixed(2)}</span></span>
+              <span>Lunch: <span className="font-medium text-green-700">${MEAL_RATES.LUNCH.toFixed(2)}</span></span>
+              <span>Dinner: <span className="font-medium text-green-700">${MEAL_RATES.DINNER.toFixed(2)}</span></span>
               <span>Daily Total: <span className="font-semibold text-blue-800">${STANDARD_RATES.MEALS_RATE.toFixed(2)}</span></span>
             </div>
           </div>

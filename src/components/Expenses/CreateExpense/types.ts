@@ -13,4 +13,9 @@ export interface FormValues {
   mealsProvided: string;
   meals: Meal[];
   expenseTitle: string;
+  // New fields
+  zipCode?: string;
+  city?: string;
+  departureTime?: string;
+  returnTime?: string;
 }
