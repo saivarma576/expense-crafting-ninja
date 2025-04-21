@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
@@ -10,14 +9,18 @@ import MealSelection from './MealSelection';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { STANDARD_RATES } from '@/components/Expenses/ExpenseFieldUtils';
-
 interface StepTwoProps {
   onBack: () => void;
   onSubmit: () => void;
 }
-
-const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
-  const { watch, setValue } = useFormContext<FormValues>();
+const StepTwo: React.FC<StepTwoProps> = ({
+  onBack,
+  onSubmit
+}) => {
+  const {
+    watch,
+    setValue
+  } = useFormContext<FormValues>();
   const watchTravelPurpose = watch('travelPurpose');
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
@@ -26,22 +29,14 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
   const watchMealsProvided = watch('mealsProvided');
   const watchMeals = watch('meals');
   const watchZipCode = watch('zipCode') || '';
-
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
     onSubmit();
   };
 
   // Determine if continue button should be disabled
-  const isContinueDisabled =
-    !watchTravelPurpose ||
-    !watchFromDate ||
-    !watchToDate ||
-    (watchMealsProvided === 'yes' && (!watchMeals || watchMeals.length === 0)) ||
-    (watchMealsProvided !== 'yes' && watchMealsProvided !== 'no');
-
-  return (
-    <div className="space-y-6 animate-fade-in">
+  const isContinueDisabled = !watchTravelPurpose || !watchFromDate || !watchToDate || watchMealsProvided === 'yes' && (!watchMeals || watchMeals.length === 0) || watchMealsProvided !== 'yes' && watchMealsProvided !== 'no';
+  return <div className="space-y-6 animate-fade-in">
       <div className="space-y-5">
         {/* Travel Purpose Selector Component */}
         <TravelPurposeSelector />
@@ -55,38 +50,20 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
               <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700">
                 Departure Time
               </Label>
-              <Input
-                type="time"
-                id="departureTime"
-                value={watchDepartureTime}
-                onChange={(e) => setValue('departureTime', e.target.value)}
-                className="h-8 px-2 py-1 text-sm"
-              />
+              <Input type="time" id="departureTime" value={watchDepartureTime} onChange={e => setValue('departureTime', e.target.value)} className="h-8 px-2 py-1 text-sm" />
             </div>
             <div>
               <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
                 Return Time
               </Label>
-              <Input
-                type="time"
-                id="returnTime"
-                value={watchReturnTime}
-                onChange={(e) => setValue('returnTime', e.target.value)}
-                className="h-8 px-2 py-1 text-sm"
-              />
+              <Input type="time" id="returnTime" value={watchReturnTime} onChange={e => setValue('returnTime', e.target.value)} className="h-8 px-2 py-1 text-sm" />
             </div>
           </div>
           {/* Add Zip Code field below time fields */}
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="zipCode" className="text-xs font-medium text-gray-700">Location Zip Code</Label>
-              <Input
-                id="zipCode"
-                value={watchZipCode}
-                onChange={(e) => setValue('zipCode', e.target.value)}
-                placeholder="Enter zip code"
-                className="h-8 px-2 py-1 text-sm"
-              />
+              <Input id="zipCode" value={watchZipCode} onChange={e => setValue('zipCode', e.target.value)} placeholder="Enter zip code" className="h-8 px-2 py-1 text-sm" />
             </div>
           </div>
         </div>
@@ -94,46 +71,18 @@ const StepTwo: React.FC<StepTwoProps> = ({ onBack, onSubmit }) => {
         <div>
           <MealSelection />
           {/* GSA Meals Rates Info */}
-          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg px-4 py-3">
-            <span className="block text-sm font-medium text-blue-900 mb-2">🧾 GSA Meal Rates</span>
-            <div className="grid grid-cols-3 gap-3">
-              <div>
-                <span className="font-medium">Breakfast</span>
-                <div className="text-blue-800 text-lg">${STANDARD_RATES.MEALS_RATE ? 18 : 18}</div>
-              </div>
-              <div>
-                <span className="font-medium">Lunch</span>
-                <div className="text-blue-800 text-lg">${STANDARD_RATES.MEALS_RATE ? 20 : 20}</div>
-              </div>
-              <div>
-                <span className="font-medium">Dinner</span>
-                <div className="text-blue-800 text-lg">${STANDARD_RATES.MEALS_RATE ? 31 : 31}</div>
-              </div>
-            </div>
-            <div className="text-xs text-blue-800 mt-2">Standard federal GSA rates per meal (adjust if your org uses different)</div>
-          </div>
+          
         </div>
       </div>
       <div className="flex justify-between pt-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onBack}
-          size="sm"
-        >
+        <Button type="button" variant="outline" onClick={onBack} size="sm">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
-        <Button
-          type="submit"
-          onClick={handleSubmit}
-          size="sm"
-          disabled={isContinueDisabled}
-        >
+        <Button type="submit" onClick={handleSubmit} size="sm" disabled={isContinueDisabled}>
           Continue
         </Button>
       </div>
-    </div>
-  );
+    </div>;
 };
 export default StepTwo;
