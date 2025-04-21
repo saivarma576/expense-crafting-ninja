@@ -64,16 +64,17 @@ function getDurationHoursAndPercent(percent: number): { hours: string; label: st
 // Show/hide per-day columns if all meals are provided and incidentals is zero
 function allMealsProvidedExceptIncidentals(day: PerDiemDay) {
   return (
-    (["breakfast", "lunch", "dinner"] as (keyof typeof MEAL_LABELS)[]).every((m) => day.mealsProvided.includes(m))
+    (["breakfast", "lunch", "dinner"] as (keyof typeof MEAL_LABELS)[]).every((m) => day.mealsProvided.includes(m as any))
   );
 }
 
 // Helper for meal cell calculation
 function getMealValue(day: PerDiemDay, meal: keyof typeof MEAL_LABELS, rates: UltraCleanPerDiemTableProps["rates"]) {
+  // Fix for the type error - handle incidentals separately since it's not in mealsProvided array
   const value =
     meal === "incidentals"
       ? rates.incidentals * day.percent
-      : day.mealsProvided.includes(meal)
+      : day.mealsProvided.includes(meal as any)
       ? 0
       : rates[meal] * day.percent;
   return value;
