@@ -2,7 +2,7 @@
 import React from 'react';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { format } from 'date-fns';
-import { Meal } from '@/components/Expenses/CreateExpense/types';
+import { MealType } from '@/components/Expenses/CreateExpense/types';
 import CalculationDetailsTable from './PerDiem/CalculationDetailsTable';
 
 export interface DailyMealAllowance {
@@ -12,7 +12,7 @@ export interface DailyMealAllowance {
   lunch: number;
   dinner: number;
   incidentals: number;
-  providedMeals: Meal[];
+  providedMeals: MealType[];
   eligibleAmount: number;
   percentage: number;
 }
@@ -27,7 +27,7 @@ export interface MealCalculationProps {
   lunchRate: number;
   dinnerRate: number;
   incidentalsRate: number;
-  providedMeals: Record<string, Meal[]>;
+  providedMeals: Record<string, MealType[]>;
 }
 
 const MealCalculationTable: React.FC<MealCalculationProps> = ({

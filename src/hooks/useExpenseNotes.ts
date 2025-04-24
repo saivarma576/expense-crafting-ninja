@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { FormValues } from '@/components/Expenses/CreateExpense/types';
+import { FormValues, MealData } from '@/components/Expenses/CreateExpense/types';
 import { format } from 'date-fns';
 
 export function useExpenseNotes(expenseData?: FormValues) {
@@ -21,10 +21,15 @@ export function useExpenseNotes(expenseData?: FormValues) {
       }
       
       if (expenseData.mealsProvided === 'yes' && expenseData.meals?.length > 0) {
-        const mealsProvided = expenseData.meals.map(meal => 
-          meal.charAt(0).toUpperCase() + meal.slice(1)
-        ).join(', ');
-        expenseNotes += `Business travel with ${mealsProvided} provided.`;
+        // Extract meal types that are provided (where boolean is true)
+        const providedMealTypes = [];
+        if (expenseData.meals.some(meal => meal.breakfast)) providedMealTypes.push('Breakfast');
+        if (expenseData.meals.some(meal => meal.lunch)) providedMealTypes.push('Lunch');
+        if (expenseData.meals.some(meal => meal.dinner)) providedMealTypes.push('Dinner');
+        
+        if (providedMealTypes.length > 0) {
+          expenseNotes += `Business travel with ${providedMealTypes.join(', ')} provided.`;
+        }
       }
       
       setNotes(expenseNotes);

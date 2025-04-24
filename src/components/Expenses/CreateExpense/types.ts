@@ -1,6 +1,7 @@
 
 export type TravelPurpose = "conference" | "training" | "client" | "internal" | "other";
 export type MealType = "breakfast" | "lunch" | "dinner";
+export type Meal = MealType; // Keep backward compatibility
 
 export interface MealData {
   date: string;

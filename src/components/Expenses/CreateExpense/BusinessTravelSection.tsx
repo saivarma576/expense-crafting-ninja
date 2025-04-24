@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormValues, Meal } from './types';
+import { FormValues, MealData } from './types';
 
 const BusinessTravelSection: React.FC = () => {
   const { watch } = useFormContext<FormValues>();
-  const meals = watch('meals') as Meal[];
+  const meals = watch('meals') as MealData[];
   
   return (
     <div className="space-y-4 pl-4 border-l-2 border-primary/20">

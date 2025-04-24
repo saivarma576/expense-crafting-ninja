@@ -13,7 +13,7 @@ import DocumentsNotesSection from '@/components/Expenses/DocumentsNotesSection';
 import { ExpenseActions } from '@/components/Expenses/ExpenseActions';
 import { useExpenseLineItems } from '@/hooks/useExpenseLineItems';
 import { ExpenseDocument } from '@/types/expense';
-import { FormValues, TravelPurpose, Meal } from './CreateExpense/types';
+import { FormValues, TravelPurpose, MealData, MealType } from './CreateExpense/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -83,7 +83,6 @@ const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
-  // Use the travel info context instead of maintaining duplicate state
   const { 
     isTravelExpense, 
     setIsTravelExpense,
@@ -174,7 +173,6 @@ const NewExpense: React.FC = () => {
       setTravelComments(expenseData.travelComments || '');
       setIsSameDayTravel(expenseData.isSameDayTravel || false);
       
-      // Set title and date range based on expense data
       if (expenseData.travelPurpose) {
         setTitle(`${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip`);
       }
@@ -194,10 +192,14 @@ const NewExpense: React.FC = () => {
       }
       
       if (expenseData.mealsProvided === 'yes' && expenseData.meals?.length > 0) {
-        const mealsProvided = expenseData.meals.map(meal => 
-          meal.charAt(0).toUpperCase() + meal.slice(1)
-        ).join(', ');
-        expenseNotes += `Business travel with ${mealsProvided} provided.`;
+        const providedMealTypes = [];
+        if (expenseData.meals.some(meal => meal.breakfast)) providedMealTypes.push('Breakfast');
+        if (expenseData.meals.some(meal => meal.lunch)) providedMealTypes.push('Lunch');
+        if (expenseData.meals.some(meal => meal.dinner)) providedMealTypes.push('Dinner');
+        
+        if (providedMealTypes.length > 0) {
+          expenseNotes += `Business travel with ${providedMealTypes.join(', ')} provided.`;
+        }
       }
       
       setNotes(expenseNotes);

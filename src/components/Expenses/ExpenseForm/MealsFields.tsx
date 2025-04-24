@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
 import { format, addDays } from 'date-fns';
-import { Meal } from '@/components/Expenses/CreateExpense/types';
+import { MealType } from '@/components/Expenses/CreateExpense/types';
 import PerDiemCalculationDialog from './PerDiemCalculationDialog';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CalculationDetailsTable from './PerDiem/CalculationDetailsTable';

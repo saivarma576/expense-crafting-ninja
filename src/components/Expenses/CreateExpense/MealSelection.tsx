@@ -1,6 +1,7 @@
+
 import React, { useState, useCallback } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormValues, Meal } from './types';
+import { FormValues, MealType, MealData } from './types';
 import DailyMealGrid from './DailyMealGrid';
 
 import {
@@ -16,14 +17,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 const MealSelection: React.FC = () => {
   const { control, watch, setValue } = useFormContext<FormValues>();
   const [sameForAllDays, setSameForAllDays] = useState(false);
-  const [dailyMeals, setDailyMeals] = useState<Record<string, Meal[]>>({});
+  const [dailyMeals, setDailyMeals] = useState<Record<string, MealType[]>>({});
   
   const watchMealsProvided = watch('mealsProvided');
   const watchMeals = watch('meals') || [];
   const watchFromDate = watch('fromDate');
   const watchToDate = watch('toDate');
 
-  const handleDailyMealChange = useCallback((date: string, meal: Meal) => {
+  const handleDailyMealChange = useCallback((date: string, meal: MealType) => {
     setDailyMeals(prev => {
       const currentMeals = prev[date] || [];
       const updatedMeals = currentMeals.includes(meal)
@@ -41,8 +42,8 @@ const MealSelection: React.FC = () => {
     setSameForAllDays(checked);
     if (checked) {
       // When checked, apply all meals to all dates
-      const allMeals: Meal[] = ['breakfast', 'lunch', 'dinner'];
-      const newDailyMeals: Record<string, Meal[]> = {};
+      const allMeals: MealType[] = ['breakfast', 'lunch', 'dinner'];
+      const newDailyMeals: Record<string, MealType[]> = {};
       const start = new Date(watchFromDate);
       const end = new Date(watchToDate);
       

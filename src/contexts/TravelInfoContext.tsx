@@ -1,5 +1,6 @@
+
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { TravelPurpose, Meal, FormValues } from '@/components/Expenses/CreateExpense/types';
+import { TravelPurpose, MealType, MealData, FormValues } from '@/components/Expenses/CreateExpense/types';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -9,7 +10,7 @@ interface TravelInfoContextType {
   fromDate: Date | undefined;
   toDate: Date | undefined;
   mealsProvided: string;
-  meals: Meal[];
+  meals: MealData[];
   travelComments: string;
   title: string;
   dateRange: string;
@@ -20,7 +21,7 @@ interface TravelInfoContextType {
   setFromDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setToDate: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setMealsProvided: React.Dispatch<React.SetStateAction<string>>;
-  setMeals: React.Dispatch<React.SetStateAction<Meal[]>>;
+  setMeals: React.Dispatch<React.SetStateAction<MealData[]>>;
   setTravelComments: React.Dispatch<React.SetStateAction<string>>;
   setTitle: React.Dispatch<React.SetStateAction<string>>;
   setDateRange: React.Dispatch<React.SetStateAction<string>>;
@@ -54,7 +55,7 @@ export const TravelInfoProvider: React.FC<{
   const [fromDate, setFromDate] = useState<Date | undefined>(initialData?.fromDate);
   const [toDate, setToDate] = useState<Date | undefined>(initialData?.toDate);
   const [mealsProvided, setMealsProvided] = useState<string>(initialData?.mealsProvided || 'no');
-  const [meals, setMeals] = useState<Meal[]>(initialData?.meals || []);
+  const [meals, setMeals] = useState<MealData[]>(initialData?.meals || []);
   const [travelPurpose, setTravelPurpose] = useState<TravelPurpose | undefined>(initialData?.travelPurpose);
   const [travelComments, setTravelComments] = useState<string>(initialData?.travelComments || '');
   
