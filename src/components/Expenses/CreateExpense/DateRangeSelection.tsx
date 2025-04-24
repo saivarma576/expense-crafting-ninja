@@ -17,7 +17,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 
-const DateRangeSelection: React.FC = () => {
+interface DateRangeSelectionProps {
+  disabled?: boolean;
+}
+
+const DateRangeSelection: React.FC<DateRangeSelectionProps> = ({ disabled = false }) => {
   const { control, watch } = useFormContext<FormValues>();
   const watchFromDate = watch('fromDate');
 
@@ -36,8 +40,10 @@ const DateRangeSelection: React.FC = () => {
                     variant={"outline"}
                     className={cn(
                       "w-full pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
+                      disabled && "opacity-50 cursor-not-allowed"
                     )}
+                    disabled={disabled}
                   >
                     {field.value ? (
                       format(field.value, "PPP")
@@ -76,8 +82,10 @@ const DateRangeSelection: React.FC = () => {
                     variant={"outline"}
                     className={cn(
                       "w-full pl-3 text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
+                      disabled && "opacity-50 cursor-not-allowed"
                     )}
+                    disabled={disabled}
                   >
                     {field.value ? (
                       format(field.value, "PPP")
@@ -94,7 +102,7 @@ const DateRangeSelection: React.FC = () => {
                   selected={field.value}
                   onSelect={field.onChange}
                   initialFocus
-                  disabled={!watchFromDate || (date => date < watchFromDate)}
+                  disabled={disabled || !watchFromDate || (date => date < watchFromDate)}
                   className="p-3 pointer-events-auto"
                 />
               </PopoverContent>
