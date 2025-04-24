@@ -1,23 +1,34 @@
+
 import React from "react";
 import WelcomeHeader from "./WelcomeHeader";
-import TopStatsCards from "./StatCards/TopStatsCards";
-import ExpenseActionsCard from "./StatCards/ExpenseActionsCard";
-import RecentExpenses from "./RecentExpenses";
+import TopStatsCards from "../TopStatsCards"; // Updated import path
+import RecentExpenses from "../RecentExpenses"; // Updated import path
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import { ExpenseActionsCardV2 } from "./StatCards";
+import ExpenseActionsCardV2 from "./StatCards/ExpenseActionsCardV2"; // Updated import
 
 const DashboardV2 = () => {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   return (
     <div className="space-y-6 p-6">
-      <WelcomeHeader />
+      <WelcomeHeader 
+        userName="Anna" 
+        startDate={undefined} 
+        endDate={undefined}
+        onStartDateChange={() => {}} 
+        onEndDateChange={() => {}} 
+      />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <TopStatsCards />
+        <TopStatsCards 
+          totalExpense={{amount: 0, count: 0}} 
+          processedExpense={{amount: 0, count: 0}} 
+          postedExpense={{amount: 0, count: 0}} 
+          currency="USD" 
+        />
         <ExpenseActionsCardV2 />
       </div>
       <div className="grid gap-6 md:grid-cols-2">
