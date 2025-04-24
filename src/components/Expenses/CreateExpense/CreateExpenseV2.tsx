@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/sheet';
 
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
 import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import ProgressIndicator from './ProgressIndicator';
