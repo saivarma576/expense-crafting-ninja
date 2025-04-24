@@ -1,42 +1,20 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import { FormValues } from './types';
-import { CalendarIcon, Clock, MapPin } from 'lucide-react';
-import { format } from 'date-fns';
-import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import ProgressIndicator from './ProgressIndicator';
 
 interface CreateExpenseV2Props {
   isOpen: boolean;
@@ -492,53 +470,62 @@ const CreateExpenseV2: React.FC<CreateExpenseV2Props> = ({ isOpen, onClose }) =>
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-2xl p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-xl">
+    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <SheetContent 
+        side="right" 
+        className="w-full sm:max-w-2xl p-0 bg-white flex flex-col"
+      >
+        <SheetHeader className="p-6 pb-2">
+          <SheetTitle className="flex items-center gap-2 animate-fade-in text-xl">
             Create New Expense
-          </DialogTitle>
-          <DialogDescription>
+          </SheetTitle>
+          <SheetDescription className="animate-fade-in">
             Let's gather some basic information about your expense.
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
         
         <Progress value={progressValue} className="mx-6" />
         
-        <div className="p-6">
-          <FormProvider {...form}>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                {renderStep()}
-                
-                <div className="flex justify-between pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => step > 1 && setStep(step - 1)}
-                    disabled={step === 1}
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (step < 4) {
-                        setStep(step + 1);
-                      } else {
-                        form.handleSubmit(handleSubmit)();
-                      }
-                    }}
-                  >
-                    {step < 4 ? 'Next' : 'Create Expense'}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </FormProvider>
+        <div className="flex-1 overflow-auto">
+          <div className="p-6 flex gap-6">
+            <div className="hidden lg:block">
+              <ProgressIndicator step={step} />
+            </div>
+            
+            <div className="flex-1">
+              <FormProvider {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                  {renderStep()}
+                  
+                  <div className="flex justify-between pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => step > 1 && setStep(step - 1)}
+                      disabled={step === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        if (step < 4) {
+                          setStep(step + 1);
+                        } else {
+                          form.handleSubmit(handleSubmit)();
+                        }
+                      }}
+                    >
+                      {step < 4 ? 'Next' : 'Create Expense'}
+                    </Button>
+                  </div>
+                </form>
+              </FormProvider>
+            </div>
+          </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 };
 
