@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Mic, Handshake, FileText, MessageSquare } from 'lucide-react';
+import { Mic, Handshake, MessageSquare, FileText, Users } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues } from './types';
 
@@ -48,7 +48,19 @@ const TravelPurposeSelector: React.FC = () => {
                     <span>Meetings</span>
                   </div>
                 </SelectItem>
-                <SelectItem value="others">
+                <SelectItem value="training">
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 mr-2 text-primary" />
+                    <span>Training</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="client_visit">
+                  <div className="flex items-center">
+                    <Handshake className="h-4 w-4 mr-2 text-primary" />
+                    <span>Client Visit</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="other">
                   <div className="flex items-center">
                     <FileText className="h-4 w-4 mr-2 text-primary" />
                     <span>Others</span>

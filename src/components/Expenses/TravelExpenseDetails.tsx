@@ -45,8 +45,10 @@ const TravelExpenseDetails: React.FC<TravelExpenseDetailsProps> = ({
     
     const purposeMap: Record<TravelPurpose, string> = {
       conferences: 'Conference',
-      meeting: 'Meeting',
-      others: 'Other'
+      training: 'Training',
+      client_visit: 'Client Visit',
+      other: 'Other',
+      meeting: 'Meeting'
     };
     
     return purposeMap[travelPurpose] || travelPurpose.charAt(0).toUpperCase() + travelPurpose.slice(1);
