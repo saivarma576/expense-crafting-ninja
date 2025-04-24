@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
-import { PlusCircle, Eye } from 'lucide-react';
+import { PlusCircle, Eye, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
 import LineItemDisplayDialog from './LineItemDisplayDialog';
