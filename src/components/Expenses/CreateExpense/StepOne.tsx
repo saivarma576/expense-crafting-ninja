@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { X, ArrowRight, Plane, Briefcase } from 'lucide-react';
+import { X, ArrowRight } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues } from './types';
 import BusinessTravelSection from './BusinessTravelSection';
@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 interface StepOneProps {
@@ -56,14 +57,12 @@ const StepOne: React.FC<StepOneProps> = ({ onNext, onCancel, onProceedToExpense 
                     value="yes" 
                     className="flex-1 h-16 data-[state=on]:bg-primary/10 data-[state=on]:border-primary border-2 rounded-lg transition-all flex items-center justify-center gap-2"
                   >
-                    <Plane className="h-5 w-5" />
                     <span className="font-medium">Yes</span>
                   </ToggleGroupItem>
                   <ToggleGroupItem 
                     value="no" 
                     className="flex-1 h-16 data-[state=on]:bg-primary/10 data-[state=on]:border-primary border-2 rounded-lg transition-all flex items-center justify-center gap-2"
                   >
-                    <Briefcase className="h-5 w-5" />
                     <span className="font-medium">No</span>
                   </ToggleGroupItem>
                 </ToggleGroup>
