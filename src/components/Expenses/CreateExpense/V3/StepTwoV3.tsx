@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormValues } from '../types';
+import { FormValues, TravelPurpose } from '../types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,11 +19,11 @@ interface StepTwoV3Props {
 }
 
 const travelPurposes = [
-  { value: 'conference', label: 'Conference' },
-  { value: 'training', label: 'Training' },
-  { value: 'client', label: 'Client Meeting' },
-  { value: 'internal', label: 'Internal Meeting' },
-  { value: 'other', label: 'Other' }
+  { value: 'conference' as TravelPurpose, label: 'Conference' },
+  { value: 'training' as TravelPurpose, label: 'Training' },
+  { value: 'client' as TravelPurpose, label: 'Client Meeting' },
+  { value: 'internal' as TravelPurpose, label: 'Internal Meeting' },
+  { value: 'other' as TravelPurpose, label: 'Other' }
 ];
 
 const StepTwoV3: React.FC<StepTwoV3Props> = ({ onBack, onNext }) => {
@@ -36,7 +35,7 @@ const StepTwoV3: React.FC<StepTwoV3Props> = ({ onBack, onNext }) => {
   const travelPurpose = watch('travelPurpose');
   
   const handleTravelPurposeChange = (value: string) => {
-    setValue('travelPurpose', value);
+    setValue('travelPurpose', value as TravelPurpose);
   };
   
   const handleFromDateChange = (date: Date | undefined) => {

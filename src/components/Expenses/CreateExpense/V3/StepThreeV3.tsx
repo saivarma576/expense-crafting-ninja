@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormValues } from '../types';
+import { FormValues, MealData } from '../types';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -58,7 +58,7 @@ const StepThreeV3: React.FC<StepThreeV3Props> = ({ onBack, onSubmit }) => {
   const handleAllMealsProvided = (checked: boolean) => {
     setAllMealsProvided(checked);
     if (checked) {
-      const allMeals = days.map(day => ({
+      const allMeals: MealData[] = days.map(day => ({
         date: format(day, 'yyyy-MM-dd'),
         breakfast: true,
         lunch: true,
@@ -84,7 +84,7 @@ const StepThreeV3: React.FC<StepThreeV3Props> = ({ onBack, onSubmit }) => {
       };
       setValue('meals', updatedMeals);
     } else {
-      const newDayMeals = {
+      const newDayMeals: MealData = {
         date: dateStr,
         breakfast: meal === 'breakfast' ? checked : false,
         lunch: meal === 'lunch' ? checked : false,

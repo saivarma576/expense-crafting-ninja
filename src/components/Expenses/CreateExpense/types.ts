@@ -1,6 +1,13 @@
 
-export type TravelPurpose = "conferences" | "training" | "client_visit" | "other" | "meeting";
-export type Meal = "breakfast" | "lunch" | "dinner";
+export type TravelPurpose = "conference" | "training" | "client" | "internal" | "other";
+export type MealType = "breakfast" | "lunch" | "dinner";
+
+export interface MealData {
+  date: string;
+  breakfast: boolean;
+  lunch: boolean;
+  dinner: boolean;
+}
 
 export interface FormValues {
   isBusinessTravel: string;
@@ -9,7 +16,7 @@ export interface FormValues {
   travelPurpose?: TravelPurpose;
   travelComments?: string;
   mealsProvided: string;
-  meals: Meal[];
+  meals: MealData[];
   expenseTitle: string;
   isSameDayTravel: boolean;
   zipCode?: string;
