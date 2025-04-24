@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button';
 import TravelPurposeSelector from './CreateExpense/TravelPurposeSelector';
 import DateRangeSelection from './CreateExpense/DateRangeSelection';
 import MealSelection from './CreateExpense/MealSelection';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const TravelExpenseDialog: React.FC = () => {
   const { 
@@ -27,7 +29,8 @@ const TravelExpenseDialog: React.FC = () => {
     toDate,
     mealsProvided,
     meals,
-    travelComments
+    travelComments,
+    isSameDayTravel
   } = useTravelInfo();
 
   const form = useForm<FormValues>({
@@ -39,11 +42,22 @@ const TravelExpenseDialog: React.FC = () => {
       mealsProvided: mealsProvided,
       meals: meals,
       travelComments: travelComments,
-      expenseTitle: ''
+      expenseTitle: '',
+      isSameDayTravel: isSameDayTravel || false
     }
   });
   
-  // Use a controlled onOpenChange handler with a guard condition
+  // Watch the fromDate and isSameDayTravel values
+  const watchFromDate = form.watch('fromDate');
+  const watchIsSameDayTravel = form.watch('isSameDayTravel');
+
+  // Update toDate when fromDate changes and isSameDayTravel is true
+  React.useEffect(() => {
+    if (watchIsSameDayTravel && watchFromDate) {
+      form.setValue('toDate', watchFromDate);
+    }
+  }, [watchFromDate, watchIsSameDayTravel, form]);
+
   const handleOpenChange = useCallback((open: boolean) => {
     if (open !== showTravelDialog) {
       setShowTravelDialog(open);
@@ -67,7 +81,22 @@ const TravelExpenseDialog: React.FC = () => {
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
               <TravelPurposeSelector />
-              <DateRangeSelection />
+              
+              <div className="flex items-center space-x-2 py-2">
+                <Checkbox
+                  id="isSameDayTravel"
+                  checked={watchIsSameDayTravel}
+                  onCheckedChange={(checked) => {
+                    form.setValue('isSameDayTravel', checked as boolean);
+                    if (checked && watchFromDate) {
+                      form.setValue('toDate', watchFromDate);
+                    }
+                  }}
+                />
+                <Label htmlFor="isSameDayTravel">Is it same-day travel?</Label>
+              </div>
+
+              <DateRangeSelection disabled={watchIsSameDayTravel} />
               <MealSelection />
               
               <div className="flex justify-end gap-2 pt-2">

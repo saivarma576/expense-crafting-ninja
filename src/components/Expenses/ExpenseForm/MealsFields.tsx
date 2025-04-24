@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Clock, MapPin, Calendar } from 'lucide-react';
@@ -13,12 +13,15 @@ import CalculationDetailsTable from './PerDiem/CalculationDetailsTable';
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
+import { useTravelInfo } from '@/contexts/TravelInfoContext';
+import { toast } from 'sonner';
 
 const MealsFields: React.FC<FieldGroupProps> = ({ 
   values, 
   onChange,
   llmSuggestions = {}
 }) => {
+  const { isSameDayTravel } = useTravelInfo();
   const [showCalculation, setShowCalculation] = useState(false);
   const [showPerDiemDialog, setShowPerDiemDialog] = useState(false);
   
@@ -35,6 +38,19 @@ const MealsFields: React.FC<FieldGroupProps> = ({
       onChange(field, format(date, 'yyyy-MM-dd'));
     }
   };
+
+  useEffect(() => {
+    if (isSameDayTravel && values.date) {
+      const selectedDate = new Date(values.date);
+      const travelDate = new Date(selectedDate.setHours(0, 0, 0, 0));
+      const todayDate = new Date(new Date().setHours(0, 0, 0, 0));
+
+      if (travelDate.getTime() === todayDate.getTime()) {
+        toast.error("For same-day travel, please submit a Business Meals expense instead.");
+        onChange('date', '');
+      }
+    }
+  }, [values.date, isSameDayTravel, onChange]);
 
   return (
     <div className="space-y-4">

@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { TravelPurpose, Meal, FormValues } from '@/components/Expenses/CreateExpense/types';
 import { format } from 'date-fns';
@@ -30,6 +29,8 @@ interface TravelInfoContextType {
   handleTravelDialogSave: (data: FormValues) => void;
   handleRemoveTravelExpense: () => void;
   formattedDateRange: () => string;
+  isSameDayTravel: boolean;
+  setIsSameDayTravel: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const TravelInfoContext = createContext<TravelInfoContextType | undefined>(undefined);
@@ -63,7 +64,8 @@ export const TravelInfoProvider: React.FC<{
     
   const [dateRange, setDateRange] = useState(formatDateInfo(initialData));
   const [expenseNo] = useState('Ref-154264');
-  
+  const [isSameDayTravel, setIsSameDayTravel] = useState<boolean>(initialData?.isSameDayTravel || false);
+
   useEffect(() => {
     if (initialData) {
       console.log("Expense data received:", initialData);
@@ -75,6 +77,7 @@ export const TravelInfoProvider: React.FC<{
       setMeals(initialData.meals || []);
       setTravelPurpose(initialData.travelPurpose);
       setTravelComments(initialData.travelComments || '');
+      setIsSameDayTravel(initialData.isSameDayTravel || false);
     }
   }, [initialData]);
   
@@ -90,6 +93,8 @@ export const TravelInfoProvider: React.FC<{
     setMealsProvided(data.mealsProvided);
     setMeals(data.meals || []);
     setTravelComments(data.travelComments || '');
+    
+    setIsSameDayTravel(data.isSameDayTravel || false);
     
     if (data.travelPurpose) {
       setTitle(`${data.travelPurpose.charAt(0).toUpperCase() + data.travelPurpose.slice(1)} Trip`);
@@ -151,7 +156,9 @@ export const TravelInfoProvider: React.FC<{
         handleOpenTravelDialog,
         handleTravelDialogSave,
         handleRemoveTravelExpense,
-        formattedDateRange
+        formattedDateRange,
+        isSameDayTravel,
+        setIsSameDayTravel
       }}
     >
       {children}

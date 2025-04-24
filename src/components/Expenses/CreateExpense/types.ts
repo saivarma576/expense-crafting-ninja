@@ -1,6 +1,4 @@
 
-import { ExpenseType } from '@/types/expense';
-
 export type TravelPurpose = "conferences" | "meeting" | "others";
 export type Meal = "breakfast" | "lunch" | "dinner";
 
@@ -13,7 +11,7 @@ export interface FormValues {
   mealsProvided: string;
   meals: Meal[];
   expenseTitle: string;
-  // New fields
+  isSameDayTravel: boolean; // New field
   zipCode?: string;
   city?: string;
   departureTime?: string;
