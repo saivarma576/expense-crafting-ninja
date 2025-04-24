@@ -1,5 +1,5 @@
 
-export type TravelPurpose = "conferences" | "meeting" | "others";
+export type TravelPurpose = "conferences" | "training" | "client_visit" | "other" | "meeting";
 export type Meal = "breakfast" | "lunch" | "dinner";
 
 export interface FormValues {
@@ -11,7 +11,7 @@ export interface FormValues {
   mealsProvided: string;
   meals: Meal[];
   expenseTitle: string;
-  isSameDayTravel: boolean; // New field
+  isSameDayTravel: boolean;
   zipCode?: string;
   city?: string;
   departureTime?: string;
