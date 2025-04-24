@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PolicyViolation } from '@/utils/policyValidations';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ExpenseCard from '@/components/Expenses/ExpenseCard';
-import { PolicyComment } from '@/utils/policyValidations';
+import LineItemDisplayDialog from './LineItemDisplayDialog';
 import { toast } from 'sonner';
 
 interface ExpenseLineItem {
@@ -38,6 +38,14 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
   totalAmount,
   onAddViolationComment
 }) => {
+  const [selectedItem, setSelectedItem] = useState<ExpenseLineItem | undefined>();
+  const [showDisplayDialog, setShowDisplayDialog] = useState(false);
+
+  const handleViewItem = (item: ExpenseLineItem) => {
+    setSelectedItem(item);
+    setShowDisplayDialog(true);
+  };
+
   const handleAddComment = (itemId: string, violationId: string, comment: string) => {
     if (onAddViolationComment) {
       onAddViolationComment(itemId, violationId, comment);
@@ -84,18 +92,46 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           {/* Line items */}
           <div className="divide-y divide-gray-100 divide-dotted">
             {processedLineItems.map((item) => (
-              <ExpenseCard
-                key={item.id}
-                item={item}
-                onEdit={() => handleEditLineItem(item.id)}
-                onDelete={() => handleDeleteLineItem(item.id)}
-                onAddViolationComment={
-                  onAddViolationComment 
-                    ? (violationId: string, comment: string) => 
-                        handleAddComment(item.id, violationId, comment)
-                    : undefined
-                }
-              />
+              <div key={item.id} className="relative py-3 px-6 hover:bg-gray-50/50 transition-all duration-200">
+                <div className="flex items-center w-full">
+                  <div className="w-3/12">
+                    <span className="text-[15px] font-medium text-gray-900">{item.title}</span>
+                  </div>
+                  
+                  <div className="w-3/12">
+                    <span className="text-sm text-gray-600">{item.type}</span>
+                  </div>
+                  
+                  <div className="w-2/12">
+                    <span className="text-sm text-gray-600">{item.date}</span>
+                  </div>
+                  
+                  <div className="w-2/12 text-right">
+                    <span className="text-sm font-medium text-gray-900">${item.amount.toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="w-2/12 flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleViewItem(item)}
+                      className="h-7 w-7 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      <span className="sr-only">View Details</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEditLineItem(item.id)}
+                      className="h-7 w-7 text-gray-400 hover:text-blue-500 hover:bg-blue-50 rounded-full"
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                      <span className="sr-only">Edit</span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
           
@@ -125,6 +161,12 @@ const LineItemsSection: React.FC<LineItemsSectionProps> = ({
           </Button>
         </div>
       )}
+
+      <LineItemDisplayDialog
+        isOpen={showDisplayDialog}
+        onClose={() => setShowDisplayDialog(false)}
+        item={selectedItem}
+      />
     </div>
   );
 };
