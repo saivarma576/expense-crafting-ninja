@@ -29,6 +29,8 @@ import ExpenseAIDrawer from './ExpenseAIDrawer';
 import { getAllValidations } from '@/utils/validationUtils';
 import PolicyTooltip from './ExpenseForm/PolicyTooltip';
 import CompactPolicyHeader from './ExpenseForm/CompactPolicyHeader';
+import { useTravelInfo } from '@/contexts/TravelInfoContext';
+import TravelExpenseDialog from './TravelExpenseDialog';
 
 interface EnhancedExpenseLineItem extends ExpenseLineItemType {
   policyViolations?: PolicyViolation[];
@@ -81,49 +83,37 @@ const NewExpense: React.FC = () => {
   const location = useLocation();
   const expenseData = location.state?.expenseData as FormValues | undefined;
   
-  const [isTravelExpense, setIsTravelExpense] = useState<boolean>(true);
-  const [showTravelDialog, setShowTravelDialog] = useState<boolean>(false);
-  
-  const [fromDate, setFromDate] = useState<Date | undefined>(expenseData?.fromDate);
-  const [toDate, setToDate] = useState<Date | undefined>(expenseData?.toDate);
-  const [mealsProvided, setMealsProvided] = useState<string>(expenseData?.mealsProvided || 'no');
-  const [meals, setMeals] = useState<Meal[]>(expenseData?.meals || []);
-  const [travelPurpose, setTravelPurpose] = useState<TravelPurpose | undefined>(expenseData?.travelPurpose);
-  const [travelComments, setTravelComments] = useState<string>(expenseData?.travelComments || '');
-  
-  const form = useForm<FormValues>({
-    defaultValues: {
-      isBusinessTravel: isTravelExpense ? 'yes' : 'no',
-      travelPurpose: expenseData?.travelPurpose,
-      fromDate: expenseData?.fromDate,
-      toDate: expenseData?.toDate,
-      mealsProvided: expenseData?.mealsProvided || 'no',
-      meals: expenseData?.meals || [],
-      travelComments: expenseData?.travelComments || '',
-      expenseTitle: ''
-    }
-  });
-  
-  useEffect(() => {
-    console.log("Expense data received:", expenseData);
-    if (expenseData) {
-      toast.success("Form data successfully transferred to expense screen");
-      setIsTravelExpense(expenseData.isBusinessTravel === 'yes');
-      setFromDate(expenseData.fromDate);
-      setToDate(expenseData.toDate);
-      setMealsProvided(expenseData.mealsProvided || 'no');
-      setMeals(expenseData.meals || []);
-      setTravelPurpose(expenseData.travelPurpose);
-      setTravelComments(expenseData.travelComments || '');
-    }
-  }, [expenseData]);
-  
-  const [title, setTitle] = useState(expenseData?.travelPurpose ? 
-    `${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip` : 
-    'Trip to Europe');
-    
-  const [dateRange, setDateRange] = useState(formatDateInfo(expenseData));
-  const [expenseNo] = useState('Ref-154264');
+  // Use the travel info context instead of maintaining duplicate state
+  const { 
+    isTravelExpense, 
+    setIsTravelExpense,
+    travelPurpose,
+    setTravelPurpose,
+    fromDate, 
+    setFromDate,
+    toDate, 
+    setToDate,
+    mealsProvided, 
+    setMealsProvided,
+    meals, 
+    setMeals,
+    travelComments, 
+    setTravelComments,
+    title, 
+    setTitle,
+    dateRange, 
+    setDateRange,
+    showTravelDialog, 
+    setShowTravelDialog,
+    expenseNo,
+    handleOpenTravelDialog,
+    handleTravelDialogSave,
+    handleRemoveTravelExpense,
+    formattedDateRange,
+    isSameDayTravel,
+    setIsSameDayTravel
+  } = useTravelInfo();
+
   const [notes, setNotes] = useState('');
   const [userEmail] = useState('oliviarhye@example.com');
   const [userName] = useState('Olivia Rhye');
@@ -148,6 +138,20 @@ const NewExpense: React.FC = () => {
   const [showAIChat, setShowAIChat] = useState<boolean>(false);
   const [activeField, setActiveField] = useState<string | null>(null);
 
+  const form = useForm<FormValues>({
+    defaultValues: {
+      isBusinessTravel: isTravelExpense ? 'yes' : 'no',
+      travelPurpose: travelPurpose,
+      fromDate: fromDate,
+      toDate: toDate,
+      mealsProvided: mealsProvided || 'no',
+      meals: meals || [],
+      travelComments: travelComments || '',
+      expenseTitle: '',
+      isSameDayTravel: isSameDayTravel || false
+    }
+  });
+  
   function formatDateInfo(data?: FormValues): string {
     if (data?.fromDate && data?.toDate) {
       const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
@@ -159,15 +163,33 @@ const NewExpense: React.FC = () => {
   
   useEffect(() => {
     if (expenseData) {
-      let expenseNotes = '';
+      console.log("Expense data received:", expenseData);
+      toast.success("Form data successfully transferred to expense screen");
+      setIsTravelExpense(expenseData.isBusinessTravel === 'yes');
+      setFromDate(expenseData.fromDate);
+      setToDate(expenseData.toDate);
+      setMealsProvided(expenseData.mealsProvided || 'no');
+      setMeals(expenseData.meals || []);
+      setTravelPurpose(expenseData.travelPurpose);
+      setTravelComments(expenseData.travelComments || '');
+      setIsSameDayTravel(expenseData.isSameDayTravel || false);
       
+      // Set title and date range based on expense data
       if (expenseData.travelPurpose) {
         setTitle(`${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)} Trip`);
-        expenseNotes += `Purpose: ${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)}\n`;
       }
       
       if (expenseData.fromDate && expenseData.toDate) {
         setDateRange(formatDateInfo(expenseData));
+      }
+      
+      let expenseNotes = '';
+      
+      if (expenseData.travelPurpose) {
+        expenseNotes += `Purpose: ${expenseData.travelPurpose.charAt(0).toUpperCase() + expenseData.travelPurpose.slice(1)}\n`;
+      }
+      
+      if (expenseData.fromDate && expenseData.toDate) {
         expenseNotes += `Date range: ${formatDateInfo(expenseData)}\n`;
       }
       
@@ -180,63 +202,7 @@ const NewExpense: React.FC = () => {
       
       setNotes(expenseNotes);
     }
-  }, [expenseData]);
-
-  const handleOpenTravelDialog = () => {
-    form.reset({
-      isBusinessTravel: isTravelExpense ? 'yes' : 'no',
-      travelPurpose: travelPurpose,
-      fromDate: fromDate,
-      toDate: toDate,
-      mealsProvided: mealsProvided,
-      meals: meals,
-      travelComments: travelComments,
-      expenseTitle: ''
-    });
-    setShowTravelDialog(true);
-  };
-
-  const handleTravelDialogSave = (data: FormValues) => {
-    setIsTravelExpense(true);
-    setTravelPurpose(data.travelPurpose);
-    setFromDate(data.fromDate);
-    setToDate(data.toDate);
-    setMealsProvided(data.mealsProvided);
-    setMeals(data.meals || []);
-    setTravelComments(data.travelComments || '');
-    
-    if (data.travelPurpose) {
-      setTitle(`${data.travelPurpose.charAt(0).toUpperCase() + data.travelPurpose.slice(1)} Trip`);
-    }
-    
-    if (data.fromDate && data.toDate) {
-      const fromDateStr = format(data.fromDate, 'MMM dd, yyyy');
-      const toDateStr = format(data.toDate, 'MMM dd, yyyy');
-      setDateRange(`${fromDateStr} - ${toDateStr}`);
-    }
-    
-    setShowTravelDialog(false);
-    toast.success("Travel expense details updated");
-  };
-
-  const handleRemoveTravelExpense = () => {
-    setIsTravelExpense(false);
-    setTravelPurpose(undefined);
-    setFromDate(undefined);
-    setToDate(undefined);
-    setMealsProvided('no');
-    setMeals([]);
-    toast.success("Travel expense details removed");
-  };
-
-  const formattedDateRange = () => {
-    if (fromDate && toDate) {
-      const fromDateStr = format(fromDate, 'MMM dd, yyyy');
-      const toDateStr = format(toDate, 'MMM dd, yyyy');
-      return `${fromDateStr} - ${toDateStr}`;
-    }
-    return dateRange;
-  };
+  }, [expenseData, setIsTravelExpense, setFromDate, setToDate, setMealsProvided, setMeals, setTravelPurpose, setTravelComments, setTitle, setDateRange, setIsSameDayTravel]);
 
   const handleRevalidate = () => {
     toast.info("Validating expense report...");
@@ -516,42 +482,7 @@ const NewExpense: React.FC = () => {
         />
       </LineItemSlider>
       
-      <Dialog open={showTravelDialog} onOpenChange={setShowTravelDialog}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
-          <DialogHeader className="p-6 pb-2">
-            <DialogTitle className="flex items-center gap-2 text-xl">
-              <Plane className="h-5 w-5 text-blue-500" />
-              Business Travel Details
-            </DialogTitle>
-            <DialogDescription>
-              Please provide information about your business travel
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="p-6">
-            <FormProvider {...form}>
-              <form onSubmit={form.handleSubmit(handleTravelDialogSave)} className="space-y-5">
-                <TravelPurposeSelector />
-                <DateRangeSelection />
-                <MealSelection />
-                
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={() => setShowTravelDialog(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">
-                    Save Details
-                  </Button>
-                </div>
-              </form>
-            </FormProvider>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <TravelExpenseDialog />
       
       <PolicyViolationsModal
         open={showValidationWarnings}

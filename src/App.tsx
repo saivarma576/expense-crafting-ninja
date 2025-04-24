@@ -15,6 +15,7 @@ import ReportDetail from "./components/Reports/ReportDetail";
 import Admin from "./components/Admin";
 import Profile from "./components/Profile";
 import NotFound from "./pages/NotFound";
+import { TravelInfoProvider } from "./contexts/TravelInfoContext";
 
 // Create a new query client
 const queryClient = new QueryClient();
@@ -31,7 +32,11 @@ const App = () => (
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="dashboard-v2" element={<DashboardV2 />} />
             <Route path="expenses" element={<Expenses />} />
-            <Route path="expenses/new" element={<NewExpense />} />
+            <Route path="expenses/new" element={
+              <TravelInfoProvider>
+                <NewExpense />
+              </TravelInfoProvider>
+            } />
             <Route path="receipts" element={<Receipts />} />
             <Route path="reports" element={<Reports />} />
             <Route path="reports/:reportId" element={<ReportDetail />} />
