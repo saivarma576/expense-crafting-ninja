@@ -6,12 +6,12 @@ import { FormValues } from './types';
 import { toast } from 'sonner';
 
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 import { Progress } from '@/components/ui/progress';
 import StepOne from './StepOne';
@@ -81,24 +81,23 @@ const CreateExpenseV2: React.FC<CreateExpenseV2Props> = ({ isOpen, onClose }) =>
   };
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-2xl p-0 bg-white flex flex-col"
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent 
+        className="sm:max-w-2xl p-0 bg-white"
       >
-        <SheetHeader className="p-6 pb-2">
-          <SheetTitle className="flex items-center gap-2 animate-fade-in text-xl">
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle className="flex items-center gap-2 animate-fade-in text-xl">
             Create New Expense
-          </SheetTitle>
-          <SheetDescription className="animate-fade-in">
+          </DialogTitle>
+          <DialogDescription className="animate-fade-in">
             Let's gather some basic information about your expense.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         
         <Progress value={progressValue} className="mx-6" />
         
-        <div className="flex-1 overflow-auto">
-          <div className="p-6 flex gap-6">
+        <div className="p-6">
+          <div className="flex gap-6">
             <div className="hidden lg:block">
               <ProgressIndicator step={step} />
             </div>
@@ -112,8 +111,8 @@ const CreateExpenseV2: React.FC<CreateExpenseV2Props> = ({ isOpen, onClose }) =>
             </div>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 };
 

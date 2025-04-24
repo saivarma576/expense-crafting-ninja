@@ -13,9 +13,9 @@ const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   step, 
   totalSteps = 4,
   steps = [
-    { icon: '🧭', label: 'Business Travel' },
-    { icon: '📅', label: 'Trip Duration' },
-    { icon: '🎯', label: 'Purpose' },
+    { icon: '👔', label: 'Business Travel' },
+    { icon: '📝', label: 'Basic Info' },
+    { icon: '📍', label: 'Trip Duration' },
     { icon: '🍽️', label: 'Meals' }
   ]
 }) => {
