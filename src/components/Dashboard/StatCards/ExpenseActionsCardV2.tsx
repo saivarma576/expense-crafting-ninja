@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CreateExpenseV2 from '@/components/Expenses/CreateExpense/CreateExpenseV2';
+import CreateExpenseV3 from '@/components/Expenses/CreateExpense/CreateExpenseV3';
 import CreateExpenseDialog from '@/components/Expenses/CreateExpense/CreateExpenseDialog';
 import VersionSelectionDialog from '@/components/Expenses/CreateExpense/VersionSelectionDialog';
 
@@ -10,6 +11,7 @@ const ExpenseActionsCardV2 = () => {
   const [showVersionSelect, setShowVersionSelect] = useState(false);
   const [showCreateExpenseV1, setShowCreateExpenseV1] = useState(false);
   const [showCreateExpenseV2, setShowCreateExpenseV2] = useState(false);
+  const [showCreateExpenseV3, setShowCreateExpenseV3] = useState(false);
 
   const handleNewExpense = () => {
     setShowVersionSelect(true);
@@ -23,6 +25,11 @@ const ExpenseActionsCardV2 = () => {
   const handleSelectV2 = () => {
     setShowVersionSelect(false);
     setShowCreateExpenseV2(true);
+  };
+
+  const handleSelectV3 = () => {
+    setShowVersionSelect(false);
+    setShowCreateExpenseV3(true);
   };
 
   return (
@@ -39,6 +46,7 @@ const ExpenseActionsCardV2 = () => {
         onClose={() => setShowVersionSelect(false)}
         onSelectV1={handleSelectV1}
         onSelectV2={handleSelectV2}
+        onSelectV3={handleSelectV3}
       />
 
       <CreateExpenseDialog
@@ -49,6 +57,11 @@ const ExpenseActionsCardV2 = () => {
       <CreateExpenseV2
         isOpen={showCreateExpenseV2}
         onClose={() => setShowCreateExpenseV2(false)}
+      />
+
+      <CreateExpenseV3
+        isOpen={showCreateExpenseV3}
+        onClose={() => setShowCreateExpenseV3(false)}
       />
     </>
   );
