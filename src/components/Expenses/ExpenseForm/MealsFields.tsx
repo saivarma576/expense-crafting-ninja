@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Clock, MapPin, Calendar } from 'lucide-react';
+import { Clock, MapPin, Calendar, AlertTriangle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { FieldGroupProps } from './types';
 import FieldValidationIndicator from './FieldValidationIndicator';
@@ -15,6 +15,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useTravelInfo } from '@/contexts/TravelInfoContext';
 import { toast } from 'sonner';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const MealsFields: React.FC<FieldGroupProps> = ({ 
   values, 
@@ -24,6 +25,8 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   const { isSameDayTravel } = useTravelInfo();
   const [showCalculation, setShowCalculation] = useState(false);
   const [showPerDiemDialog, setShowPerDiemDialog] = useState(false);
+  const [multipleZipCodes, setMultipleZipCodes] = useState(false);
+  const [zipCodes, setZipCodes] = useState<Set<string>>(new Set());
   
   const checkInDate = values.date ? new Date(values.date) : new Date();
   const checkOutDate = values.throughDate ? new Date(values.throughDate) : addDays(checkInDate, 1);
@@ -52,9 +55,30 @@ const MealsFields: React.FC<FieldGroupProps> = ({
     }
   }, [values.date, isSameDayTravel, onChange]);
 
+  useEffect(() => {
+    if (values.zipCode) {
+      const newZipCodes = new Set(zipCodes);
+      newZipCodes.add(values.zipCode);
+      setZipCodes(newZipCodes);
+      
+      if (newZipCodes.size > 1) {
+        setMultipleZipCodes(true);
+      }
+    }
+  }, [values.zipCode]);
+
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-medium text-gray-700">Meal Details</h3>
+      
+      {multipleZipCodes && (
+        <Alert className="bg-amber-50 border-amber-200">
+          <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <AlertDescription className="text-amber-800">
+            Multiple ZIP codes detected – please calculate per diem manually.
+          </AlertDescription>
+        </Alert>
+      )}
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
@@ -224,6 +248,7 @@ const MealsFields: React.FC<FieldGroupProps> = ({
           variant="outline" 
           size="sm"
           onClick={() => setShowCalculation(!showCalculation)}
+          disabled={multipleZipCodes}
         >
           {showCalculation ? 'Hide' : 'Show'} Per Diem Calculation
         </Button>
@@ -239,7 +264,7 @@ const MealsFields: React.FC<FieldGroupProps> = ({
         </Button>
       </div>
 
-      {showCalculation && (
+      {showCalculation && !multipleZipCodes && (
         <div className="border rounded-md">
           <ScrollArea className="h-[400px]">
             <div className="p-4">

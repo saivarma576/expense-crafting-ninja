@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import { useFormContext } from 'react-hook-form';
 import { FormValues } from './types';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,7 @@ import TravelPurposeSelector from './TravelPurposeSelector';
 import MealSelection from './MealSelection';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { STANDARD_RATES } from '@/components/Expenses/ExpenseFieldUtils';
 
 // Define meal rates constants to use since they're not in STANDARD_RATES
@@ -35,6 +36,8 @@ const StepTwo: React.FC<StepTwoProps> = ({
 
   // Define state for city since it's not coming from the form
   const [city, setCity] = useState<string>('');
+  const [zipCodes, setZipCodes] = useState<Set<string>>(new Set());
+  const [showMultipleZipWarning, setShowMultipleZipWarning] = useState(false);
 
   const watchTravelPurpose = watch('travelPurpose');
   const watchFromDate = watch('fromDate');
@@ -44,6 +47,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
   const watchZipCode = watch('zipCode');
   const watchDepartureTime = watch('departureTime');
   const watchReturnTime = watch('returnTime');
+  const watchIsSameDayTravel = watch('isSameDayTravel');
 
   // Simulate zip code to city lookup
   useEffect(() => {
@@ -62,12 +66,28 @@ const StepTwo: React.FC<StepTwoProps> = ({
         const foundCity = zipMapping[watchZipCode] || 'Unknown City';
         setCity(foundCity);
         setValue('city', foundCity);
+        
+        // Check for multiple ZIP codes
+        const newZipCodes = new Set(zipCodes);
+        newZipCodes.add(watchZipCode);
+        setZipCodes(newZipCodes);
+        
+        if (newZipCodes.size > 1) {
+          setShowMultipleZipWarning(true);
+        }
       }, 500);
     } else {
       setCity('');
       setValue('city', '');
     }
-  }, [watchZipCode, setValue]);
+  }, [watchZipCode, setValue, zipCodes]);
+
+  // Handle same-day travel changes
+  useEffect(() => {
+    if (watchIsSameDayTravel && watchFromDate) {
+      setValue('toDate', watchFromDate);
+    }
+  }, [watchIsSameDayTravel, watchFromDate, setValue]);
 
   const handleSubmit = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,12 +105,27 @@ const StepTwo: React.FC<StepTwoProps> = ({
         {/* Travel Purpose Selector Component */}
         <TravelPurposeSelector />
 
+        {/* Same-day travel checkbox */}
+        <div className="flex items-center space-x-2 py-2">
+          <Checkbox
+            id="isSameDayTravel"
+            checked={watchIsSameDayTravel}
+            onCheckedChange={(checked) => {
+              setValue('isSameDayTravel', checked as boolean);
+              if (checked && watchFromDate) {
+                setValue('toDate', watchFromDate);
+              }
+            }}
+          />
+          <Label htmlFor="isSameDayTravel">Is it same-day travel?</Label>
+        </div>
+
         {/* Date Range & Time Grid */}
         <div>
+          <DateRangeSelection disabled={watchIsSameDayTravel} />
           <div className="grid grid-cols-2 gap-4">
             {/* From Date + Departure Time */}
             <div className="flex flex-col gap-1">
-              <DateRangeSelection />
               <Label htmlFor="departureTime" className="text-xs font-medium text-gray-700 mt-2">
                 Departure Time
               </Label>
@@ -102,8 +137,7 @@ const StepTwo: React.FC<StepTwoProps> = ({
               />
             </div>
             {/* To Date + Return Time */}
-            <div className="flex flex-col gap-1 mt-0 pt-[34px]">
-              {/* Empty label for spacing to align with Departure Time in left col */}
+            <div className="flex flex-col gap-1 mt-0">
               <Label htmlFor="returnTime" className="text-xs font-medium text-gray-700">
                 Return Time
               </Label>
@@ -133,6 +167,12 @@ const StepTwo: React.FC<StepTwoProps> = ({
                   ) : (
                     <>Looking up city...</>
                   )}
+                </div>
+              )}
+              {showMultipleZipWarning && (
+                <div className="text-xs text-amber-600 mt-1 flex items-center">
+                  <AlertTriangle className="h-3 w-3 mr-1" />
+                  Multiple ZIP codes detected – per diem will need manual calculation
                 </div>
               )}
             </div>

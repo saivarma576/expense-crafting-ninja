@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
@@ -40,8 +41,20 @@ const CreateExpenseDialog: React.FC<CreateExpenseDialogProps> = ({ isOpen, onClo
       toDate: undefined,
       travelPurpose: undefined,
       travelComments: "",
+      isSameDayTravel: false,
     }
   });
+
+  // Watch the fromDate and isSameDayTravel values to sync them
+  const watchFromDate = form.watch('fromDate');
+  const watchIsSameDayTravel = form.watch('isSameDayTravel');
+
+  // Update toDate when fromDate changes and isSameDayTravel is true
+  React.useEffect(() => {
+    if (watchIsSameDayTravel && watchFromDate) {
+      form.setValue('toDate', watchFromDate);
+    }
+  }, [watchFromDate, watchIsSameDayTravel, form]);
 
   const handleStepBack = () => {
     if (step > 1) {
