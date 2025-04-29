@@ -2,7 +2,7 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 
 interface ReceiptFiltersProps {
   searchTerm: string;
@@ -31,20 +31,48 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
           />
         </div>
         
-        <ToggleGroup type="single" value={selectedFilter || ""} onValueChange={(value) => onFilterChange(value || null)}>
-          <ToggleGroupItem value="" className="rounded-full text-sm border-gray-300">
+        <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-full">
+          <Button
+            type="button"
+            onClick={() => onFilterChange(null)}
+            className={cn(
+              "rounded-full text-sm h-8 px-3", 
+              !selectedFilter ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
+            )}
+          >
             All
-          </ToggleGroupItem>
-          <ToggleGroupItem value="processed" className="rounded-full text-sm border-gray-300 data-[state=on]:bg-green-50 data-[state=on]:text-green-700">
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onFilterChange("processed")}
+            className={cn(
+              "rounded-full text-sm h-8 px-3", 
+              selectedFilter === "processed" ? "bg-green-50 text-green-700 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
+            )}
+          >
             Processed
-          </ToggleGroupItem>
-          <ToggleGroupItem value="pending" className="rounded-full text-sm border-gray-300 data-[state=on]:bg-amber-50 data-[state=on]:text-amber-700">
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onFilterChange("pending")}
+            className={cn(
+              "rounded-full text-sm h-8 px-3", 
+              selectedFilter === "pending" ? "bg-amber-50 text-amber-700 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
+            )}
+          >
             Processing
-          </ToggleGroupItem>
-          <ToggleGroupItem value="error" className="rounded-full text-sm border-gray-300 data-[state=on]:bg-red-50 data-[state=on]:text-red-700">
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onFilterChange("error")}
+            className={cn(
+              "rounded-full text-sm h-8 px-3", 
+              selectedFilter === "error" ? "bg-red-50 text-red-700 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
+            )}
+          >
             Error
-          </ToggleGroupItem>
-        </ToggleGroup>
+          </Button>
+        </div>
       </div>
     </div>
   );

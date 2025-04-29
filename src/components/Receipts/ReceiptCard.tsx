@@ -87,29 +87,29 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
         </div>
       </div>
       
-      <div className="p-3 space-y-3">
+      <div className="p-3 space-y-2">
         {/* Title and Date */}
-        <div>
-          <TruncatedText 
-            text={receipt.name}
-            className="font-medium text-base text-gray-900"
-            maxLength={30}
-          />
-          <p className="text-xs text-gray-500 mt-0.5">
-            {new Date(receipt.date).toLocaleDateString('en-US', { 
-              month: 'short', 
-              day: 'numeric',
-              year: 'numeric'
-            })}
-          </p>
-        </div>
-        
-        {/* Amount if available */}
-        {receipt.amount && (
-          <div className="flex justify-end">
-            <span className="font-semibold text-base text-gray-900">${receipt.amount.toFixed(2)}</span>
+        <div className="flex justify-between items-start">
+          <div>
+            <TruncatedText 
+              text={receipt.name}
+              className="font-medium text-base text-gray-900"
+              maxLength={24}
+            />
+            <p className="text-xs text-gray-500 mt-0.5">
+              {new Date(receipt.date).toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
+              })}
+            </p>
           </div>
-        )}
+          
+          {/* Amount if available */}
+          {receipt.amount && (
+            <span className="font-semibold text-base text-gray-900">${receipt.amount.toFixed(2)}</span>
+          )}
+        </div>
         
         {/* Actions */}
         <div className="flex items-center justify-between pt-2 border-t border-gray-100">
@@ -124,6 +124,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                     onClick={() => onViewReceipt(receipt.id)}
                   >
                     <Eye className="h-4 w-4" />
+                    <span className="sr-only">View Receipt</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
@@ -140,6 +141,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                     onClick={() => onDownloadReceipt(receipt.id)}
                   >
                     <Download className="h-4 w-4" />
+                    <span className="sr-only">Download Receipt</span>
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
