@@ -177,10 +177,10 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                           </td>
                           <td className="py-4 px-4 text-sm">{item.count}</td>
                           <td className="py-4 px-4 text-sm font-medium">
-                            ${item.amount.toLocaleString()}
+                            ${item.amount ? item.amount.toLocaleString() : '0'}
                           </td>
                           <td className="py-4 px-4 text-sm">
-                            ${(item.amount / item.count).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                            ${item.count && item.amount ? (item.amount / item.count).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0'}
                           </td>
                           <td className="py-4 px-4 text-sm">
                             <div className="flex items-center">
