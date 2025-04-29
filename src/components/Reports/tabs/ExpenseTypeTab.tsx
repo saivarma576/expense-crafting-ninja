@@ -14,7 +14,8 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
-  Legend
+  Legend,
+  Tooltip
 } from 'recharts';
 
 export interface ExpenseTypeData {
@@ -29,6 +30,20 @@ interface ExpenseTypeTabProps {
   expenseTypeData: ExpenseTypeData[];
 }
 
+// Custom Tooltip
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white px-3 py-2 shadow-md border border-gray-100 rounded-lg">
+        <p className="font-medium">{payload[0].name}</p>
+        <p className="text-sm text-gray-600">${payload[0].value.toLocaleString()}</p>
+        <p className="text-xs text-gray-500">{payload[0].payload.percentage}%</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 // Custom chart component
 const ExpenseTypePieChart = ({ data }: { data: ExpenseTypeData[] }) => {
   const RADIAN = Math.PI / 180;
@@ -42,9 +57,9 @@ const ExpenseTypePieChart = ({ data }: { data: ExpenseTypeData[] }) => {
         x={x} 
         y={y} 
         fill="white" 
-        textAnchor={x > cx ? 'start' : 'end'} 
+        textAnchor="middle"
         dominantBaseline="central"
-        className="text-xs font-medium"
+        className="text-sm font-medium"
       >
         {`${(percent * 100).toFixed(0)}%`}
       </text>
@@ -52,7 +67,7 @@ const ExpenseTypePieChart = ({ data }: { data: ExpenseTypeData[] }) => {
   };
 
   return (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={380}>
       <RechartsPieChart>
         <Pie
           data={data}
@@ -60,20 +75,26 @@ const ExpenseTypePieChart = ({ data }: { data: ExpenseTypeData[] }) => {
           cy="50%"
           labelLine={false}
           label={renderCustomizedLabel}
-          outerRadius={110}
-          innerRadius={60}
+          outerRadius={150}
+          innerRadius={80}
           fill="#8884d8"
           dataKey="value"
+          paddingAngle={2}
         >
           {data.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
+        <Tooltip content={<CustomTooltip />} />
         <Legend 
           layout="horizontal" 
           verticalAlign="bottom" 
           align="center"
-          formatter={(value, entry, index) => <span className="text-xs">{value}</span>}
+          formatter={(value, entry, index) => (
+            <span className="text-sm">{value}</span>
+          )}
+          iconType="circle"
+          iconSize={10}
         />
       </RechartsPieChart>
     </ResponsiveContainer>
@@ -104,54 +125,54 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
     }) : [];
   
   return (
-    <Card>
-      <CardHeader>
+    <Card className="overflow-hidden border border-gray-100 shadow-sm">
+      <CardHeader className="bg-white border-b border-gray-100 pb-4">
         <div className="flex items-center gap-2">
-          <PieChart className="h-5 w-5 text-primary" />
-          <CardTitle>Expense Type Analysis</CardTitle>
+          <PieChart className="h-5 w-5 text-gray-600" />
+          <CardTitle className="text-xl">Expense Type Analysis</CardTitle>
         </div>
-        <CardDescription>
+        <CardDescription className="text-gray-500 mt-1">
           Breakdown of expenses by category for the current period
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         {hasData ? (
           <>
             <div className="mb-6">
               <ExpenseTypePieChart data={expenseTypeData} />
             </div>
             
-            <div className="overflow-hidden rounded-lg border border-muted/30">
+            <div className="overflow-hidden rounded-lg border border-gray-100">
               <Table>
-                <TableHeader className="bg-muted/20">
+                <TableHeader className="bg-gray-50">
                   <TableRow>
-                    <TableHead>
+                    <TableHead className="py-3 text-gray-600 font-medium">
                       <div className="flex items-center gap-2">
-                        <FileText className="h-4 w-4" />
+                        <FileText className="h-4 w-4 text-gray-500" />
                         Expense Type
                       </div>
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className="text-right py-3 text-gray-600 font-medium">
                       <div className="flex items-center justify-end gap-2">
-                        <DollarSign className="h-4 w-4" />
+                        <DollarSign className="h-4 w-4 text-gray-500" />
                         Total Amount
                       </div>
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className="text-right py-3 text-gray-600 font-medium">
                       <div className="flex items-center justify-end gap-2">
-                        <FileBarChart className="h-4 w-4" />
+                        <FileBarChart className="h-4 w-4 text-gray-500" />
                         No. of Reports
                       </div>
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className="text-right py-3 text-gray-600 font-medium">
                       <div className="flex items-center justify-end gap-2">
-                        <Percent className="h-4 w-4" />
+                        <Percent className="h-4 w-4 text-gray-500" />
                         % of Amount
                       </div>
                     </TableHead>
-                    <TableHead className="text-right">
+                    <TableHead className="text-right py-3 text-gray-600 font-medium">
                       <div className="flex items-center justify-end gap-2">
-                        <Percent className="h-4 w-4" />
+                        <Percent className="h-4 w-4 text-gray-500" />
                         % of Count
                       </div>
                     </TableHead>
@@ -159,31 +180,31 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
                 </TableHeader>
                 <TableBody>
                   {enhancedData.map((type) => (
-                    <TableRow key={type.name} className="hover:bg-muted/20">
-                      <TableCell className="font-medium">
+                    <TableRow key={type.name} className="hover:bg-gray-50">
+                      <TableCell className="py-3 font-medium">
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: type.color }}></div>
                           {type.name}
                         </div>
                       </TableCell>
-                      <TableCell className="text-right">${type.value.toLocaleString()}</TableCell>
-                      <TableCell className="text-right">{type.reportCount}</TableCell>
-                      <TableCell className="text-right">{type.amountPercentage}%</TableCell>
-                      <TableCell className="text-right">{type.countPercentage}%</TableCell>
+                      <TableCell className="text-right py-3">${type.value.toLocaleString()}</TableCell>
+                      <TableCell className="text-right py-3">{type.reportCount}</TableCell>
+                      <TableCell className="text-right py-3">{type.amountPercentage}%</TableCell>
+                      <TableCell className="text-right py-3">{type.countPercentage}%</TableCell>
                     </TableRow>
                   ))}
-                  <TableRow className="bg-muted/50">
-                    <TableCell className="font-bold">Total</TableCell>
-                    <TableCell className="text-right font-bold">
+                  <TableRow className="bg-gray-50 border-t border-gray-200">
+                    <TableCell className="py-3 font-bold">Total</TableCell>
+                    <TableCell className="text-right py-3 font-bold">
                       ${totalAmount.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-right font-bold">
+                    <TableCell className="text-right py-3 font-bold">
                       {totalReports}
                     </TableCell>
-                    <TableCell className="text-right font-bold">
+                    <TableCell className="text-right py-3 font-bold">
                       100%
                     </TableCell>
-                    <TableCell className="text-right font-bold">
+                    <TableCell className="text-right py-3 font-bold">
                       100%
                     </TableCell>
                   </TableRow>
@@ -192,7 +213,7 @@ const ExpenseTypeTab: React.FC<ExpenseTypeTabProps> = ({ expenseTypeData }) => {
             </div>
           </>
         ) : (
-          <div className="py-8 text-center text-muted-foreground">
+          <div className="py-8 text-center text-gray-500">
             No expense type data available for the selected period.
           </div>
         )}

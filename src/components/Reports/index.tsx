@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import ReportsHeader from './ReportsHeader';
 import RecentReportsList from './RecentReportsList';
 import { Button } from '@/components/ui/button';
-import { Plus, ArrowRight } from 'lucide-react';
+import { Plus, ArrowRight, ChevronLeft } from 'lucide-react';
 import ReportV2Apple from './ReportV2Apple';
+import ReportV2 from './ReportV2';
 
 // Sample reports data with explicit types that match the ReportItem interface
 const recentReports = [
@@ -18,9 +19,34 @@ const recentReports = [
 const Reports: React.FC = () => {
   const navigate = useNavigate();
   const [showReport, setShowReport] = useState(false);
+  const [viewMode, setViewMode] = useState<'standard' | 'apple'>('standard');
   
   if (showReport) {
-    return <ReportV2Apple />;
+    return viewMode === 'apple' ? (
+      <ReportV2Apple />
+    ) : (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <Button 
+            variant="ghost" 
+            className="flex items-center gap-2 text-sm font-medium" 
+            onClick={() => setShowReport(false)}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Back to Reports
+          </Button>
+          
+          <Button 
+            onClick={() => setViewMode('apple')} 
+            variant="outline" 
+            className="flex items-center gap-2 text-sm rounded-full"
+          >
+            Switch to Apple View
+          </Button>
+        </div>
+        <ReportV2 />
+      </div>
+    );
   }
   
   return (

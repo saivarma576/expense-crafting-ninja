@@ -215,8 +215,8 @@ const ReportV2Apple: React.FC = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
               <div className="px-6 py-4 bg-gradient-to-r from-gray-50 to-white border-b">
-                <h1 className="text-2xl font-semibold text-gray-900">Expense Report</h1>
-                <p className="text-gray-500 text-sm">April 2025</p>
+                <h1 className="text-2xl font-semibold text-gray-900">Expense Reports Dashboard</h1>
+                <p className="text-gray-500 text-sm">Comprehensive analysis and insights for expense management</p>
               </div>
               
               <div className="p-6">
