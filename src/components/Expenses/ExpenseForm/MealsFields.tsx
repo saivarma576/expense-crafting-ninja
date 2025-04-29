@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -32,7 +31,7 @@ const MealsFields: React.FC<FieldGroupProps> = ({
   const checkInDate = values.date ? new Date(values.date) : new Date();
   const checkOutDate = values.throughDate ? new Date(values.throughDate) : addDays(checkInDate, 1);
   
-  const providedMeals: Record<string, Meal[]> = {
+  const providedMeals: Record<string, MealType[]> = {
     [format(checkInDate, 'yyyy-MM-dd')]: [],
     [format(checkOutDate, 'yyyy-MM-dd')]: [],
   };

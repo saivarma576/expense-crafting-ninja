@@ -1,115 +1,176 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormValues, MealType, MealData } from './types';
+import { format, eachDayOfInterval, isAfter, isBefore } from 'date-fns';
+import { MealData, FormValues } from './types';
 import DailyMealGrid from './DailyMealGrid';
 
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Checkbox } from '@/components/ui/checkbox';
-
 const MealSelection: React.FC = () => {
-  const { control, watch, setValue } = useFormContext<FormValues>();
-  const [sameForAllDays, setSameForAllDays] = useState(false);
-  const [dailyMeals, setDailyMeals] = useState<Record<string, MealType[]>>({});
-  
-  const watchMealsProvided = watch('mealsProvided');
-  const watchMeals = watch('meals') || [];
-  const watchFromDate = watch('fromDate');
-  const watchToDate = watch('toDate');
+  const { register, watch, setValue } = useFormContext<FormValues>();
+  const mealsProvided = watch('mealsProvided');
+  const fromDate = watch('fromDate');
+  const toDate = watch('toDate');
+  const [showMealDetails, setShowMealDetails] = useState<boolean>(false);
 
-  const handleDailyMealChange = useCallback((date: string, meal: MealType) => {
-    setDailyMeals(prev => {
-      const currentMeals = prev[date] || [];
-      const updatedMeals = currentMeals.includes(meal)
-        ? currentMeals.filter(m => m !== meal)
-        : [...currentMeals, meal];
-      
-      return {
-        ...prev,
-        [date]: updatedMeals
-      };
-    });
-  }, []);
+  useEffect(() => {
+    setShowMealDetails(mealsProvided === 'yes');
 
-  const handleSameForAllDaysChange = useCallback((checked: boolean) => {
-    setSameForAllDays(checked);
-    if (checked) {
-      // When checked, apply all meals to all dates
-      const allMeals: MealType[] = ['breakfast', 'lunch', 'dinner'];
-      const newDailyMeals: Record<string, MealType[]> = {};
-      const start = new Date(watchFromDate);
-      const end = new Date(watchToDate);
-      
-      for (let date = start; date <= end; date.setDate(date.getDate() + 1)) {
-        newDailyMeals[date.toISOString().split('T')[0]] = [...allMeals];
-      }
-      setDailyMeals(newDailyMeals);
+    if (mealsProvided === 'yes' && fromDate && toDate) {
+      // Generate dates range
+      const dates = eachDayOfInterval({
+        start: fromDate,
+        end: toDate
+      });
+
+      // Initialize mealData array
+      const mealsData: MealData[] = dates.map(date => ({
+        date: format(date, 'yyyy-MM-dd'),
+        breakfast: false,
+        lunch: false,
+        dinner: false
+      }));
+
+      setValue('meals', mealsData);
+    } else {
+      setValue('meals', []);
     }
-  }, [watchFromDate, watchToDate]);
+  }, [mealsProvided, fromDate, toDate, setValue]);
+
+  // Handle meal selection change
+  const handleMealChange = (dateIndex: number, mealType: string, isChecked: boolean) => {
+    const currentMeals = watch('meals') || [];
+    
+    // Make a copy of the current meals array
+    const updatedMeals = [...currentMeals];
+    
+    // Update the specific meal type for the specific date
+    if (updatedMeals[dateIndex]) {
+      updatedMeals[dateIndex] = {
+        ...updatedMeals[dateIndex],
+        [mealType]: isChecked
+      };
+      
+      // Update the form value
+      setValue('meals', updatedMeals);
+    }
+  };
+
+  if (!fromDate || !toDate) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="mealsProvided" className="block text-sm font-medium mb-1">
+            Were any meals provided during the business trip?
+          </label>
+          <div className="space-y-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="meals-yes"
+                value="yes"
+                className="h-4 w-4"
+                {...register('mealsProvided')}
+              />
+              <label htmlFor="meals-yes" className="ml-2 block text-sm">
+                Yes
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="meals-no"
+                value="no"
+                className="h-4 w-4"
+                {...register('mealsProvided')}
+              />
+              <label htmlFor="meals-no" className="ml-2 block text-sm">
+                No
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        {mealsProvided === 'yes' && (
+          <p className="text-sm text-amber-600">
+            Please select travel dates to specify meal details.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Generate dates range
+  const dates = fromDate && toDate ? eachDayOfInterval({
+    start: fromDate,
+    end: toDate
+  }) : [];
+
+  // Get current meals
+  const currentMeals = watch('meals') || [];
 
   return (
-    <>
-      <FormField
-        control={control}
-        name="mealsProvided"
-        render={({ field }) => (
-          <FormItem className="space-y-3">
-            <FormLabel>Were meals provided during the trip?</FormLabel>
-            <FormControl>
-              <RadioGroup
-                onValueChange={field.onChange}
-                value={field.value}
-                className="flex space-x-4"
-              >
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <RadioGroupItem value="yes" />
-                  </FormControl>
-                  <FormLabel className="font-normal">Yes</FormLabel>
-                </FormItem>
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <RadioGroupItem value="no" />
-                  </FormControl>
-                  <FormLabel className="font-normal">No</FormLabel>
-                </FormItem>
-              </RadioGroup>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {watchMealsProvided === 'yes' && watchFromDate && watchToDate && (
-        <div className="space-y-4 pt-2 animate-fade-in">
-          <div className="flex items-center gap-2 mb-4">
-            <Checkbox
-              id="sameForAllDays"
-              checked={sameForAllDays}
-              onCheckedChange={(checked) => handleSameForAllDaysChange(checked as boolean)}
+    <div className="space-y-4">
+      <div>
+        <label htmlFor="mealsProvided" className="block text-sm font-medium mb-1">
+          Were any meals provided during the business trip?
+        </label>
+        <div className="space-y-2">
+          <div className="flex items-center">
+            <input
+              type="radio"
+              id="meals-yes"
+              value="yes"
+              className="h-4 w-4"
+              {...register('mealsProvided')}
             />
-            <label htmlFor="sameForAllDays" className="text-sm">
-              All meals are provided for all days
+            <label htmlFor="meals-yes" className="ml-2 block text-sm">
+              Yes
             </label>
           </div>
+          <div className="flex items-center">
+            <input
+              type="radio"
+              id="meals-no"
+              value="no"
+              className="h-4 w-4"
+              {...register('mealsProvided')}
+            />
+            <label htmlFor="meals-no" className="ml-2 block text-sm">
+              No
+            </label>
+          </div>
+        </div>
+      </div>
 
-          <DailyMealGrid
-            startDate={watchFromDate}
-            endDate={watchToDate}
-            selectedMeals={watchMeals}
-            dailyMeals={dailyMeals}
-            onDailyMealChange={handleDailyMealChange}
-          />
+      {showMealDetails && (
+        <div className="border rounded-md p-4 bg-gray-50">
+          <h3 className="font-medium mb-3">Meal Details</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Select which meals were provided on each day of your trip.
+          </p>
+
+          {dates.map((date, dateIndex) => {
+            const mealData = currentMeals[dateIndex] || {
+              date: format(date, 'yyyy-MM-dd'),
+              breakfast: false,
+              lunch: false,
+              dinner: false
+            };
+
+            return (
+              <DailyMealGrid
+                key={dateIndex}
+                date={date}
+                breakfast={mealData.breakfast}
+                lunch={mealData.lunch}
+                dinner={mealData.dinner}
+                onMealChange={(mealType, isChecked) => handleMealChange(dateIndex, mealType, isChecked)}
+              />
+            );
+          })}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
