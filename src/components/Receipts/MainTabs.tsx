@@ -12,14 +12,14 @@ const MainTabs: React.FC<MainTabsProps> = ({
   onTabChange
 }) => {
   return (
-    <div className="flex justify-center pt-3 pb-2 border-b border-gray-200">
-      <div className="bg-gray-100 p-1 rounded-full flex">
+    <div className="flex pl-4 pt-3 pb-2 border-b border-gray-200">
+      <div className="bg-gray-100 p-1 rounded-lg flex">
         {["email", "captured", "archived"].map((tab) => (
           <button
             key={tab}
             onClick={() => onTabChange(tab)}
             className={cn(
-              "relative px-6 py-1.5 text-sm font-medium rounded-full transition-all duration-200",
+              "relative px-5 py-1.5 text-sm font-medium rounded-md transition-all duration-200",
               activeTab === tab 
                 ? "bg-white text-gray-900 shadow-sm" 
                 : "text-gray-600 hover:text-gray-900"
