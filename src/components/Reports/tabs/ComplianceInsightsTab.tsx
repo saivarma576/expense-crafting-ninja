@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FileCheck, AlertTriangle, Clock, CalendarRange, Info, TrendingDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { FileCheck, AlertTriangle, Clock, CalendarRange, Info, TrendingDown, ArrowUp, ArrowDown, Check } from 'lucide-react';
 import {
   Card,
   CardContent,
