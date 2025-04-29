@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { Card } from "@/components/ui/card";
 import MainTabs from './MainTabs';
-import SubTabs from './SubTabs';
 import ReceiptFilters from './ReceiptFilters';
 import ReceiptGrid from './ReceiptGrid';
 import UploadButton from './UploadButton';
@@ -34,7 +32,7 @@ const Receipts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
   const [activeMainTab, setActiveMainTab] = useState<string>('email');
-  const [activeSubTab, setActiveSubTab] = useState<string>('inbox');
+  const [activeOption, setActiveOption] = useState<string>('inbox');
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined;
     to: Date | undefined;
@@ -141,23 +139,23 @@ const Receipts: React.FC = () => {
     // Filter by main tab (source)
     const matchesMainTab = receipt.source === activeMainTab;
       
-    // Filter by sub-tab (only when main tab is 'email')
-    const matchesSubTab = activeMainTab !== 'email' || 
-      (activeSubTab === 'inbox' && !receipt.draftId) || 
-      (activeSubTab === 'upload' && receipt.draftId);
+    // Filter by option (only when main tab is 'email')
+    const matchesOption = activeMainTab !== 'email' || 
+      (activeOption === 'inbox' && !receipt.draftId) || 
+      (activeOption === 'upload' && receipt.draftId);
     
     // Filter by date range if set
     const matchesDateRange = !dateRange.from || !dateRange.to || 
       (new Date(receipt.date) >= dateRange.from && 
        new Date(receipt.date) <= dateRange.to);
     
-    return matchesSearch && matchesFilter && matchesMainTab && matchesSubTab && matchesDateRange;
+    return matchesSearch && matchesFilter && matchesMainTab && matchesOption && matchesDateRange;
   });
   
   // Show subtabs only for email tab
   useEffect(() => {
     if (activeMainTab !== 'email') {
-      setActiveSubTab('inbox'); // Default sub-tab
+      setActiveOption('inbox'); // Default sub-tab
     }
   }, [activeMainTab]);
   
@@ -179,11 +177,17 @@ const Receipts: React.FC = () => {
   };
   
   const handleUploadReceipt = () => {
+    setActiveOption('upload');
     toast.success("Receipt upload initiated");
   };
 
   const handleCaptureReceipt = () => {
+    setActiveOption('camera');
     toast.success("Receipt capture initiated");
+  };
+
+  const handleInboxView = () => {
+    setActiveOption('inbox');
   };
 
   const handleViewReceipt = (receiptId: string) => {
@@ -198,9 +202,9 @@ const Receipts: React.FC = () => {
     toast.info(`Opening draft expense ${draftId}`);
   };
   
-  // Render appropriate UI based on sub-tab
-  const renderSubTabContent = () => {
-    if (activeMainTab === 'email' && activeSubTab === 'upload') {
+  // Render appropriate UI based on active option
+  const renderOptionContent = () => {
+    if (activeMainTab === 'email' && activeOption === 'upload') {
       return (
         <div className="px-4 py-8 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200">
           <div className="max-w-lg w-full bg-white border border-gray-200 border-dashed rounded-xl p-8 text-center">
@@ -218,7 +222,7 @@ const Receipts: React.FC = () => {
           </div>
         </div>
       );
-    } else if (activeMainTab === 'email' && activeSubTab === 'camera') {
+    } else if (activeMainTab === 'email' && activeOption === 'camera') {
       return (
         <div className="px-4 py-8 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200">
           <div className="max-w-lg w-full bg-white border border-gray-200 border-dashed rounded-xl p-8 text-center">
@@ -247,8 +251,13 @@ const Receipts: React.FC = () => {
         <h1 className="text-2xl font-semibold text-gray-900">Receipts</h1>
         
         {/* Show appropriate action button based on current tab */}
-        {activeMainTab === 'email' && activeSubTab === 'inbox' && (
-          <UploadButton onClick={handleUploadReceipt} />
+        {activeMainTab === 'email' && activeOption === 'inbox' && (
+          <UploadButton 
+            onClick={handleUploadReceipt}
+            onInboxClick={handleInboxView}
+            onUploadClick={handleUploadReceipt}
+            onCaptureClick={handleCaptureReceipt}
+          />
         )}
         
         {activeMainTab === 'captured' && (
@@ -269,19 +278,11 @@ const Receipts: React.FC = () => {
           onTabChange={setActiveMainTab} 
         />
         
-        {/* Sub Tabs - Only shown for Email tab */}
-        {activeMainTab === 'email' && (
-          <SubTabs 
-            activeSubTab={activeSubTab} 
-            onSubTabChange={setActiveSubTab} 
-          />
-        )}
-        
-        {/* Conditional content based on selected sub-tab */}
-        {renderSubTabContent()}
+        {/* Conditional content based on selected option */}
+        {renderOptionContent()}
         
         {/* Only show receipts grid when not in upload/camera mode */}
-        {!(activeMainTab === 'email' && (activeSubTab === 'upload' || activeSubTab === 'camera')) && (
+        {!(activeMainTab === 'email' && (activeOption === 'upload' || activeOption === 'camera')) && (
           <>
             {/* Search and Filters */}
             <ReceiptFilters 
@@ -307,7 +308,10 @@ const Receipts: React.FC = () => {
       
       {/* Floating capture button - Only visible on mobile */}
       <div className="md:hidden">
-        <UploadButton onClick={activeMainTab === 'captured' ? handleCaptureReceipt : handleUploadReceipt} floating={true} />
+        <UploadButton 
+          onClick={activeMainTab === 'captured' ? handleCaptureReceipt : handleUploadReceipt} 
+          floating={true} 
+        />
       </div>
     </div>
   );
