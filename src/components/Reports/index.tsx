@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ReportsHeader from './ReportsHeader';
 import RecentReportsList from './RecentReportsList';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, ArrowRight } from 'lucide-react';
 import ReportV2Apple from './ReportV2Apple';
 
 // Sample reports data with explicit types that match the ReportItem interface
@@ -17,7 +17,7 @@ const recentReports = [
 
 const Reports: React.FC = () => {
   const navigate = useNavigate();
-  const [showReport, setShowReport] = useState(true); // Default to true to show the report immediately
+  const [showReport, setShowReport] = useState(false);
   
   if (showReport) {
     return <ReportV2Apple />;
@@ -31,20 +31,35 @@ const Reports: React.FC = () => {
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Recent Reports</h2>
           <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-blue-600"
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 rounded-full px-4"
             onClick={() => setShowReport(true)}
           >
-            <Plus className="h-4 w-4 mr-1" /> New Report
+            <Plus className="h-4 w-4" /> New Report
           </Button>
         </div>
         
-        <div>
-          <RecentReportsList 
-            recentReports={recentReports}
-            onViewReport={() => setShowReport(true)} 
-          />
+        <div className="grid gap-4">
+          {recentReports.map(report => (
+            <div 
+              key={report.id}
+              className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex justify-between items-center"
+              onClick={() => setShowReport(true)}
+            >
+              <div>
+                <h3 className="font-medium">{report.name}</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  {new Date(report.date).toLocaleDateString('en-US', { 
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
+              <Button variant="ghost" size="sm" className="text-blue-600">
+                View <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
     </div>

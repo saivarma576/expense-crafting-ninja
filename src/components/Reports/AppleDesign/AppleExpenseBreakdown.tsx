@@ -29,13 +29,14 @@ interface AppleExpenseBreakdownProps {
   monthlyData: any[];
 }
 
+// More muted Apple-style color palette
 const EXPENSE_COLORS = {
-  'Meals': '#FF9500',
-  'Travel': '#007AFF',
-  'Hotel': '#5856D6',
-  'Mileage': '#34C759',
-  'Office Supplies': '#FF2D55',
-  'Misc': '#AF52DE'
+  'Meals': '#FF9F0A',
+  'Travel': '#0A84FF',
+  'Hotel': '#5E5CE6',
+  'Mileage': '#30D158',
+  'Office Supplies': '#FF453A',
+  'Misc': '#BF5AF2'
 };
 
 const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({ 
@@ -75,22 +76,22 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
   return (
     <div className="space-y-6">
       <Tabs defaultValue={activeView} onValueChange={setActiveView} className="w-full">
-        <TabsList className="w-full grid grid-cols-3 mb-6 bg-gray-100 p-1 rounded-full">
+        <TabsList className="w-full grid grid-cols-3 mb-6 bg-gray-50 p-1 rounded-full">
           <TabsTrigger 
             value="distribution" 
-            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
+            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-300"
           >
             Distribution
           </TabsTrigger>
           <TabsTrigger 
             value="monthly" 
-            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
+            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-300"
           >
             Monthly Trend
           </TabsTrigger>
           <TabsTrigger 
             value="detail" 
-            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
+            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm transition-all duration-300"
           >
             Detail View
           </TabsTrigger>
@@ -198,7 +199,7 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                     <div className="text-3xl font-semibold">
                       {valueType === 'amount' 
                         ? formatCurrency(getTotal()) 
-                        : getTotal()}
+                        : getTotal().toString()}
                     </div>
                     <div className="text-sm text-gray-500">
                       {valueType === 'amount' ? 'Total' : 'Items'}
@@ -234,7 +235,7 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                       }}
                     />
                     <Tooltip 
-                      formatter={(value: number) => formatCurrency(value || 0)} 
+                      formatter={(value: number) => [formatCurrency(value || 0), "Amount"]} 
                       contentStyle={{ 
                         borderRadius: '12px', 
                         border: 'none', 
@@ -246,7 +247,7 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                     />
                     <Bar 
                       dataKey="amount" 
-                      fill="#007AFF"
+                      fill="#0A84FF"
                       fillOpacity={0.7} 
                       radius={[6, 6, 0, 0]}
                       name="Amount"
@@ -282,7 +283,7 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                         : 0;
                       
                       return (
-                        <tr key={index} className="hover:bg-gray-50">
+                        <tr key={index} className="hover:bg-gray-50 transition-colors">
                           <td className="py-4 px-4 text-sm">
                             <div className="flex items-center">
                               <span 

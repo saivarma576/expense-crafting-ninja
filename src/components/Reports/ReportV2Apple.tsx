@@ -44,7 +44,7 @@ const ReportV2Apple: React.FC = () => {
   const [departmentFilter, setDepartmentFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(true); // Default to Apple view
   
   // Filtered data based on date range
   const [filteredData, setFilteredData] = useState({
@@ -88,7 +88,7 @@ const ReportV2Apple: React.FC = () => {
         <Button 
           onClick={handleFlip} 
           variant="outline" 
-          className="flex items-center gap-2 text-sm"
+          className="flex items-center gap-2 text-sm rounded-full"
           aria-label="Switch view"
         >
           <RotateCw className="h-4 w-4" />
@@ -249,7 +249,7 @@ const ReportV2Apple: React.FC = () => {
                 />
                 
                 <div className="mt-8 flex justify-end">
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full">
                     <Download className="mr-2 h-4 w-4" />
                     Export Full Report
                   </Button>
