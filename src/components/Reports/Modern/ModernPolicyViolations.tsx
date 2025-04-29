@@ -7,16 +7,15 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
-interface ComplianceInsight {
+export interface ComplianceInsight {
+  id: string;
+  name: string;
   category: string;
   count: number;
   trend: number;
   risk: string;
   impact: number;
   status: string;
-  // Add the missing properties required by ReportV3
-  id: string;
-  name: string;
   description: string;
 }
 

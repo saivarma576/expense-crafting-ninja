@@ -4,7 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps
 } from 'recharts';
 
-interface MonthlyExpenseData {
+export interface MonthlyExpenseData {
   name: string;
   expenses: number;
   month?: string;
@@ -32,10 +32,16 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
 };
 
 const ModernMonthlyExpenseChart: React.FC<ModernMonthlyExpenseChartProps> = ({ monthlyData }) => {
+  // Transform data if it has month/totalExpenses instead of name/expenses
+  const formattedData = monthlyData.map(item => ({
+    name: item.name || item.month || '',
+    expenses: item.expenses || item.totalExpenses || 0
+  }));
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
-        data={monthlyData}
+        data={formattedData}
         margin={{
           top: 5,
           right: 30,
