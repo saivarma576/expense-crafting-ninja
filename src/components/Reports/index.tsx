@@ -2,13 +2,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReportsHeader from './ReportsHeader';
-import RecentReportsList from './RecentReportsList';
 import { Button } from '@/components/ui/button';
 import { Plus, ArrowRight, ChevronLeft } from 'lucide-react';
 import ReportV2Apple from './ReportV2Apple';
 import ReportV2 from './ReportV2';
+import ReportV3 from './ReportV3';
 
-// Sample reports data with explicit types that match the ReportItem interface
+// Sample reports data
 const recentReports = [
   { id: '1', name: 'Q1 Financial Report', type: 'quarterly' as const, date: '2025-04-15T00:00:00Z' },
   { id: '2', name: 'Marketing Department Expenses', type: 'department' as const, date: '2025-04-10T00:00:00Z' },
@@ -19,34 +19,47 @@ const recentReports = [
 const Reports: React.FC = () => {
   const navigate = useNavigate();
   const [showReport, setShowReport] = useState(false);
-  const [viewMode, setViewMode] = useState<'standard' | 'apple'>('standard');
+  const [viewMode, setViewMode] = useState<'standard' | 'apple' | 'modern'>('standard');
   
   if (showReport) {
-    return viewMode === 'apple' ? (
-      <ReportV2Apple />
-    ) : (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button 
-            variant="ghost" 
-            className="flex items-center gap-2 text-sm font-medium" 
-            onClick={() => setShowReport(false)}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back to Reports
-          </Button>
-          
-          <Button 
-            onClick={() => setViewMode('apple')} 
-            variant="outline" 
-            className="flex items-center gap-2 text-sm rounded-full"
-          >
-            Switch to Apple View
-          </Button>
+    if (viewMode === 'apple') {
+      return <ReportV2Apple />;
+    } else if (viewMode === 'modern') {
+      return <ReportV3 onBack={() => setShowReport(false)} />;
+    } else {
+      return (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Button 
+              variant="ghost" 
+              className="flex items-center gap-2 text-sm font-medium" 
+              onClick={() => setShowReport(false)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back to Reports
+            </Button>
+            
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setViewMode('apple')} 
+                variant="outline" 
+                className="flex items-center gap-2 text-sm rounded-full"
+              >
+                Switch to Apple View
+              </Button>
+              <Button 
+                onClick={() => setViewMode('modern')} 
+                variant="outline" 
+                className="flex items-center gap-2 text-sm rounded-full"
+              >
+                Switch to Modern View
+              </Button>
+            </div>
+          </div>
+          <ReportV2 />
         </div>
-        <ReportV2 />
-      </div>
-    );
+      );
+    }
   }
   
   return (
@@ -58,7 +71,10 @@ const Reports: React.FC = () => {
           <h2 className="text-xl font-semibold">Recent Reports</h2>
           <Button 
             className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 rounded-full px-4"
-            onClick={() => setShowReport(true)}
+            onClick={() => {
+              setViewMode('modern');
+              setShowReport(true);
+            }}
           >
             <Plus className="h-4 w-4" /> New Report
           </Button>
@@ -69,7 +85,10 @@ const Reports: React.FC = () => {
             <div 
               key={report.id}
               className="p-4 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex justify-between items-center"
-              onClick={() => setShowReport(true)}
+              onClick={() => {
+                setViewMode('modern');
+                setShowReport(true);
+              }}
             >
               <div>
                 <h3 className="font-medium">{report.name}</h3>
