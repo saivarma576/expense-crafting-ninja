@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { 
-  Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink
+  Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
+  Airplane, Car, Coffee, Building2, Briefcase
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -40,26 +41,44 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
   onDownloadReceipt,
   onOpenDraft
 }) => {
+  // Get category icon component
+  const getCategoryIcon = (category: string) => {
+    switch(category.toLowerCase()) {
+      case 'airfare':
+        return <Airplane className="h-8 w-8 text-blue-500" />;
+      case 'hotel':
+        return <Building2 className="h-8 w-8 text-purple-500" />;
+      case 'meals':
+        return <Coffee className="h-8 w-8 text-red-500" />;
+      case 'transport':
+        return <Car className="h-8 w-8 text-green-500" />;
+      case 'rental':
+        return <Car className="h-8 w-8 text-amber-500" />;
+      default:
+        return <Briefcase className="h-8 w-8 text-gray-500" />;
+    }
+  };
+
   // Get status badge component
   const StatusBadge = () => {
     switch(receipt.status) {
       case 'processed':
         return (
-          <Badge variant="success" className="absolute top-3 right-3 flex items-center gap-1 shadow-sm text-xs">
+          <Badge variant="success" className="absolute top-2 right-2 flex items-center gap-1 shadow-sm text-xs">
             <CheckCircle2 className="h-3 w-3" />
             <span>Processed</span>
           </Badge>
         );
       case 'pending':
         return (
-          <Badge variant="warning" className="absolute top-3 right-3 flex items-center gap-1 shadow-sm text-xs">
+          <Badge variant="warning" className="absolute top-2 right-2 flex items-center gap-1 shadow-sm text-xs">
             <Clock className="h-3 w-3 animate-pulse" />
             <span>Processing</span>
           </Badge>
         );
       case 'error':
         return (
-          <Badge variant="destructive" className="absolute top-3 right-3 flex items-center gap-1 shadow-sm text-xs">
+          <Badge variant="destructive" className="absolute top-2 right-2 flex items-center gap-1 shadow-sm text-xs">
             <Ban className="h-3 w-3" />
             <span>Error</span>
           </Badge>
@@ -79,39 +98,48 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
   // Get merchant name from either direct prop or extracted data
   const merchantName = receipt.merchantName || receipt.name;
 
+  // Determine if we should use a custom thumbnail or the provided URL
+  const hasCustomThumbnail = !receipt.thumbnailUrl.includes('placehold.co');
+
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-100 hover:border-gray-300 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
-      <div className="relative aspect-[3/2] bg-gray-50">
-        <img 
-          src={receipt.thumbnailUrl} 
-          alt={merchantName}
-          className="w-full h-full object-cover"
-        />
+    <div className="overflow-hidden rounded-lg border border-gray-100 hover:border-gray-300 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
+      <div className="relative aspect-[4/3] bg-gray-50">
+        {hasCustomThumbnail ? (
+          <img 
+            src={receipt.thumbnailUrl} 
+            alt={merchantName}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+            {getCategoryIcon(receipt.category)}
+          </div>
+        )}
         
         {/* Status Badge */}
         <StatusBadge />
         
         {/* Receipt Type Pill */}
-        <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-white/80 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700 border border-gray-100 shadow-sm">
+        <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-white/80 backdrop-blur-sm rounded-full text-xs font-medium text-gray-700 border border-gray-100 shadow-sm">
           {receipt.type === 'pdf' ? 'PDF' : 'Image'}
         </div>
 
         {/* Category Tag */}
-        <div className="absolute bottom-3 right-3">
+        <div className="absolute bottom-2 right-2">
           <Badge variant="outline" className="capitalize bg-white/80 backdrop-blur-sm text-gray-700 border shadow-sm text-xs font-medium">
             {receipt.category}
           </Badge>
         </div>
       </div>
       
-      <div className="p-3 space-y-2">
+      <div className="p-2.5 space-y-1.5">
         {/* Title and Date */}
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1 min-w-0">
             <TruncatedText 
               text={merchantName}
-              className="font-medium text-base text-gray-900"
-              maxLength={24}
+              className="font-medium text-sm text-gray-900"
+              maxLength={20}
             />
             <p className="text-xs text-gray-500 mt-0.5">
               {formattedDate}
@@ -120,14 +148,14 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
           
           {/* Amount if available */}
           {(receipt.amount || (receipt.extractedData && receipt.extractedData.amount)) && (
-            <span className="font-semibold text-base text-gray-900">
+            <span className="font-bold text-sm text-gray-900 ml-2">
               ${(receipt.amount || receipt.extractedData?.amount || 0).toFixed(2)}
             </span>
           )}
         </div>
         
         {/* Actions */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-1.5 border-t border-gray-100">
           <TooltipProvider>
             <div className="flex space-x-1">
               <Tooltip>
@@ -135,10 +163,10 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-8 w-8 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+                    className="h-7 w-7 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50"
                     onClick={() => onViewReceipt(receipt.id)}
                   >
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-3.5 w-3.5" />
                     <span className="sr-only">View Receipt</span>
                   </Button>
                 </TooltipTrigger>
@@ -152,10 +180,10 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="h-8 w-8 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+                    className="h-7 w-7 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50"
                     onClick={() => onDownloadReceipt(receipt.id)}
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-3.5 w-3.5" />
                     <span className="sr-only">Download Receipt</span>
                   </Button>
                 </TooltipTrigger>
@@ -171,10 +199,10 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-7 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded-full shadow-sm flex items-center gap-1"
+                    className="h-6 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded-full shadow-sm flex items-center gap-1"
                     onClick={() => onOpenDraft(receipt.draftId!)}
                   >
-                    <ExternalLink className="h-3 w-3 mr-1" />
+                    <ExternalLink className="h-3 w-3 mr-0.5" />
                     Open Draft
                   </Button>
                 </TooltipTrigger>
