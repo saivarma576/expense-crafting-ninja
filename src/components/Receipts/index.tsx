@@ -1,16 +1,13 @@
-
-import React, { useState } from 'react';
-import { 
-  Search, Upload, Inbox, CheckCircle2, Clock, Eye, Download, 
-  FileText, Mail, MailOpen, Archive, Ban 
-} from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
+import React, { useState, useEffect } from 'react';
 import { toast } from "sonner";
-import TruncatedText from "@/components/ui/truncated-text";
+import { Card } from "@/components/ui/card";
+import MainTabs from './MainTabs';
+import SubTabs from './SubTabs';
+import ReceiptFilters from './ReceiptFilters';
+import ReceiptGrid from './ReceiptGrid';
+import UploadButton from './UploadButton';
+import { Upload } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 interface ReceiptItem {
   id: string;
@@ -28,7 +25,8 @@ interface ReceiptItem {
 const Receipts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('email');
+  const [activeMainTab, setActiveMainTab] = useState<string>('new');
+  const [activeSubTab, setActiveSubTab] = useState<string>('email');
   
   // Mock data
   const receipts: ReceiptItem[] = [
@@ -98,53 +96,53 @@ const Receipts: React.FC = () => {
       type: 'pdf'
     }
   ];
-  
-  // Filter receipts by tab and search/filter
+
+  // Filter receipts based on selected tabs, filters, and search term
   const filteredReceipts = receipts.filter(receipt => {
+    // Filter by search term
     const matchesSearch = receipt.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = !selectedFilter || receipt.status === selectedFilter;
-    const matchesTab = (
-      (activeTab === 'email' && receipt.source === 'email') ||
-      (activeTab === 'captured' && receipt.source === 'capture') ||
-      (activeTab === 'uploaded' && receipt.source === 'upload') ||
-      (activeTab === 'all')
-    );
     
-    return matchesSearch && matchesFilter && matchesTab;
+    // Filter by status filter
+    const matchesFilter = !selectedFilter || receipt.status === selectedFilter;
+    
+    // Filter by main tab
+    const matchesMainTab = 
+      (activeMainTab === 'new' && ['pending', 'error'].includes(receipt.status)) ||
+      (activeMainTab === 'processed' && receipt.status === 'processed') ||
+      (activeMainTab === 'archived'); // Currently no archived items in mock data
+      
+    // Filter by sub-tab (only when main tab is 'new')
+    const matchesSubTab = activeMainTab !== 'new' || 
+      (activeSubTab === 'email' && receipt.source === 'email') ||
+      (activeSubTab === 'upload' && receipt.source === 'upload');
+    
+    return matchesSearch && matchesFilter && matchesMainTab && matchesSubTab;
   });
   
-  const getStatusIcon = (status: string) => {
-    switch(status) {
-      case 'processed':
-        return <CheckCircle2 className="h-5 w-5 text-green-500" />;
-      case 'pending':
-        return <Clock className="h-5 w-5 text-amber-500" />;
-      case 'error':
-        return <Ban className="h-5 w-5 text-red-500" />;
-      default:
-        return null;
+  // Reset sub-tab when main tab changes
+  useEffect(() => {
+    if (activeMainTab !== 'new') {
+      setActiveSubTab('email'); // Default sub-tab
     }
+  }, [activeMainTab]);
+  
+  // Handle search change
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
   };
   
-  const getStatusText = (status: string) => {
-    switch(status) {
-      case 'processed':
-        return 'Processed';
-      case 'pending':
-        return 'Processing';
-      case 'error':
-        return 'Error';
-      default:
-        return status;
-    }
+  // Handle filter change
+  const handleFilterChange = (value: string | null) => {
+    setSelectedFilter(value);
   };
-
-  const getTypeIcon = (type: string) => {
-    return type === 'pdf' ? <FileText className="h-5 w-5" /> : <Eye className="h-5 w-5" />;
+  
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setSelectedFilter(null);
   };
-
+  
   const handleUploadReceipt = () => {
-    // In a real app, this would trigger a file upload dialog
     toast.success("Receipt upload initiated");
   };
 
@@ -158,351 +156,75 @@ const Receipts: React.FC = () => {
 
   const handleOpenDraft = (draftId: string) => {
     toast.info(`Opening draft expense ${draftId}`);
-    // In a real app, this would navigate to the draft expense page
   };
   
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900">Receipts</h1>
-        <Button 
-          className="bg-blue-500 hover:bg-blue-600 text-white shadow-sm group transition-all duration-300"
-          onClick={handleUploadReceipt}
-        >
-          <Upload className="h-5 w-5 mr-2 group-hover:scale-110 transition-transform" />
-          Upload Receipt
-        </Button>
+        
+        {/* Only show upload button in header when not on Upload tab */}
+        {!(activeMainTab === 'new' && activeSubTab === 'upload') && (
+          <UploadButton onClick={handleUploadReceipt} />
+        )}
       </div>
       
-      <Card className="border-gray-200 shadow-sm overflow-hidden">
-        <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="border-b border-gray-200">
-            <div className="px-4 py-3">
-              <TabsList className="bg-gray-100/80 p-1 grid grid-cols-4 gap-2">
-                <TabsTrigger 
-                  value="email" 
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  <Mail className="h-4 w-4 mr-2" />
-                  <span>Email</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="captured" 
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  <MailOpen className="h-4 w-4 mr-2" />
-                  <span>Captured</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="uploaded" 
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  <Upload className="h-4 w-4 mr-2" />
-                  <span>Uploaded</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="all" 
-                  className="data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  <Archive className="h-4 w-4 mr-2" />
-                  <span>All</span>
-                </TabsTrigger>
-              </TabsList>
+      <Card className="border-gray-200 shadow-sm overflow-hidden rounded-xl">
+        {/* Main Tabs */}
+        <MainTabs 
+          activeTab={activeMainTab} 
+          onTabChange={setActiveMainTab} 
+        />
+        
+        {/* Sub Tabs - Only shown when 'New' tab is active */}
+        {activeMainTab === 'new' && (
+          <SubTabs 
+            activeSubTab={activeSubTab} 
+            onSubTabChange={setActiveSubTab} 
+          />
+        )}
+        
+        {/* Upload UI - Only shown in Upload tab */}
+        {activeMainTab === 'new' && activeSubTab === 'upload' && (
+          <div className="px-4 py-8 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200">
+            <div className="max-w-lg w-full bg-white border border-gray-200 border-dashed rounded-xl p-8 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+                <Upload className="h-6 w-6 text-blue-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Receipt</h3>
+              <p className="text-gray-500 text-sm mb-6">Drag and drop receipt files here, or click to select files</p>
+              <Button 
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                onClick={handleUploadReceipt}
+              >
+                Select Files
+              </Button>
             </div>
           </div>
-
-          <div className="px-4 py-3 bg-gray-50/50 border-b border-gray-200 sticky top-0 z-10">
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <div className="relative flex-1 w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <input
-                  type="text"
-                  placeholder="Search receipts..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 w-full h-10 rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-              
-              <div className="flex gap-2 flex-wrap">
-                <Button 
-                  variant="outline"
-                  onClick={() => setSelectedFilter(null)}
-                  className={`px-3 py-1.5 h-auto border-gray-300 transition-colors ${
-                    selectedFilter === null 
-                      ? 'bg-gray-100 text-gray-800 border-gray-300' 
-                      : 'bg-white text-gray-700'
-                  }`}
-                >
-                  All
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setSelectedFilter('processed')}
-                  className={`px-3 py-1.5 h-auto border-gray-300 transition-colors ${
-                    selectedFilter === 'processed' 
-                      ? 'bg-green-50 text-green-800 border-green-200' 
-                      : 'bg-white text-gray-700'
-                  }`}
-                >
-                  Processed
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setSelectedFilter('pending')}
-                  className={`px-3 py-1.5 h-auto border-gray-300 transition-colors ${
-                    selectedFilter === 'pending' 
-                      ? 'bg-amber-50 text-amber-800 border-amber-200' 
-                      : 'bg-white text-gray-700'
-                  }`}
-                >
-                  Processing
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setSelectedFilter('error')}
-                  className={`px-3 py-1.5 h-auto border-gray-300 transition-colors ${
-                    selectedFilter === 'error' 
-                      ? 'bg-red-50 text-red-800 border-red-200' 
-                      : 'bg-white text-gray-700'
-                  }`}
-                >
-                  Error
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <TabsContent value="email" className="m-0">
-            <ReceiptGrid 
-              receipts={filteredReceipts} 
-              getStatusIcon={getStatusIcon}
-              getStatusText={getStatusText}
-              getTypeIcon={getTypeIcon}
-              onViewReceipt={handleViewReceipt}
-              onDownloadReceipt={handleDownloadReceipt}
-              onOpenDraft={handleOpenDraft}
-            />
-          </TabsContent>
-          <TabsContent value="captured" className="m-0">
-            <ReceiptGrid 
-              receipts={filteredReceipts}
-              getStatusIcon={getStatusIcon}
-              getStatusText={getStatusText}
-              getTypeIcon={getTypeIcon}
-              onViewReceipt={handleViewReceipt}
-              onDownloadReceipt={handleDownloadReceipt}
-              onOpenDraft={handleOpenDraft}
-            />
-          </TabsContent>
-          <TabsContent value="uploaded" className="m-0">
-            <ReceiptGrid 
-              receipts={filteredReceipts}
-              getStatusIcon={getStatusIcon}
-              getStatusText={getStatusText}
-              getTypeIcon={getTypeIcon}
-              onViewReceipt={handleViewReceipt}
-              onDownloadReceipt={handleDownloadReceipt}
-              onOpenDraft={handleOpenDraft}
-            />
-          </TabsContent>
-          <TabsContent value="all" className="m-0">
-            <ReceiptGrid 
-              receipts={filteredReceipts}
-              getStatusIcon={getStatusIcon}
-              getStatusText={getStatusText}
-              getTypeIcon={getTypeIcon}
-              onViewReceipt={handleViewReceipt}
-              onDownloadReceipt={handleDownloadReceipt}
-              onOpenDraft={handleOpenDraft}
-            />
-          </TabsContent>
-        </Tabs>
+        )}
+        
+        {/* Search and Filters */}
+        <ReceiptFilters 
+          searchTerm={searchTerm}
+          onSearchChange={handleSearchChange}
+          selectedFilter={selectedFilter}
+          onFilterChange={handleFilterChange}
+        />
+        
+        {/* Receipt Grid */}
+        <ReceiptGrid 
+          receipts={filteredReceipts}
+          onViewReceipt={handleViewReceipt}
+          onDownloadReceipt={handleDownloadReceipt}
+          onOpenDraft={handleOpenDraft}
+          onClearFilters={handleClearFilters}
+        />
       </Card>
-    </div>
-  );
-};
-
-interface ReceiptGridProps {
-  receipts: ReceiptItem[];
-  getStatusIcon: (status: string) => JSX.Element | null;
-  getStatusText: (status: string) => string;
-  getTypeIcon: (type: string) => JSX.Element;
-  onViewReceipt: (receiptId: string) => void;
-  onDownloadReceipt: (receiptId: string) => void;
-  onOpenDraft: (draftId: string) => void;
-}
-
-const ReceiptGrid: React.FC<ReceiptGridProps> = ({
-  receipts,
-  getStatusIcon,
-  getStatusText,
-  getTypeIcon,
-  onViewReceipt,
-  onDownloadReceipt,
-  onOpenDraft
-}) => {
-  if (receipts.length === 0) {
-    return (
-      <div className="text-center py-16 border-t border-gray-100">
-        <Inbox className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-        <h3 className="text-lg font-medium text-gray-800 mb-1">No receipts found</h3>
-        <p className="text-gray-500 mb-6">No receipts match your current search or filter criteria</p>
-        <Button 
-          variant="outline"
-          className="bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-        >
-          Clear Filters
-        </Button>
+      
+      {/* Floating upload button - Only visible on mobile */}
+      <div className="md:hidden">
+        <UploadButton onClick={handleUploadReceipt} floating={true} />
       </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 p-5 bg-gray-50">
-      {receipts.map((receipt) => (
-        <Card 
-          key={receipt.id}
-          className="overflow-hidden border border-gray-200 rounded-lg hover:shadow-md transition-all duration-300 bg-white hover:scale-[1.02] hover:border-gray-300"
-        >
-          <div className="aspect-video relative bg-gray-100">
-            <img 
-              src={receipt.thumbnailUrl} 
-              alt={receipt.name}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-3 right-3">
-              {receipt.status === 'processed' && (
-                <Badge variant="success" className="flex items-center gap-1 shadow-sm">
-                  <CheckCircle2 className="h-3.5 w-3.5" />
-                  <span>{getStatusText(receipt.status)}</span>
-                </Badge>
-              )}
-              {receipt.status === 'pending' && (
-                <Badge variant="warning" className="flex items-center gap-1 shadow-sm">
-                  <Clock className="h-3.5 w-3.5 animate-pulse-subtle" />
-                  <span>{getStatusText(receipt.status)}</span>
-                </Badge>
-              )}
-              {receipt.status === 'error' && (
-                <Badge variant="destructive" className="flex items-center gap-1 shadow-sm">
-                  <Ban className="h-3.5 w-3.5" />
-                  <span>{getStatusText(receipt.status)}</span>
-                </Badge>
-              )}
-            </div>
-            
-            {/* Source badge */}
-            <div className="absolute top-3 left-3">
-              <div className="px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 text-gray-700 shadow-sm border border-gray-200 backdrop-blur-sm">
-                {receipt.source === 'email' ? (
-                  <Mail className="h-3.5 w-3.5" />
-                ) : receipt.source === 'capture' ? (
-                  <MailOpen className="h-3.5 w-3.5" />
-                ) : (
-                  <Upload className="h-3.5 w-3.5" />
-                )}
-              </div>
-            </div>
-            
-            {/* Type badge */}
-            <div className="absolute bottom-3 left-3">
-              <div className="px-2.5 py-1 text-xs font-medium rounded-full bg-white/90 text-gray-700 shadow-sm border border-gray-200 backdrop-blur-sm">
-                {receipt.type === 'pdf' ? 'PDF' : 'Image'}
-              </div>
-            </div>
-          </div>
-          
-          <CardContent className="p-4">
-            <div className="mb-3">
-              <TruncatedText 
-                text={receipt.name}
-                className="font-medium text-lg text-gray-900"
-                maxLength={40}
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date(receipt.date).toLocaleDateString('en-US', { 
-                  year: 'numeric', 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <div>
-                <p className="text-xs text-gray-500 mb-0.5">Category</p>
-                <Badge variant="outline" className="capitalize bg-gray-50 text-gray-700">
-                  {receipt.category}
-                </Badge>
-              </div>
-              {receipt.amount && (
-                <div className="text-right">
-                  <p className="text-xs text-gray-500 mb-0.5">Amount</p>
-                  <span className="font-semibold text-lg text-gray-900">${receipt.amount.toFixed(2)}</span>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-100">
-              <TooltipProvider>
-                <div className="flex space-x-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-9 w-9 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50"
-                        onClick={() => onViewReceipt(receipt.id)}
-                      >
-                        <Eye className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      <p className="text-xs">View Receipt</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-9 w-9 rounded-full text-gray-500 hover:text-blue-600 hover:bg-blue-50"
-                        onClick={() => onDownloadReceipt(receipt.id)}
-                      >
-                        <Download className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      <p className="text-xs">Download Receipt</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                
-                {receipt.draftId && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-9 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-700 hover:bg-blue-100 hover:text-blue-800 text-xs rounded-full shadow-sm"
-                        onClick={() => onOpenDraft(receipt.draftId!)}
-                      >
-                        <FileText className="h-3.5 w-3.5 mr-1.5" />
-                        Open Draft
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top">
-                      <p className="text-xs">Open draft expense for editing</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </TooltipProvider>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
     </div>
   );
 };
