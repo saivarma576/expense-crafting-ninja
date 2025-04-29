@@ -14,7 +14,7 @@ const MainTabs: React.FC<MainTabsProps> = ({
   return (
     <div className="flex justify-center pt-3 pb-2 border-b border-gray-200">
       <div className="bg-gray-100 p-1 rounded-full flex">
-        {["new", "processed", "archived"].map((tab) => (
+        {["email", "captured", "archived"].map((tab) => (
           <button
             key={tab}
             onClick={() => onTabChange(tab)}
@@ -25,7 +25,7 @@ const MainTabs: React.FC<MainTabsProps> = ({
                 : "text-gray-600 hover:text-gray-900"
             )}
           >
-            <span className="capitalize">{tab}</span>
+            <span className="capitalize">{tab} Receipts</span>
             {activeTab === tab && (
               <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-0.5 bg-blue-500 rounded-full" />
             )}

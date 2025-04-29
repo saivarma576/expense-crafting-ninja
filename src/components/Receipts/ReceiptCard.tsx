@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { 
-  Eye, Download, FileText, Clock, CheckCircle2, Ban
+  Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,13 @@ interface ReceiptCardProps {
     thumbnailUrl: string;
     type: 'pdf' | 'image';
     draftId?: string;
+    merchantName?: string;
+    extractedData?: {
+      date?: string;
+      amount?: number;
+      category?: string;
+      merchantName?: string;
+    };
   };
   onViewReceipt: (receiptId: string) => void;
   onDownloadReceipt: (receiptId: string) => void;
@@ -62,12 +69,22 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
     }
   };
 
+  // Format display date
+  const formattedDate = new Date(receipt.date).toLocaleDateString('en-US', { 
+    month: 'short', 
+    day: 'numeric',
+    year: 'numeric'
+  });
+
+  // Get merchant name from either direct prop or extracted data
+  const merchantName = receipt.merchantName || receipt.name;
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-100 hover:border-gray-300 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
       <div className="relative aspect-[3/2] bg-gray-50">
         <img 
           src={receipt.thumbnailUrl} 
-          alt={receipt.name}
+          alt={merchantName}
           className="w-full h-full object-cover"
         />
         
@@ -92,22 +109,20 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
         <div className="flex justify-between items-start">
           <div>
             <TruncatedText 
-              text={receipt.name}
+              text={merchantName}
               className="font-medium text-base text-gray-900"
               maxLength={24}
             />
             <p className="text-xs text-gray-500 mt-0.5">
-              {new Date(receipt.date).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric',
-                year: 'numeric'
-              })}
+              {formattedDate}
             </p>
           </div>
           
           {/* Amount if available */}
-          {receipt.amount && (
-            <span className="font-semibold text-base text-gray-900">${receipt.amount.toFixed(2)}</span>
+          {(receipt.amount || (receipt.extractedData && receipt.extractedData.amount)) && (
+            <span className="font-semibold text-base text-gray-900">
+              ${(receipt.amount || receipt.extractedData?.amount || 0).toFixed(2)}
+            </span>
           )}
         </div>
         
@@ -156,10 +171,10 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-7 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded-full shadow-sm"
+                    className="h-7 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded-full shadow-sm flex items-center gap-1"
                     onClick={() => onOpenDraft(receipt.draftId!)}
                   >
-                    <FileText className="h-3 w-3 mr-1" />
+                    <ExternalLink className="h-3 w-3 mr-1" />
                     Open Draft
                   </Button>
                 </TooltipTrigger>

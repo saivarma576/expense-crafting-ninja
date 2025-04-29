@@ -7,7 +7,7 @@ import SubTabs from './SubTabs';
 import ReceiptFilters from './ReceiptFilters';
 import ReceiptGrid from './ReceiptGrid';
 import UploadButton from './UploadButton';
-import { Upload } from 'lucide-react';
+import { Upload, Camera } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 interface ReceiptItem {
@@ -21,15 +21,26 @@ interface ReceiptItem {
   thumbnailUrl: string;
   type: 'pdf' | 'image';
   draftId?: string;
+  merchantName?: string;
+  extractedData?: {
+    date?: string;
+    amount?: number;
+    category?: string;
+    merchantName?: string;
+  };
 }
 
 const Receipts: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
-  const [activeMainTab, setActiveMainTab] = useState<string>('new');
-  const [activeSubTab, setActiveSubTab] = useState<string>('email');
+  const [activeMainTab, setActiveMainTab] = useState<string>('email');
+  const [activeSubTab, setActiveSubTab] = useState<string>('inbox');
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({ from: undefined, to: undefined });
   
-  // Mock data
+  // Enhanced mock data for demonstration
   const receipts: ReceiptItem[] = [
     {
       id: 'rec-001',
@@ -41,7 +52,14 @@ const Receipts: React.FC = () => {
       source: 'email',
       thumbnailUrl: 'https://placehold.co/600x400?text=Hotel+Receipt',
       type: 'pdf',
-      draftId: 'draft-001'
+      draftId: 'draft-001',
+      merchantName: 'Hilton Hotels & Resorts',
+      extractedData: {
+        date: '2023-10-14',
+        amount: 345.87,
+        category: 'hotel',
+        merchantName: 'Hilton Hotels & Resorts'
+      }
     },
     {
       id: 'rec-002',
@@ -52,7 +70,13 @@ const Receipts: React.FC = () => {
       amount: 542.33,
       source: 'email',
       thumbnailUrl: 'https://placehold.co/600x400?text=Airfare+Receipt',
-      type: 'image'
+      type: 'image',
+      extractedData: {
+        date: '2023-10-12',
+        amount: 542.33,
+        category: 'airfare',
+        merchantName: 'Delta Airlines'
+      }
     },
     {
       id: 'rec-003',
@@ -64,7 +88,14 @@ const Receipts: React.FC = () => {
       source: 'email',
       thumbnailUrl: 'https://placehold.co/600x400?text=Uber+Receipt',
       type: 'image',
-      draftId: 'draft-002'
+      draftId: 'draft-002',
+      merchantName: 'Uber',
+      extractedData: {
+        date: '2023-10-15',
+        amount: 28.45,
+        category: 'transport',
+        merchantName: 'Uber Technologies Inc.'
+      }
     },
     {
       id: 'rec-004',
@@ -101,29 +132,32 @@ const Receipts: React.FC = () => {
   // Filter receipts based on selected tabs, filters, and search term
   const filteredReceipts = receipts.filter(receipt => {
     // Filter by search term
-    const matchesSearch = receipt.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = receipt.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         (receipt.merchantName && receipt.merchantName.toLowerCase().includes(searchTerm.toLowerCase()));
     
     // Filter by status filter
     const matchesFilter = !selectedFilter || receipt.status === selectedFilter;
     
-    // Filter by main tab
-    const matchesMainTab = 
-      (activeMainTab === 'new' && ['pending', 'error'].includes(receipt.status)) ||
-      (activeMainTab === 'processed' && receipt.status === 'processed') ||
-      (activeMainTab === 'archived'); // Currently no archived items in mock data
+    // Filter by main tab (source)
+    const matchesMainTab = receipt.source === activeMainTab;
       
-    // Filter by sub-tab (only when main tab is 'new')
-    const matchesSubTab = activeMainTab !== 'new' || 
-      (activeSubTab === 'email' && receipt.source === 'email') ||
-      (activeSubTab === 'upload' && receipt.source === 'upload');
+    // Filter by sub-tab (only when main tab is 'email')
+    const matchesSubTab = activeMainTab !== 'email' || 
+      (activeSubTab === 'inbox' && !receipt.draftId) || 
+      (activeSubTab === 'upload' && receipt.draftId);
     
-    return matchesSearch && matchesFilter && matchesMainTab && matchesSubTab;
+    // Filter by date range if set
+    const matchesDateRange = !dateRange.from || !dateRange.to || 
+      (new Date(receipt.date) >= dateRange.from && 
+       new Date(receipt.date) <= dateRange.to);
+    
+    return matchesSearch && matchesFilter && matchesMainTab && matchesSubTab && matchesDateRange;
   });
   
-  // Reset sub-tab when main tab changes
+  // Show subtabs only for email tab
   useEffect(() => {
-    if (activeMainTab !== 'new') {
-      setActiveSubTab('email'); // Default sub-tab
+    if (activeMainTab !== 'email') {
+      setActiveSubTab('inbox'); // Default sub-tab
     }
   }, [activeMainTab]);
   
@@ -141,10 +175,15 @@ const Receipts: React.FC = () => {
   const handleClearFilters = () => {
     setSearchTerm('');
     setSelectedFilter(null);
+    setDateRange({ from: undefined, to: undefined });
   };
   
   const handleUploadReceipt = () => {
     toast.success("Receipt upload initiated");
+  };
+
+  const handleCaptureReceipt = () => {
+    toast.success("Receipt capture initiated");
   };
 
   const handleViewReceipt = (receiptId: string) => {
@@ -159,14 +198,67 @@ const Receipts: React.FC = () => {
     toast.info(`Opening draft expense ${draftId}`);
   };
   
+  // Render appropriate UI based on sub-tab
+  const renderSubTabContent = () => {
+    if (activeMainTab === 'email' && activeSubTab === 'upload') {
+      return (
+        <div className="px-4 py-8 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200">
+          <div className="max-w-lg w-full bg-white border border-gray-200 border-dashed rounded-xl p-8 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+              <Upload className="h-6 w-6 text-blue-500" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Receipt</h3>
+            <p className="text-gray-500 text-sm mb-6">Drag and drop receipt files here, or click to select files</p>
+            <Button 
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={handleUploadReceipt}
+            >
+              Select Files
+            </Button>
+          </div>
+        </div>
+      );
+    } else if (activeMainTab === 'email' && activeSubTab === 'camera') {
+      return (
+        <div className="px-4 py-8 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200">
+          <div className="max-w-lg w-full bg-white border border-gray-200 border-dashed rounded-xl p-8 text-center">
+            <div className="mx-auto w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+              <Camera className="h-6 w-6 text-blue-500" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Capture Receipt</h3>
+            <p className="text-gray-500 text-sm mb-6">Use your device camera to take a photo of your receipt</p>
+            <Button 
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+              onClick={handleCaptureReceipt}
+            >
+              Open Camera
+            </Button>
+          </div>
+        </div>
+      );
+    }
+    
+    return null;
+  };
+  
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-2xl font-semibold text-gray-900">Receipts</h1>
         
-        {/* Only show upload button in header when not on Upload tab */}
-        {!(activeMainTab === 'new' && activeSubTab === 'upload') && (
+        {/* Show appropriate action button based on current tab */}
+        {activeMainTab === 'email' && activeSubTab === 'inbox' && (
           <UploadButton onClick={handleUploadReceipt} />
+        )}
+        
+        {activeMainTab === 'captured' && (
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 text-white flex items-center gap-2"
+            onClick={handleCaptureReceipt}
+          >
+            <Camera className="h-4 w-4" />
+            Capture Receipt
+          </Button>
         )}
       </div>
       
@@ -177,54 +269,45 @@ const Receipts: React.FC = () => {
           onTabChange={setActiveMainTab} 
         />
         
-        {/* Sub Tabs - Only shown when 'New' tab is active */}
-        {activeMainTab === 'new' && (
+        {/* Sub Tabs - Only shown for Email tab */}
+        {activeMainTab === 'email' && (
           <SubTabs 
             activeSubTab={activeSubTab} 
             onSubTabChange={setActiveSubTab} 
           />
         )}
         
-        {/* Upload UI - Only shown in Upload tab */}
-        {activeMainTab === 'new' && activeSubTab === 'upload' && (
-          <div className="px-4 py-8 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200">
-            <div className="max-w-lg w-full bg-white border border-gray-200 border-dashed rounded-xl p-8 text-center">
-              <div className="mx-auto w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center mb-4">
-                <Upload className="h-6 w-6 text-blue-500" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Receipt</h3>
-              <p className="text-gray-500 text-sm mb-6">Drag and drop receipt files here, or click to select files</p>
-              <Button 
-                className="bg-blue-500 hover:bg-blue-600 text-white"
-                onClick={handleUploadReceipt}
-              >
-                Select Files
-              </Button>
-            </div>
-          </div>
+        {/* Conditional content based on selected sub-tab */}
+        {renderSubTabContent()}
+        
+        {/* Only show receipts grid when not in upload/camera mode */}
+        {!(activeMainTab === 'email' && (activeSubTab === 'upload' || activeSubTab === 'camera')) && (
+          <>
+            {/* Search and Filters */}
+            <ReceiptFilters 
+              searchTerm={searchTerm}
+              onSearchChange={handleSearchChange}
+              selectedFilter={selectedFilter}
+              onFilterChange={handleFilterChange}
+              dateRange={dateRange}
+              onDateRangeChange={setDateRange}
+            />
+            
+            {/* Receipt Grid */}
+            <ReceiptGrid 
+              receipts={filteredReceipts}
+              onViewReceipt={handleViewReceipt}
+              onDownloadReceipt={handleDownloadReceipt}
+              onOpenDraft={handleOpenDraft}
+              onClearFilters={handleClearFilters}
+            />
+          </>
         )}
-        
-        {/* Search and Filters */}
-        <ReceiptFilters 
-          searchTerm={searchTerm}
-          onSearchChange={handleSearchChange}
-          selectedFilter={selectedFilter}
-          onFilterChange={handleFilterChange}
-        />
-        
-        {/* Receipt Grid */}
-        <ReceiptGrid 
-          receipts={filteredReceipts}
-          onViewReceipt={handleViewReceipt}
-          onDownloadReceipt={handleDownloadReceipt}
-          onOpenDraft={handleOpenDraft}
-          onClearFilters={handleClearFilters}
-        />
       </Card>
       
-      {/* Floating upload button - Only visible on mobile */}
+      {/* Floating capture button - Only visible on mobile */}
       <div className="md:hidden">
-        <UploadButton onClick={handleUploadReceipt} floating={true} />
+        <UploadButton onClick={activeMainTab === 'captured' ? handleCaptureReceipt : handleUploadReceipt} floating={true} />
       </div>
     </div>
   );

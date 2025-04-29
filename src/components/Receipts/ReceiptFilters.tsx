@@ -1,21 +1,32 @@
 
 import React from 'react';
-import { Search } from 'lucide-react';
+import { Search, CalendarIcon, Filter } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 interface ReceiptFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   selectedFilter: string | null;
   onFilterChange: (value: string | null) => void;
+  dateRange?: { from: Date | undefined; to: Date | undefined };
+  onDateRangeChange?: (range: { from: Date | undefined; to: Date | undefined }) => void;
 }
 
 const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
   searchTerm,
   onSearchChange,
   selectedFilter,
-  onFilterChange
+  onFilterChange,
+  dateRange,
+  onDateRangeChange
 }) => {
   return (
     <div className="px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -30,6 +41,37 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
             className="pl-9 w-full h-10 rounded-full border border-gray-300 bg-white px-3 py-2 shadow-sm transition-colors placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
+        
+        {onDateRangeChange && (
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="h-10 px-3 border-gray-300 text-gray-700">
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL dd")} - {format(dateRange.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL dd, y")
+                  )
+                ) : (
+                  "Date Range"
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={onDateRangeChange}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        )}
         
         <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-full">
           <Button
