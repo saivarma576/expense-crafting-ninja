@@ -7,6 +7,10 @@ import {
 interface MonthlyExpenseData {
   name: string;
   expenses: number;
+  month?: string;
+  totalExpenses?: number;
+  reports?: number;
+  avgAmount?: number;
 }
 
 interface ModernMonthlyExpenseChartProps {

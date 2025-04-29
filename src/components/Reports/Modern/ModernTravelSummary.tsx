@@ -3,7 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, MapPin, Clock, Utensils, Airplane, Hotel } from 'lucide-react';
+import { CalendarDays, MapPin, Clock, Utensils, Airplay, Hotel } from 'lucide-react';
 
 // Sample travel data
 const travelData = [
@@ -79,7 +79,7 @@ const ModernTravelSummary: React.FC = () => {
                   <div className="space-y-3">
                     <div className="flex items-center">
                       <div className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-100">
-                        <Airplane className="h-4 w-4 text-blue-600" />
+                        <Airplay className="h-4 w-4 text-blue-600" />
                       </div>
                       <div className="ml-3">
                         <p className="text-sm font-medium">Flight</p>

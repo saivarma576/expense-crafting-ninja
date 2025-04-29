@@ -1,20 +1,19 @@
-
 import { subMonths, isWithinInterval, startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfYear } from 'date-fns';
 
-// Mock data for monthly expenses - Updated to match MonthlyExpenseData interface
+// Updated to match both MonthlyExpenseData interface in ModernMonthlyExpenseChart and in MonthlySummaryTab
 export const monthlyExpenseData = [
-  { month: 'Jan', totalExpenses: 15000, reports: 24, avgAmount: 625 },
-  { month: 'Feb', totalExpenses: 18000, reports: 28, avgAmount: 643 },
-  { month: 'Mar', totalExpenses: 22000, reports: 32, avgAmount: 688 },
-  { month: 'Apr', totalExpenses: 25000, reports: 36, avgAmount: 694 },
-  { month: 'May', totalExpenses: 21000, reports: 30, avgAmount: 700 },
-  { month: 'Jun', totalExpenses: 23000, reports: 33, avgAmount: 697 },
-  { month: 'Jul', totalExpenses: 26000, reports: 38, avgAmount: 684 },
-  { month: 'Aug', totalExpenses: 24000, reports: 35, avgAmount: 686 },
-  { month: 'Sep', totalExpenses: 29000, reports: 42, avgAmount: 690 },
-  { month: 'Oct', totalExpenses: 27000, reports: 39, avgAmount: 692 },
-  { month: 'Nov', totalExpenses: 30000, reports: 43, avgAmount: 698 },
-  { month: 'Dec', totalExpenses: 32000, reports: 45, avgAmount: 711 },
+  { name: 'Jan', expenses: 15000, month: 'Jan', totalExpenses: 15000, reports: 24, avgAmount: 625 },
+  { name: 'Feb', expenses: 18000, month: 'Feb', totalExpenses: 18000, reports: 28, avgAmount: 643 },
+  { name: 'Mar', expenses: 22000, month: 'Mar', totalExpenses: 22000, reports: 32, avgAmount: 688 },
+  { name: 'Apr', expenses: 25000, month: 'Apr', totalExpenses: 25000, reports: 36, avgAmount: 694 },
+  { name: 'May', expenses: 21000, month: 'May', totalExpenses: 21000, reports: 30, avgAmount: 700 },
+  { name: 'Jun', expenses: 23000, month: 'Jun', totalExpenses: 23000, reports: 33, avgAmount: 697 },
+  { name: 'Jul', expenses: 26000, month: 'Jul', totalExpenses: 26000, reports: 38, avgAmount: 684 },
+  { name: 'Aug', expenses: 24000, month: 'Aug', totalExpenses: 24000, reports: 35, avgAmount: 686 },
+  { name: 'Sep', expenses: 29000, month: 'Sep', totalExpenses: 29000, reports: 42, avgAmount: 690 },
+  { name: 'Oct', expenses: 27000, month: 'Oct', totalExpenses: 27000, reports: 39, avgAmount: 692 },
+  { name: 'Nov', expenses: 30000, month: 'Nov', totalExpenses: 30000, reports: 43, avgAmount: 698 },
+  { name: 'Dec', expenses: 32000, month: 'Dec', totalExpenses: 32000, reports: 45, avgAmount: 711 },
 ];
 
 // Mock data for expense type distribution - Updated to match ExpenseTypeData interface
@@ -26,14 +25,14 @@ export const expenseTypeData = [
   { name: 'Other', value: 6000, percentage: 7.5, avgClaim: 500, color: '#6b7280' },
 ];
 
-// Mock data for compliance insights - Updated to match ComplianceInsight interface
+// Mock data for compliance insights - Updated to match ComplianceInsight interface with additional fields
 export const complianceInsightsData = [
-  { category: 'Missing Receipts', count: 24, trend: 5, risk: 'high', impact: 12500, status: 'Non-Compliant' },
-  { category: 'Over Threshold', count: 18, trend: -2, risk: 'medium', impact: 8700, status: 'Non-Compliant' },
-  { category: 'Late Submission', count: 12, trend: -10, risk: 'low', impact: 5200, status: 'Warning' },
-  { category: 'Duplicate Claims', count: 5, trend: -15, risk: 'high', impact: 3800, status: 'Non-Compliant' },
-  { category: 'Incorrect Category', count: 9, trend: 0, risk: 'medium', impact: 2700, status: 'Warning' },
-  { category: 'Approved', count: 136, trend: 8, risk: 'low', impact: 0, status: 'Compliant' },
+  { id: '1', name: 'Missing Receipts', category: 'Missing Receipts', count: 24, trend: 5, risk: 'high', impact: 12500, status: 'Non-Compliant', description: 'Expense reports submitted without required receipt documentation.' },
+  { id: '2', name: 'Over Threshold', category: 'Over Threshold', count: 18, trend: -2, risk: 'medium', impact: 8700, status: 'Non-Compliant', description: 'Expenses that exceed the allowed threshold for their respective categories.' },
+  { id: '3', name: 'Late Submission', category: 'Late Submission', count: 12, trend: -10, risk: 'low', impact: 5200, status: 'Warning', description: 'Expense reports submitted after the deadline.' },
+  { id: '4', name: 'Duplicate Claims', category: 'Duplicate Claims', count: 5, trend: -15, risk: 'high', impact: 3800, status: 'Non-Compliant', description: 'Multiple expense claims for the same purchase or service.' },
+  { id: '5', name: 'Incorrect Category', category: 'Incorrect Category', count: 9, trend: 0, risk: 'medium', impact: 2700, status: 'Warning', description: 'Expenses filed under the wrong expense category.' },
+  { id: '6', name: 'Approved', category: 'Approved', count: 136, trend: 8, risk: 'low', impact: 0, status: 'Compliant', description: 'Expenses that comply with all company policies.' },
 ];
 
 // Mock data for department spending - Updated to match DepartmentData interface
@@ -167,7 +166,7 @@ export const getFilteredData = (
     return months.indexOf(monthStr);
   };
 
-  // Filter monthly data
+  // When filtering monthly data, ensure we preserve the name and expenses properties
   const filteredMonthlyData = monthlyExpenseData.filter(item => {
     const itemDate = new Date(now.getFullYear(), getMonthIndex(item.month), 1);
     return isWithinInterval(itemDate, { start: filterStartDate, end: filterEndDate });

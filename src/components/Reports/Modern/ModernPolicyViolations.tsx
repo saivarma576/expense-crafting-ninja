@@ -7,18 +7,21 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 
-interface ComplianceInsightsData {
+interface ComplianceInsight {
+  category: string;
+  count: number;
+  trend: number;
+  risk: string;
+  impact: number;
+  status: string;
+  // Add the missing properties required by ReportV3
   id: string;
   name: string;
-  count: number;
-  impact: number;
-  status: 'high' | 'medium' | 'low';
   description: string;
-  trend: 'up' | 'down' | 'flat';
 }
 
 interface ModernPolicyViolationsProps {
-  complianceData: ComplianceInsightsData[];
+  complianceData: ComplianceInsight[];
 }
 
 const getStatusColor = (status: 'high' | 'medium' | 'low') => {
@@ -57,8 +60,8 @@ const ModernPolicyViolations: React.FC<ModernPolicyViolationsProps> = ({ complia
             onClick={() => toggleItem(item.id)}
           >
             <div className="flex items-center">
-              <div className={`w-8 h-8 rounded-full ${item.status === 'high' ? 'bg-red-100' : item.status === 'medium' ? 'bg-amber-100' : 'bg-blue-100'} flex items-center justify-center mr-3`}>
-                <AlertTriangle className={`h-4 w-4 ${item.status === 'high' ? 'text-red-600' : item.status === 'medium' ? 'text-amber-600' : 'text-blue-600'}`} />
+              <div className={`w-8 h-8 rounded-full ${item.risk === 'high' ? 'bg-red-100' : item.risk === 'medium' ? 'bg-amber-100' : 'bg-blue-100'} flex items-center justify-center mr-3`}>
+                <AlertTriangle className={`h-4 w-4 ${item.risk === 'high' ? 'text-red-600' : item.risk === 'medium' ? 'text-amber-600' : 'text-blue-600'}`} />
               </div>
               <div>
                 <h4 className="text-sm font-medium">{item.name}</h4>
@@ -66,8 +69,8 @@ const ModernPolicyViolations: React.FC<ModernPolicyViolationsProps> = ({ complia
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <Badge className={getStatusColor(item.status)}>
-                {item.status === 'high' ? 'High Risk' : item.status === 'medium' ? 'Medium Risk' : 'Low Risk'}
+              <Badge className={getStatusColor(item.risk as 'high' | 'medium' | 'low')}>
+                {item.risk === 'high' ? 'High Risk' : item.risk === 'medium' ? 'Medium Risk' : 'Low Risk'}
               </Badge>
               {expandedItem === item.id ? (
                 <ChevronUp className="h-4 w-4 text-gray-500" />
