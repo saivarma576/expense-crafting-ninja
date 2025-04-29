@@ -103,13 +103,13 @@ const AppleTravelDetails: React.FC = () => {
                     border: 'none', 
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' 
                   }}
-                  formatter={(value, name) => {
+                  formatter={(value: any, name: any) => {
                     if (name === 'Duration') return [`${value} days`, name];
                     if (name === 'Cost') return [`$${value}`, name];
-                    if (name === 'Travelers') return [`${Math.round(value/10)} people`, name];
+                    if (name === 'Travelers') return [`${Math.round(Number(value)/10)} people`, name];
                     return [value, name];
                   }}
-                  labelFormatter={(label) => bubbleData[label].name}
+                  labelFormatter={(label: number) => bubbleData[label].name}
                 />
                 <Scatter name="Travel expenses" data={bubbleData}>
                   {

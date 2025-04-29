@@ -10,10 +10,21 @@ interface ReportItem {
 }
 
 interface RecentReportsListProps {
-  recentReports: ReportItem[];
+  recentReports?: ReportItem[];
+  onViewReport?: () => void; // Add this prop
 }
 
-const RecentReportsList: React.FC<RecentReportsListProps> = ({ recentReports }) => {
+const defaultReports: ReportItem[] = [
+  { id: '1', name: 'Q1 Financial Report', type: 'quarterly', date: '2025-04-15T00:00:00Z' },
+  { id: '2', name: 'Marketing Department Expenses', type: 'department', date: '2025-04-10T00:00:00Z' },
+  { id: '3', name: 'Travel Expense Breakdown', type: 'category', date: '2025-04-05T00:00:00Z' },
+  { id: '4', name: 'Revenue Forecast', type: 'forecast', date: '2025-04-01T00:00:00Z' }
+];
+
+const RecentReportsList: React.FC<RecentReportsListProps> = ({ 
+  recentReports = defaultReports, 
+  onViewReport 
+}) => {
   return (
     <div className="lg:col-span-2 space-y-6">
       <div className="glass-card rounded-xl p-6">
@@ -44,7 +55,8 @@ const RecentReportsList: React.FC<RecentReportsListProps> = ({ recentReports }) 
             return (
               <div 
                 key={report.id}
-                className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-primary/30 transition-all group"
+                onClick={() => onViewReport && onViewReport()}
+                className="flex items-center justify-between p-4 rounded-lg border border-border hover:border-primary/30 transition-all group cursor-pointer"
               >
                 <div className="flex items-center">
                   <div className="p-2 rounded-full bg-muted mr-3">
@@ -70,7 +82,10 @@ const RecentReportsList: React.FC<RecentReportsListProps> = ({ recentReports }) 
         </div>
         
         <div className="mt-5 pt-5 border-t">
-          <button className="w-full py-2.5 flex items-center justify-center text-primary font-medium hover:bg-primary/5 rounded-md transition-colors">
+          <button 
+            className="w-full py-2.5 flex items-center justify-center text-primary font-medium hover:bg-primary/5 rounded-md transition-colors"
+            onClick={() => onViewReport && onViewReport()}
+          >
             <span>Generate Custom Report</span>
             <ArrowRight className="ml-2 h-4 w-4" />
           </button>

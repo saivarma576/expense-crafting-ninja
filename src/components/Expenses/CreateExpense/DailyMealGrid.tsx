@@ -8,20 +8,52 @@ import { Separator } from '@/components/ui/separator';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface DailyMealGridProps {
+  date?: Date;  // Add this prop to fix the type error
   startDate?: Date;
   endDate?: Date;
-  selectedMeals: Meal[];
-  dailyMeals: Record<string, Meal[]>;
-  onDailyMealChange: (date: string, meal: Meal) => void;
+  breakfast?: boolean;  // Add these individual props for backward compatibility
+  lunch?: boolean;
+  dinner?: boolean;
+  selectedMeals?: Meal[];
+  dailyMeals?: Record<string, Meal[]>;
+  onMealChange?: (mealType: string, isChecked: boolean) => void;
+  onDailyMealChange?: (date: string, meal: Meal) => void;
 }
 
 const DailyMealGrid: React.FC<DailyMealGridProps> = ({
+  date,  // Add this prop to component parameters
   startDate,
   endDate,
-  selectedMeals,
-  dailyMeals,
+  breakfast = false,
+  lunch = false,
+  dinner = false,
+  selectedMeals = [],
+  dailyMeals = {},
+  onMealChange,
   onDailyMealChange
 }) => {
+  // Check if we're using the legacy props format
+  const isLegacyFormat = date !== undefined && onMealChange !== undefined;
+  
+  if (isLegacyFormat) {
+    return (
+      <div className="grid grid-cols-4 border-b last:border-b-0">
+        <div className="p-2 border-r text-sm">
+          {format(date as Date, 'dd-MMM-yy')}
+        </div>
+        <div className="p-2 border-r flex justify-center">
+          <Checkbox checked={breakfast} onCheckedChange={(checked) => onMealChange && onMealChange('breakfast', !!checked)} />
+        </div>
+        <div className="p-2 border-r flex justify-center">
+          <Checkbox checked={lunch} onCheckedChange={(checked) => onMealChange && onMealChange('lunch', !!checked)} />
+        </div>
+        <div className="p-2 flex justify-center">
+          <Checkbox checked={dinner} onCheckedChange={(checked) => onMealChange && onMealChange('dinner', !!checked)} />
+        </div>
+      </div>
+    );
+  }
+  
   const dateRange = useMemo(() => {
     if (!startDate || !endDate) return [];
     const dates = [];
@@ -100,7 +132,7 @@ const DailyMealGrid: React.FC<DailyMealGridProps> = ({
                 </div>
                 {['breakfast', 'lunch', 'dinner'].map((meal, index) => (
                   <div key={meal} className={`p-2 ${index < 2 ? 'border-r' : ''} flex justify-center`}>
-                    <Checkbox checked={mealsForDate.includes(meal as Meal)} onCheckedChange={() => onDailyMealChange(dateStr, meal as Meal)} />
+                    <Checkbox checked={mealsForDate.includes(meal as Meal)} onCheckedChange={() => onDailyMealChange && onDailyMealChange(dateStr, meal as Meal)} />
                   </div>
                 ))}
               </div>
