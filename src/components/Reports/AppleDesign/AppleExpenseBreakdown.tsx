@@ -16,6 +16,13 @@ import {
   Legend
 } from 'recharts';
 import { formatCurrency } from '@/components/Charts/chartUtils';
+import { 
+  Tooltip as UITooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from '@/components/ui/tooltip';
+import { ChevronRight, Info } from 'lucide-react';
 
 interface AppleExpenseBreakdownProps {
   expenseTypeData: any[];
@@ -38,19 +45,19 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
   const [activeView, setActiveView] = useState('distribution');
   const [valueType, setValueType] = useState<'amount' | 'count'>('amount');
   
-  // Format expense type data for pie chart
+  // Format expense type data for pie chart with safety checks
   const pieChartData = expenseTypeData.map(item => ({
-    name: item.type,
-    value: valueType === 'amount' ? item.amount : item.count,
+    name: item.type || 'Unknown',
+    value: valueType === 'amount' ? (item.amount || 0) : (item.count || 0),
     color: EXPENSE_COLORS[item.type as keyof typeof EXPENSE_COLORS] || '#999',
-    amount: item.amount,
-    count: item.count
+    amount: item.amount || 0,
+    count: item.count || 0
   }));
 
-  // Format monthly data for bar chart
+  // Format monthly data for bar chart with safety checks
   const monthData = monthlyData.map(item => ({
-    name: item.month,
-    amount: item.amount
+    name: item.month || '',
+    amount: item.amount || 0
   }));
 
   const getTotal = () => {
@@ -59,34 +66,40 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
       : expenseTypeData.reduce((sum, item) => sum + (item.count || 0), 0);
   };
 
+  // Calculate safe percentage
+  const calculatePercentage = (value: number, total: number) => {
+    if (!total || total === 0) return 0;
+    return Math.round((value / total) * 100);
+  };
+
   return (
     <div className="space-y-6">
       <Tabs defaultValue={activeView} onValueChange={setActiveView} className="w-full">
-        <TabsList className="w-full grid grid-cols-3 mb-6">
+        <TabsList className="w-full grid grid-cols-3 mb-6 bg-gray-100 p-1 rounded-full">
           <TabsTrigger 
             value="distribution" 
-            className="text-sm rounded-full data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900"
+            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
           >
             Distribution
           </TabsTrigger>
           <TabsTrigger 
             value="monthly" 
-            className="text-sm rounded-full data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900"
+            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
           >
             Monthly Trend
           </TabsTrigger>
           <TabsTrigger 
             value="detail" 
-            className="text-sm rounded-full data-[state=active]:bg-gray-100 data-[state=active]:text-gray-900"
+            className="text-sm rounded-full data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
           >
             Detail View
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="distribution">
+        <TabsContent value="distribution" className="animate-in fade-in duration-300">
           <Card className="overflow-hidden border-none rounded-2xl shadow-sm bg-[#F9FAFB]">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
+            <CardContent className="p-6 relative">
+              <div className="flex justify-between items-center mb-6">
                 <h3 className="text-sm font-medium text-gray-500">Expense Type Distribution</h3>
                 <div className="flex space-x-1 bg-gray-100 p-0.5 rounded-full text-xs">
                   <button 
@@ -103,9 +116,10 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                   </button>
                 </div>
               </div>
-              <div className="h-80">
+
+              <div className="relative" style={{ height: '320px' }}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+                  <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                     <Pie
                       data={pieChartData}
                       cx="50%"
@@ -115,27 +129,33 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                       outerRadius={110}
                       paddingAngle={2}
                       dataKey="value"
+                      strokeWidth={2}
+                      stroke="#FFFFFF"
                     >
                       {pieChartData.map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
                           fill={entry.color} 
-                          fillOpacity={0.8}
-                          stroke="white"
-                          strokeWidth={2}
+                          fillOpacity={0.85}
                         />
                       ))}
                     </Pie>
                     <Tooltip 
-                      formatter={(value, name, props) => {
+                      formatter={(value: any, name: any, props: any) => {
                         const entry = props?.payload;
+                        if (!entry) return [0, ''];
+                        
                         const totalValue = getTotal();
-                        const percentage = totalValue > 0 ? Math.round((Number(value) / totalValue) * 100) : 0;
+                        const percentage = calculatePercentage(Number(value), totalValue);
+                        
                         return [
                           <div key="tooltip" className="text-sm py-1">
-                            <div className="font-medium">{entry?.name}</div>
+                            <div className="font-medium">{entry.name}</div>
                             <div className="text-gray-600">
-                              {valueType === 'amount' ? formatCurrency(entry?.amount || 0) : `${entry?.count || 0} items`}
+                              {valueType === 'amount' 
+                                ? formatCurrency(entry.amount) 
+                                : `${entry.count || 0} items`
+                              }
                             </div>
                             <div className="text-gray-500 text-xs">{percentage}% of total</div>
                           </div>
@@ -154,9 +174,12 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                       verticalAlign="bottom" 
                       align="center"
                       formatter={(value, entry, index) => {
+                        if (index === undefined || !pieChartData[index]) return value;
+                        
                         const item = pieChartData[index];
                         const totalValue = getTotal();
-                        const percentage = totalValue > 0 ? Math.round((item.value / totalValue) * 100) : 0;
+                        const percentage = calculatePercentage(item.value, totalValue);
+                        
                         return (
                           <span className="text-xs text-gray-600">
                             {value} <span className="font-medium">{percentage}%</span>
@@ -168,18 +191,18 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                     />
                   </PieChart>
                 </ResponsiveContainer>
-              </div>
-              
-              {/* Center content for the donut chart */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <div className="text-center">
-                  <div className="text-3xl font-semibold">
-                    {valueType === 'amount' 
-                      ? formatCurrency(getTotal()) 
-                      : getTotal()}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {valueType === 'amount' ? 'Total' : 'Items'}
+                
+                {/* Center content for the donut chart */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <div className="text-center">
+                    <div className="text-3xl font-semibold">
+                      {valueType === 'amount' 
+                        ? formatCurrency(getTotal()) 
+                        : getTotal()}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {valueType === 'amount' ? 'Total' : 'Items'}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -187,11 +210,11 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
           </Card>
         </TabsContent>
         
-        <TabsContent value="monthly">
+        <TabsContent value="monthly" className="animate-in fade-in duration-300">
           <Card className="overflow-hidden border-none rounded-2xl shadow-sm bg-[#F9FAFB]">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-gray-500 mb-4">Monthly Expense Trend</h3>
-              <div className="h-80">
+              <h3 className="text-sm font-medium text-gray-500 mb-6">Monthly Expense Trend</h3>
+              <div style={{ height: '320px', width: '100%' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
@@ -205,10 +228,13 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                       axisLine={false}
                       tickLine={false}
                       tick={{ fontSize: 12, fill: '#666' }}
-                      tickFormatter={(value) => `$${value / 1000}k`}
+                      tickFormatter={(value) => {
+                        if (value === 0) return '0';
+                        return `$${value / 1000}k`;
+                      }}
                     />
                     <Tooltip 
-                      formatter={(value: number) => formatCurrency(value)} 
+                      formatter={(value: number) => formatCurrency(value || 0)} 
                       contentStyle={{ 
                         borderRadius: '12px', 
                         border: 'none', 
@@ -232,10 +258,10 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
           </Card>
         </TabsContent>
         
-        <TabsContent value="detail">
+        <TabsContent value="detail" className="animate-in fade-in duration-300">
           <Card className="overflow-hidden border-none rounded-2xl shadow-sm bg-[#F9FAFB]">
             <CardContent className="p-6">
-              <h3 className="text-sm font-medium text-gray-500 mb-4">Expense Details</h3>
+              <h3 className="text-sm font-medium text-gray-500 mb-6">Expense Details</h3>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
@@ -250,7 +276,10 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                   <tbody className="divide-y divide-gray-100">
                     {expenseTypeData.map((item, index) => {
                       const total = expenseTypeData.reduce((sum, i) => sum + (i.amount || 0), 0);
-                      const percentage = total > 0 ? (item.amount || 0) / total * 100 : 0;
+                      const percentage = calculatePercentage(item.amount || 0, total);
+                      const avgAmount = item.count && item.amount 
+                        ? (item.amount / item.count) 
+                        : 0;
                       
                       return (
                         <tr key={index} className="hover:bg-gray-50">
@@ -262,15 +291,15 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                                   backgroundColor: EXPENSE_COLORS[item.type as keyof typeof EXPENSE_COLORS] || '#999' 
                                 }}
                               />
-                              {item.type}
+                              {item.type || 'Unknown'}
                             </div>
                           </td>
                           <td className="py-4 px-4 text-sm">{item.count || 0}</td>
                           <td className="py-4 px-4 text-sm font-medium">
-                            ${item.amount ? item.amount.toLocaleString() : '0'}
+                            {formatCurrency(item.amount || 0)}
                           </td>
                           <td className="py-4 px-4 text-sm">
-                            ${item.count && item.amount ? (item.amount / item.count).toLocaleString(undefined, { maximumFractionDigits: 2 }) : '0'}
+                            {formatCurrency(avgAmount)}
                           </td>
                           <td className="py-4 px-4 text-sm">
                             <div className="flex items-center">
@@ -278,17 +307,41 @@ const AppleExpenseBreakdown: React.FC<AppleExpenseBreakdownProps> = ({
                                 <div 
                                   className="h-1.5 rounded-full" 
                                   style={{ 
-                                    width: `${percentage.toFixed(1)}%`, 
+                                    width: `${percentage}%`, 
                                     backgroundColor: EXPENSE_COLORS[item.type as keyof typeof EXPENSE_COLORS] || '#999'
                                   }}
                                 />
                               </div>
-                              {percentage.toFixed(1)}%
+                              {percentage}%
                             </div>
                           </td>
                         </tr>
                       );
                     })}
+                    
+                    {/* Add a total row */}
+                    {expenseTypeData.length > 0 && (
+                      <tr className="bg-gray-50 font-medium">
+                        <td className="py-4 px-4 text-sm">Total</td>
+                        <td className="py-4 px-4 text-sm">
+                          {expenseTypeData.reduce((sum, item) => sum + (item.count || 0), 0)}
+                        </td>
+                        <td className="py-4 px-4 text-sm">
+                          {formatCurrency(expenseTypeData.reduce((sum, item) => sum + (item.amount || 0), 0))}
+                        </td>
+                        <td className="py-4 px-4 text-sm">-</td>
+                        <td className="py-4 px-4 text-sm">100%</td>
+                      </tr>
+                    )}
+                    
+                    {/* Empty state */}
+                    {expenseTypeData.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-gray-500">
+                          No expense data available
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>

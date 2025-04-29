@@ -17,7 +17,7 @@ const recentReports = [
 
 const Reports: React.FC = () => {
   const navigate = useNavigate();
-  const [showReport, setShowReport] = useState(false);
+  const [showReport, setShowReport] = useState(true); // Default to true to show the report immediately
   
   if (showReport) {
     return <ReportV2Apple />;
@@ -47,8 +47,6 @@ const Reports: React.FC = () => {
           />
         </div>
       </div>
-      
-      {/* Additional content */}
     </div>
   );
 };
