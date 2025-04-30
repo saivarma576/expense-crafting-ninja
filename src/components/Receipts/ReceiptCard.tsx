@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
-  Airplane, Car, Coffee, Building2, Briefcase
+  Airplay, Car, Coffee, Building2, Briefcase
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -45,7 +45,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
   const getCategoryIcon = (category: string) => {
     switch(category.toLowerCase()) {
       case 'airfare':
-        return <Airplane className="h-8 w-8 text-blue-500" />;
+        return <Airplay className="h-8 w-8 text-blue-500" />; // Changed from Airplane to Airplay
       case 'hotel':
         return <Building2 className="h-8 w-8 text-purple-500" />;
       case 'meals':
