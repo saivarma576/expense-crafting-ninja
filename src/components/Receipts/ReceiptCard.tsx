@@ -2,7 +2,7 @@
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
-  Airplay, Car, Coffee, Building2, Briefcase, FilePdf, FileImage
+  Airplay, Car, Coffee, Building2, Briefcase, FileImage
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -114,7 +114,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
             {receipt.type === 'pdf' ? (
               <div className="flex flex-col items-center justify-center">
-                <FilePdf className="h-8 w-8 text-red-500" />
+                <FileText className="h-8 w-8 text-red-500" />
                 <span className="text-[10px] text-gray-500 mt-1">PDF</span>
               </div>
             ) : receipt.type === 'image' ? (
