@@ -92,7 +92,7 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
               selectedFilter === "processed" ? "bg-green-50 text-green-700 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
             )}
           >
-            Processed
+            New
           </Button>
           <Button
             type="button"
@@ -102,7 +102,7 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
               selectedFilter === "pending" ? "bg-amber-50 text-amber-700 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
             )}
           >
-            Processing
+            Inprocess
           </Button>
           <Button
             type="button"
@@ -112,7 +112,7 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
               selectedFilter === "error" ? "bg-red-50 text-red-700 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
             )}
           >
-            Error
+            Errors
           </Button>
         </div>
       </div>
