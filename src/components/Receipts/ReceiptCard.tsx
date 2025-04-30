@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
@@ -110,7 +109,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
 
   // Determine if we should use a custom thumbnail or the provided URL
   const hasCustomThumbnail = !receipt.thumbnailUrl.includes('placehold.co');
-
+  
   return (
     <div className={cn(
       "overflow-hidden rounded-md border bg-white shadow-sm hover:shadow-md transition-all duration-200 flex flex-col",
@@ -248,48 +247,46 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
         </div>
       </div>
       
-      {/* View Expense or Draft button - Moved to bottom and full width */}
-      {(receipt.expenseId || receipt.draftId) && (
-        <div className="px-2 pb-2 w-full">
-          <TooltipProvider>
-            {receipt.expenseId ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full h-7 bg-gradient-to-b from-green-50 to-green-100 border-green-200 text-green-600 hover:text-green-700 hover:bg-green-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
-                    onClick={() => onViewExpense && onViewExpense(receipt.expenseId!)}
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    View Expense
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p className="text-xs">View the created expense</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : receipt.draftId ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full h-7 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
-                    onClick={() => onOpenDraft(receipt.draftId!)}
-                  >
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    Draft
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p className="text-xs">Open draft expense for editing</p>
-                </TooltipContent>
-              </Tooltip>
-            ) : null}
-          </TooltipProvider>
-        </div>
-      )}
+      {/* View Expense or Draft button - Full width at bottom for all cards */}
+      <div className="px-2 pb-2 w-full">
+        <TooltipProvider>
+          {receipt.expenseId ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full h-7 bg-gradient-to-b from-green-50 to-green-100 border-green-200 text-green-600 hover:text-green-700 hover:bg-green-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
+                  onClick={() => onViewExpense && onViewExpense(receipt.expenseId!)}
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" />
+                  View Expense
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">View the created expense</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full h-7 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
+                  onClick={() => onOpenDraft(receipt.draftId!)}
+                >
+                  <ExternalLink className="h-3 w-3 mr-1" />
+                  Draft Expense
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">Create a draft expense</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </TooltipProvider>
+      </div>
     </div>
   );
 };
