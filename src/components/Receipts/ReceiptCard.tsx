@@ -277,11 +277,11 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                   onClick={() => onOpenDraft(receipt.draftId!)}
                 >
                   <ExternalLink className="h-3 w-3 mr-1" />
-                  Draft Expense
+                  View drafted expense
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                <p className="text-xs">Create a draft expense</p>
+                <p className="text-xs">View or edit your drafted expense</p>
               </TooltipContent>
             </Tooltip>
           )}
