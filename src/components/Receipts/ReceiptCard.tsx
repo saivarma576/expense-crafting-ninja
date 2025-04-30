@@ -102,7 +102,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
   
   return (
     <div className={cn(
-      "overflow-hidden rounded-md border bg-white shadow-sm hover:shadow-md transition-all duration-200 flex flex-col",
+      "overflow-hidden rounded-md border bg-white shadow-sm hover:shadow-md transition-all duration-200 flex flex-col h-[280px]", // Added fixed height
       isSelected ? "border-blue-400 ring-2 ring-blue-200" : "border-gray-100 hover:border-gray-300"
     )}>
       <div className="relative aspect-[4/3] bg-gray-50">
@@ -154,7 +154,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
       </div>
       
       {/* Receipt info */}
-      <div className="p-2 space-y-1 flex-1">
+      <div className="p-2 space-y-1 flex-1 flex flex-col">
         {/* Title and Date */}
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
@@ -178,8 +178,8 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
           )}
         </div>
         
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+        {/* Actions - pushed to bottom with mt-auto */}
+        <div className="flex items-center justify-between pt-1 border-t border-gray-100 mt-auto">
           <TooltipProvider>
             <div className="flex space-x-0.5">
               <Tooltip>
