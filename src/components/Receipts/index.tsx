@@ -20,6 +20,7 @@ interface ReceiptItem {
   type: 'pdf' | 'image';
   draftId?: string;
   merchantName?: string;
+  expenseId?: string;
   extractedData?: {
     date?: string;
     amount?: number;
@@ -69,6 +70,7 @@ const Receipts: React.FC = () => {
       source: 'email',
       thumbnailUrl: 'https://placehold.co/600x400?text=Airfare+Receipt',
       type: 'image',
+      expenseId: 'exp-001',
       extractedData: {
         date: '2023-10-12',
         amount: 542.33,
@@ -351,6 +353,18 @@ const Receipts: React.FC = () => {
     toast.info(`Opening draft expense ${draftId}`);
   };
   
+  const handleViewExpense = (expenseId: string) => {
+    toast.info(`Viewing expense ${expenseId}`);
+  };
+  
+  const handleArchiveReceipt = (receiptId: string) => {
+    toast.success(`Receipt ${receiptId} archived`);
+  };
+  
+  const handleCreateExpense = (receiptIds: string[]) => {
+    toast.success(`Creating expense from ${receiptIds.length} receipt(s)`);
+  };
+  
   // Render appropriate UI based on active option
   const renderOptionContent = () => {
     if (activeMainTab === 'email' && activeOption === 'upload') {
@@ -449,6 +463,9 @@ const Receipts: React.FC = () => {
               onViewReceipt={handleViewReceipt}
               onDownloadReceipt={handleDownloadReceipt}
               onOpenDraft={handleOpenDraft}
+              onViewExpense={handleViewExpense}
+              onArchive={handleArchiveReceipt}
+              onCreateExpense={handleCreateExpense}
               onClearFilters={handleClearFilters}
             />
           </>

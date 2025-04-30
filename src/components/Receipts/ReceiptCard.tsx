@@ -2,12 +2,13 @@
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
-  Airplay, Car, Coffee, Building2, Briefcase, FileImage
+  Airplay, Car, Coffee, Building2, Briefcase, FileImage, Archive
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import TruncatedText from "@/components/ui/truncated-text";
 
 interface ReceiptCardProps {
@@ -23,6 +24,7 @@ interface ReceiptCardProps {
     type: 'pdf' | 'image';
     draftId?: string;
     merchantName?: string;
+    expenseId?: string;
     extractedData?: {
       date?: string;
       amount?: number;
@@ -33,13 +35,21 @@ interface ReceiptCardProps {
   onViewReceipt: (receiptId: string) => void;
   onDownloadReceipt: (receiptId: string) => void;
   onOpenDraft: (draftId: string) => void;
+  onViewExpense?: (expenseId: string) => void;
+  onArchive?: (receiptId: string) => void;
+  isSelected?: boolean;
+  onToggleSelect?: (receiptId: string) => void;
 }
 
 const ReceiptCard: React.FC<ReceiptCardProps> = ({
   receipt,
   onViewReceipt,
   onDownloadReceipt,
-  onOpenDraft
+  onOpenDraft,
+  onViewExpense,
+  onArchive,
+  isSelected = false,
+  onToggleSelect
 }) => {
   // Get category icon component
   const getCategoryIcon = (category: string) => {
@@ -102,8 +112,22 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
   const hasCustomThumbnail = !receipt.thumbnailUrl.includes('placehold.co');
 
   return (
-    <div className="overflow-hidden rounded-md border border-gray-100 hover:border-gray-300 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]">
+    <div className={cn(
+      "overflow-hidden rounded-md border bg-white shadow-sm hover:shadow-md transition-all duration-200",
+      isSelected ? "border-blue-400 ring-2 ring-blue-200" : "border-gray-100 hover:border-gray-300"
+    )}>
       <div className="relative aspect-[4/3] bg-gray-50">
+        {/* Checkbox for selection */}
+        {onToggleSelect && (
+          <div className="absolute top-1 left-1 z-10">
+            <Checkbox 
+              checked={isSelected}
+              onCheckedChange={() => onToggleSelect(receipt.id)}
+              className="bg-white border-gray-300"
+            />
+          </div>
+        )}
+        
         {hasCustomThumbnail ? (
           <img 
             src={receipt.thumbnailUrl} 
@@ -200,26 +224,64 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                   <p className="text-xs">Download Receipt</p>
                 </TooltipContent>
               </Tooltip>
+              
+              {onArchive && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 p-0"
+                      onClick={() => onArchive(receipt.id)}
+                    >
+                      <Archive className="h-3 w-3" />
+                      <span className="sr-only">Archive Receipt</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-xs">Archive Receipt</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
             </div>
             
-            {receipt.draftId && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-5 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-[10px] rounded-full shadow-sm flex items-center gap-1 px-2"
-                    onClick={() => onOpenDraft(receipt.draftId!)}
-                  >
-                    <ExternalLink className="h-2.5 w-2.5 mr-0.5" />
-                    Draft
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p className="text-xs">Open draft expense for editing</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
+            <div>
+              {receipt.expenseId ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-5 bg-gradient-to-b from-green-50 to-green-100 border-green-200 text-green-600 hover:text-green-700 hover:bg-green-100 text-[10px] rounded-full shadow-sm flex items-center gap-1 px-2"
+                      onClick={() => onViewExpense && onViewExpense(receipt.expenseId!)}
+                    >
+                      <ExternalLink className="h-2.5 w-2.5 mr-0.5" />
+                      View Expense
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-xs">View the created expense</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : receipt.draftId ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-5 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-[10px] rounded-full shadow-sm flex items-center gap-1 px-2"
+                      onClick={() => onOpenDraft(receipt.draftId!)}
+                    >
+                      <ExternalLink className="h-2.5 w-2.5 mr-0.5" />
+                      Draft
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-xs">Open draft expense for editing</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+            </div>
           </TooltipProvider>
         </div>
       </div>
