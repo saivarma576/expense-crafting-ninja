@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
-  Airplay, Car, Coffee, Building2, Briefcase, FileImage, Archive
+  Airplay, Car, Coffee, Building2, Briefcase, FileImage, Archive, Sparkle
 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -68,12 +68,12 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
     }
   };
 
-  // Get status badge component - updated to only show Drafted or In Process
+  // Get status badge component - updated to show Drafted with Sparkle or In Process
   const StatusBadge = () => {
     if (receipt.draftId) {
       return (
         <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-yellow-100 text-yellow-800 border-yellow-200">
-          <Clock className="h-2.5 w-2.5" />
+          <Sparkle className="h-2.5 w-2.5" />
           <span>Drafted</span>
         </Badge>
       );
