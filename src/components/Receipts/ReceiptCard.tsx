@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
@@ -250,44 +249,40 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
         </div>
       </div>
       
-      {/* View Expense or Draft button - Full width at bottom for all cards */}
+      {/* View Expense button - Full width at bottom for all cards */}
       <div className="px-2 pb-2 w-full">
         <TooltipProvider>
-          {receipt.expenseId ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full h-7 bg-gradient-to-b from-green-50 to-green-100 border-green-200 text-green-600 hover:text-green-700 hover:bg-green-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
-                  onClick={() => onViewExpense && onViewExpense(receipt.expenseId!)}
-                >
-                  <ExternalLink className="h-3 w-3 mr-1" />
-                  View Expense
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">View the created expense</p>
-              </TooltipContent>
-            </Tooltip>
-          ) : receipt.draftId ? (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full h-7 bg-gradient-to-b from-yellow-50 to-yellow-100 border-yellow-200 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
-                  onClick={() => onOpenDraft(receipt.draftId!)}
-                >
-                  <ExternalLink className="h-3 w-3 mr-1" />
-                  View drafted expense
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">View or edit your drafted expense</p>
-              </TooltipContent>
-            </Tooltip>
-          ) : null}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full h-7 bg-gradient-to-b from-green-50 to-green-100 border-green-200 text-green-600 hover:text-green-700 hover:bg-green-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
+                onClick={() => {
+                  if (receipt.expenseId && onViewExpense) {
+                    onViewExpense(receipt.expenseId);
+                  } else if (receipt.draftId) {
+                    onOpenDraft(receipt.draftId);
+                  } else {
+                    // If there's no expense or draft, we'll just create a new one
+                    onOpenDraft(`new-${receipt.id}`);
+                  }
+                }}
+              >
+                <ExternalLink className="h-3 w-3 mr-1" />
+                View Expense
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <p className="text-xs">
+                {receipt.expenseId 
+                  ? "View the created expense" 
+                  : receipt.draftId 
+                    ? "View or edit your drafted expense" 
+                    : "Create a new expense"}
+              </p>
+            </TooltipContent>
+          </Tooltip>
         </TooltipProvider>
       </div>
     </div>
