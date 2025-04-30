@@ -38,7 +38,7 @@ const Receipts: React.FC = () => {
     to: Date | undefined;
   }>({ from: undefined, to: undefined });
   
-  // Enhanced mock data for demonstration
+  // Enhanced mock data for demonstration with more test items
   const receipts: ReceiptItem[] = [
     {
       id: 'rec-001',
@@ -124,6 +124,155 @@ const Receipts: React.FC = () => {
       source: 'email',
       thumbnailUrl: 'https://placehold.co/600x400?text=Car+Rental',
       type: 'pdf'
+    },
+    {
+      id: 'rec-007',
+      name: 'Marriott Hotel',
+      date: '2023-11-10',
+      category: 'hotel',
+      status: 'processed',
+      amount: 289.99,
+      source: 'email',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Marriott+Receipt',
+      type: 'pdf',
+      merchantName: 'Marriott International',
+      extractedData: {
+        date: '2023-11-10',
+        amount: 289.99,
+        category: 'hotel',
+        merchantName: 'Marriott International'
+      }
+    },
+    {
+      id: 'rec-008',
+      name: 'United Airlines',
+      date: '2023-11-15',
+      category: 'airfare',
+      status: 'pending',
+      amount: 621.50,
+      source: 'email',
+      thumbnailUrl: 'https://placehold.co/600x400?text=United+Receipt',
+      type: 'pdf',
+      merchantName: 'United Airlines Inc.',
+      extractedData: {
+        date: '2023-11-15',
+        amount: 621.50,
+        category: 'airfare',
+        merchantName: 'United Airlines Inc.'
+      }
+    },
+    {
+      id: 'rec-009',
+      name: 'Lyft Ride',
+      date: '2023-11-18',
+      category: 'transport',
+      status: 'processed',
+      amount: 32.75,
+      source: 'email',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Lyft+Receipt',
+      type: 'image',
+      merchantName: 'Lyft, Inc.',
+      extractedData: {
+        date: '2023-11-18',
+        amount: 32.75,
+        category: 'transport',
+        merchantName: 'Lyft, Inc.'
+      }
+    },
+    {
+      id: 'rec-010',
+      name: 'Staples',
+      date: '2023-11-20',
+      category: 'other',
+      status: 'error',
+      amount: 45.23,
+      source: 'upload',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Staples+Receipt',
+      type: 'image'
+    },
+    {
+      id: 'rec-011',
+      name: 'Cheesecake Factory',
+      date: '2023-11-22',
+      category: 'meals',
+      status: 'pending',
+      amount: 87.45,
+      source: 'email',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Restaurant+Receipt',
+      type: 'pdf',
+      draftId: 'draft-003',
+      merchantName: 'The Cheesecake Factory',
+      extractedData: {
+        date: '2023-11-22',
+        amount: 87.45,
+        category: 'meals',
+        merchantName: 'The Cheesecake Factory'
+      }
+    },
+    {
+      id: 'rec-012',
+      name: 'Avis Car Rental',
+      date: '2023-11-25',
+      category: 'rental',
+      status: 'processed',
+      amount: 175.34,
+      source: 'email',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Avis+Receipt',
+      type: 'image',
+      merchantName: 'Avis Budget Group',
+      extractedData: {
+        date: '2023-11-25',
+        amount: 175.34,
+        category: 'rental',
+        merchantName: 'Avis Budget Group'
+      }
+    },
+    {
+      id: 'rec-013',
+      name: 'Apple Store',
+      date: '2023-11-28',
+      category: 'other',
+      status: 'error',
+      amount: 1299.99,
+      source: 'capture',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Apple+Receipt',
+      type: 'image'
+    },
+    {
+      id: 'rec-014',
+      name: 'Southwest Airlines',
+      date: '2023-12-01',
+      category: 'airfare',
+      status: 'processed',
+      amount: 324.76,
+      source: 'email',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Southwest+Receipt',
+      type: 'pdf',
+      merchantName: 'Southwest Airlines',
+      extractedData: {
+        date: '2023-12-01',
+        amount: 324.76,
+        category: 'airfare',
+        merchantName: 'Southwest Airlines'
+      }
+    },
+    {
+      id: 'rec-015',
+      name: 'Chipotle',
+      date: '2023-12-03',
+      category: 'meals',
+      status: 'pending',
+      amount: 23.85,
+      source: 'upload',
+      thumbnailUrl: 'https://placehold.co/600x400?text=Chipotle+Receipt',
+      type: 'image',
+      merchantName: 'Chipotle Mexican Grill',
+      extractedData: {
+        date: '2023-12-03',
+        amount: 23.85,
+        category: 'meals',
+        merchantName: 'Chipotle Mexican Grill'
+      }
     }
   ];
 
