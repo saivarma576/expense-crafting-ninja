@@ -76,16 +76,6 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
         <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-full">
           <Button
             type="button"
-            onClick={() => onFilterChange(null)}
-            className={cn(
-              "rounded-full text-sm h-8 px-3", 
-              !selectedFilter ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
-            )}
-          >
-            All
-          </Button>
-          <Button
-            type="button"
             onClick={() => onFilterChange("processed")}
             className={cn(
               "rounded-full text-sm h-8 px-3", 
@@ -113,6 +103,16 @@ const ReceiptFilters: React.FC<ReceiptFiltersProps> = ({
             )}
           >
             Errors
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onFilterChange(null)}
+            className={cn(
+              "rounded-full text-sm h-8 px-3", 
+              !selectedFilter ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-900"
+            )}
+          >
+            All
           </Button>
         </div>
       </div>
