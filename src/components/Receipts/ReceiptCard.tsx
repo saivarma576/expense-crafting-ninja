@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Eye, Download, FileText, Clock, CheckCircle2, Ban, ExternalLink,
@@ -73,23 +74,23 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
     switch(receipt.status) {
       case 'processed':
         return (
-          <Badge variant="success" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px]" size="sm">
+          <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-green-100 text-green-800 border-green-200">
             <CheckCircle2 className="h-2.5 w-2.5" />
             <span>Processed</span>
           </Badge>
         );
       case 'pending':
         return (
-          <Badge variant="warning" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px]" size="sm">
+          <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-blue-100 text-blue-800 border-blue-200">
             <Clock className="h-2.5 w-2.5 animate-pulse" />
-            <span>Processing</span>
+            <span>New</span>
           </Badge>
         );
       case 'error':
         return (
-          <Badge variant="destructive" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px]" size="sm">
+          <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-red-100 text-red-800 border-red-200">
             <Ban className="h-2.5 w-2.5" />
-            <span>Error</span>
+            <span>Archived</span>
           </Badge>
         );
       default:
@@ -127,6 +128,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
           </div>
         )}
         
+        {/* Receipt Thumbnail */}
         {hasCustomThumbnail ? (
           <img 
             src={receipt.thumbnailUrl} 
@@ -162,6 +164,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
         </div>
       </div>
       
+      {/* Receipt info */}
       <div className="p-2 space-y-1 flex-1">
         {/* Title and Date */}
         <div className="flex justify-between items-start">
@@ -267,13 +270,13 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                 <p className="text-xs">View the created expense</p>
               </TooltipContent>
             </Tooltip>
-          ) : (
+          ) : receipt.draftId ? (
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="w-full h-7 bg-gradient-to-b from-blue-50 to-blue-100 border-blue-200 text-blue-600 hover:text-blue-700 hover:bg-blue-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
+                  className="w-full h-7 bg-gradient-to-b from-yellow-50 to-yellow-100 border-yellow-200 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 text-xs rounded shadow-sm flex items-center justify-center gap-1"
                   onClick={() => onOpenDraft(receipt.draftId!)}
                 >
                   <ExternalLink className="h-3 w-3 mr-1" />
@@ -284,7 +287,7 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
                 <p className="text-xs">View or edit your drafted expense</p>
               </TooltipContent>
             </Tooltip>
-          )}
+          ) : null}
         </TooltipProvider>
       </div>
     </div>

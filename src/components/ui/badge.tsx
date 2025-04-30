@@ -20,6 +20,7 @@ const badgeVariants = cva(
           "border-transparent bg-green-100 text-green-800 hover:bg-green-200/80",
         warning:
           "border-transparent bg-amber-100 text-amber-800 hover:bg-amber-200/80",
+        custom: "", // Add custom variant for full class control
       },
       size: {
         default: "px-2.5 py-0.5 text-xs",
