@@ -68,32 +68,22 @@ const ReceiptCard: React.FC<ReceiptCardProps> = ({
     }
   };
 
-  // Get status badge component
+  // Get status badge component - updated to only show Drafted or In Process
   const StatusBadge = () => {
-    switch(receipt.status) {
-      case 'processed':
-        return (
-          <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-green-100 text-green-800 border-green-200">
-            <CheckCircle2 className="h-2.5 w-2.5" />
-            <span>Processed</span>
-          </Badge>
-        );
-      case 'pending':
-        return (
-          <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-blue-100 text-blue-800 border-blue-200">
-            <Clock className="h-2.5 w-2.5 animate-pulse" />
-            <span>New</span>
-          </Badge>
-        );
-      case 'error':
-        return (
-          <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-red-100 text-red-800 border-red-200">
-            <Ban className="h-2.5 w-2.5" />
-            <span>Archived</span>
-          </Badge>
-        );
-      default:
-        return null;
+    if (receipt.draftId) {
+      return (
+        <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-yellow-100 text-yellow-800 border-yellow-200">
+          <Clock className="h-2.5 w-2.5" />
+          <span>Drafted</span>
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge variant="custom" className="absolute top-1 right-1 flex items-center gap-1 shadow-sm text-[10px] bg-blue-100 text-blue-800 border-blue-200">
+          <CheckCircle2 className="h-2.5 w-2.5" />
+          <span>In Process</span>
+        </Badge>
+      );
     }
   };
 
